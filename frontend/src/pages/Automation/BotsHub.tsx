@@ -94,7 +94,7 @@ export default function BotsHub() {
         query,
         context: {}
       });
-      alert(`Agent executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${(response.data.confidence * 100).toFixed(0)}%`);
+      alert(`Bot executed successfully!\n\nResponse: ${response.data.response}\n\nConfidence: ${((response.data.confidence || 0) * 100).toFixed(0)}%`);
       loadBots();
     } catch (err: any) {
       console.error('Error running agent:', err);
@@ -119,23 +119,23 @@ export default function BotsHub() {
   }, {} as Record<string, BotInfo[]>);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30">
+          <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl ">
             <Cpu className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Automation Agents</h1>
-            <p className="text-gray-600 dark:text-gray-400">67 AI-powered automation agents to streamline your business processes</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Automation Agents</h1>
+            <p className="text-gray-600 dark:text-gray-300">67 AI-powered automation agents to streamline your business processes</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search agents by name or description..."
@@ -157,47 +157,47 @@ export default function BotsHub() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30">
-              <Cpu className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl ">
+              <Cpu className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{agents.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Agents</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{agents.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Agents</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <Zap className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <Zap className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{agents.filter(b => b.status === 'active').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Agents</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{agents.filter(b => b.status === 'active').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Agents</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Activity className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Activity className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Object.keys(botsByCategory).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Categories</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{Object.keys(botsByCategory).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Categories</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <TrendingUp className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{agents.length > 0 ? Math.round(agents.reduce((sum, b) => sum + (b.success_rate || 0), 0) / agents.length) : 0}%</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Avg Success Rate</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{agents.length > 0 ? Math.round(agents.reduce((sum, b) => sum + (b.success_rate || 0), 0) / agents.length) : 0}%</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Avg Success Rate</p>
             </div>
           </div>
         </div>
@@ -206,27 +206,27 @@ export default function BotsHub() {
       {loading ? (
         <div className="text-center py-12">
           <Cpu className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3 animate-pulse" />
-          <p className="text-gray-500 dark:text-gray-400">Loading agents...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading agents...</p>
         </div>
       ) : Object.keys(botsByCategory).length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <Cpu className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">No agents found matching your filters</p>
+          <p className="text-gray-500 dark:text-gray-300">No agents found matching your filters</p>
         </div>
       ) : (
         Object.entries(botsByCategory).map(([category, categoryBots]) => (
           <div key={category} className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               {category}
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
                 {categoryBots.length}
               </span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {categoryBots.map(agent => (
                 <div 
                   key={agent.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-violet-300 dark:hover:border-violet-600 transition-all cursor-pointer"
+                  className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-violet-300 dark:hover:border-violet-600 transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
@@ -237,25 +237,25 @@ export default function BotsHub() {
                       {agent.status}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
                     {agent.description}
                   </p>
-                  <div className="flex items-center justify-between mb-4 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center justify-between mb-4 text-xs text-gray-500 dark:text-gray-300">
                     <div className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5" />
                       {agent.last_run ? new Date(agent.last_run).toLocaleDateString() : 'Never run'}
                     </div>
                     <div className="flex items-center gap-1">
                       <CheckCircle className="h-3.5 w-3.5 text-green-500" />
-                      {agent.success_rate?.toFixed(0)}% success
+                      {(agent.success_rate ?? 0).toFixed(0)}% success
                     </div>
                   </div>
                   <button
                     onClick={() => handleRunBot(agent.id)}
-                    className="w-full px-4 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 flex items-center justify-center gap-2 text-sm font-medium"
+                    className="w-full px-4 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  flex items-center justify-center gap-2 text-sm font-medium"
                   >
                     <Play className="h-4 w-4" />
-                    Run Agent
+                    Run Bot
                   </button>
                 </div>
               ))}

@@ -3,9 +3,10 @@
  * Phase 2: Customer and Supplier Invoices CRUD
  */
 
-import { Hono } from 'hono';
+import { Hono, Context } from 'hono';
 import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { postCustomerInvoice, postCustomerPayment, postSupplierInvoice, postSupplierPayment } from '../services/gl-posting-engine';
+import { validateInvoice, validatePayment, validateStatusTransition, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -250,10 +251,6 @@ invoices.post('/customer/:id/payment', async (c) => {
     if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ amount: number; payment_method?: string; reference?: string }>();
 
-    if (!body.amount || body.amount <= 0) {
-      return c.json({ error: 'Valid payment amount is required' }, 400);
-    }
-
     // Get invoice with customer name
     const invoice = await c.env.DB.prepare(`
       SELECT ci.*, c.customer_name
@@ -264,6 +261,11 @@ invoices.post('/customer/:id/payment', async (c) => {
 
     if (!invoice) {
       return c.json({ error: 'Invoice not found' }, 404);
+    }
+
+    const paymentValidation = validatePayment(safeNumber(body.amount), safeNumber(invoice.total_amount), safeNumber(invoice.amount_paid));
+    if (!paymentValidation.valid) {
+      return c.json({ error: paymentValidation.errors.join('; ') }, 400);
     }
 
     // Generate payment number
@@ -332,6 +334,139 @@ invoices.post('/customer/:id/payment', async (c) => {
     return c.json({ error: 'Internal server error' }, 500);
   }
 });
+
+// Create customer invoice - shared handler
+const createCustomerInvoiceHandler = async (c: Context<{ Bindings: Env }>) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
+    const userId = await getSecureUserId(c);
+    const body = await c.req.json<{
+      customer_name?: string;
+      customer_email?: string;
+      customer_id?: string;
+      invoice_date?: string;
+      due_date?: string;
+      notes?: string;
+      reference?: string;
+      lines?: Array<{
+        line_number?: number;
+        product_id?: string;
+        description?: string;
+        quantity?: number;
+        unit_price?: number;
+        discount_percent?: number;
+        tax_rate?: number;
+        vat_rate?: number;
+      }>;
+      subtotal?: number;
+      vat_amount?: number;
+      total_amount?: number;
+    }>();
+
+    let customerId: string | undefined = body.customer_id;
+    if (customerId) {
+      const existingCustomer = await c.env.DB.prepare(
+        'SELECT id FROM customers WHERE id = ? AND company_id = ?'
+      ).bind(customerId, companyId).first<{ id: string }>();
+      if (!existingCustomer) {
+        customerId = undefined;
+      }
+    }
+    if (!customerId && body.customer_name) {
+      const customer = await c.env.DB.prepare(
+        'SELECT id FROM customers WHERE company_id = ? AND customer_name = ? LIMIT 1'
+      ).bind(companyId, body.customer_name).first<{ id: string }>();
+      customerId = customer?.id || undefined;
+    }
+
+    if (!customerId) {
+      if (!body.customer_name) {
+        return c.json({ error: 'customer_name is required when customer_id is not provided' }, 400);
+      }
+      const newId = crypto.randomUUID();
+      const now = new Date().toISOString();
+      const code = `CUST-${Date.now()}`;
+      try {
+        await c.env.DB.prepare(
+          'INSERT INTO customers (id, company_id, customer_code, customer_name, email, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, ?, ?)'
+        ).bind(newId, companyId, code, body.customer_name, body.customer_email || null, now, now).run();
+        customerId = newId;
+      } catch {
+        customerId = newId;
+      }
+    }
+
+    const lastInvoice = await c.env.DB.prepare(
+      'SELECT invoice_number FROM customer_invoices WHERE company_id = ? ORDER BY created_at DESC LIMIT 1'
+    ).bind(companyId).first<{ invoice_number: string }>();
+
+    const lastNum = lastInvoice ? (parseInt((lastInvoice.invoice_number || '').replace(/[^0-9]/g, '')) || 0) : 0;
+    const nextNum = lastNum + 1;
+    const invoiceNumber = `INV-${String(nextNum).padStart(6, '0')}`;
+
+    const invoiceId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const invoiceDate = body.invoice_date || now.split('T')[0];
+    const dueDate = body.due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    const lines = body.lines || [];
+    let subtotal = 0;
+    let taxAmount = 0;
+    for (const line of lines) {
+      const qty = safeNumber(line.quantity) || 1;
+      const price = safeNumber(line.unit_price);
+      const discount = safeNumber(line.discount_percent);
+      const taxRate = safeNumber(line.tax_rate ?? line.vat_rate) || 15;
+      const lineSubtotal = qty * price * (1 - discount / 100);
+      subtotal += lineSubtotal;
+      taxAmount += lineSubtotal * (taxRate / 100);
+    }
+    const totalAmount = subtotal + taxAmount;
+
+    await c.env.DB.prepare(`
+      INSERT INTO customer_invoices (id, company_id, invoice_number, customer_id, sales_order_id, invoice_date, due_date, status, subtotal, tax_amount, discount_amount, total_amount, amount_paid, balance_due, notes, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      invoiceId, companyId, invoiceNumber, customerId, null,
+      invoiceDate, dueDate, 'draft',
+      subtotal, taxAmount, 0, totalAmount, 0, totalAmount,
+      body.notes || null, userId, now, now
+    ).run();
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const qty = safeNumber(line.quantity) || 1;
+      const price = safeNumber(line.unit_price);
+      const discount = safeNumber(line.discount_percent);
+      const taxRate = safeNumber(line.tax_rate ?? line.vat_rate) || 15;
+      const lineTotal = qty * price * (1 - discount / 100);
+
+      await c.env.DB.prepare(`
+        INSERT INTO customer_invoice_items (id, invoice_id, product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total, sort_order, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        crypto.randomUUID(), invoiceId,
+        line.product_id || null, line.description || '',
+        qty, price, discount, taxRate, lineTotal, i, now
+      ).run();
+    }
+
+    return c.json({
+      id: invoiceId,
+      invoice_number: invoiceNumber,
+      total_amount: totalAmount,
+      message: 'Invoice created successfully'
+    }, 201);
+  } catch (error) {
+    console.error('Create customer invoice error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+};
+
+invoices.post('/customer', createCustomerInvoiceHandler);
+invoices.post('/', createCustomerInvoiceHandler);
+invoices.post('/invoices', createCustomerInvoiceHandler);
 
 // ========================================
 // SUPPLIER INVOICES (AP)
@@ -840,6 +975,172 @@ invoices.post('/invoice-lines', async (c) => {
   } catch (error) {
     console.error('Create invoice line error:', error);
     return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+
+// DELETE /:id - Delete invoice (safeguards)
+invoices.delete('/:id', async (c) => {
+  try {
+    const invoiceId = c.req.param('id');
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
+
+    const inv = await c.env.DB.prepare(
+      'SELECT id, status, amount_paid FROM customer_invoices WHERE id = ? AND company_id = ?'
+    ).bind(invoiceId, companyId).first<{ id: string; status: string; amount_paid: number }>();
+
+    if (!inv) return c.json({ error: 'Invoice not found' }, 404);
+    if ((inv.status && inv.status !== 'draft') || (inv.amount_paid && inv.amount_paid > 0)) {
+      return c.json({ error: 'Cannot delete a non-draft or partially/fully paid invoice' }, 400);
+    }
+
+    await c.env.DB.prepare('DELETE FROM customer_invoice_items WHERE invoice_id = ?')
+      .bind(invoiceId).run();
+    const result = await c.env.DB.prepare('DELETE FROM customer_invoices WHERE id = ? AND company_id = ?')
+      .bind(invoiceId, companyId).run();
+
+    if (result.meta.changes === 0) return c.json({ error: 'Invoice not found' }, 404);
+    return c.json({ message: 'Invoice deleted successfully' });
+  } catch (error) {
+    console.error('Delete invoice error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+// ==================== AR/AP ALIAS ENDPOINTS ====================
+// These map frontend paths like /ar/invoices, /ar/receipts, /ap/payments, /ap/invoices
+// to the existing customer/supplier invoice handlers
+
+invoices.get('/invoices', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
+    const status = c.req.query('status') || '';
+    const search = c.req.query('search') || '';
+    const page = parseInt(c.req.query('page') || '1');
+    const pageSize = parseInt(c.req.query('page_size') || '50');
+    const offset = (page - 1) * pageSize;
+
+    let query = 'SELECT ci.*, c.customer_name, c.email as customer_email FROM customer_invoices ci LEFT JOIN customers c ON ci.customer_id = c.id WHERE ci.company_id = ?';
+    const params: (string | number)[] = [companyId];
+
+    if (status) { query += ' AND ci.status = ?'; params.push(status); }
+    if (search) { query += ' AND (ci.invoice_number LIKE ? OR c.customer_name LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
+
+    query += ' ORDER BY ci.created_at DESC LIMIT ? OFFSET ?';
+    params.push(pageSize, offset);
+
+    const result = await c.env.DB.prepare(query).bind(...params).all();
+    return c.json({ data: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    console.error('Error fetching invoices:', error);
+    return c.json({ data: [], total: 0 });
+  }
+});
+
+invoices.get('/receipts', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(`
+      SELECT cp.*, ci.invoice_number, c.customer_name
+      FROM customer_payments cp
+      LEFT JOIN customer_invoices ci ON cp.invoice_id = ci.id
+      LEFT JOIN customers c ON ci.customer_id = c.id
+      WHERE cp.company_id = ?
+      ORDER BY cp.payment_date DESC LIMIT 100
+    `).bind(companyId).all();
+    return c.json({ receipts: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    console.error('Error fetching receipts:', error);
+    return c.json({ receipts: [], total: 0 });
+  }
+});
+
+invoices.get('/payments', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(`
+      SELECT sp.*, si.invoice_number, s.supplier_name
+      FROM supplier_payments sp
+      LEFT JOIN supplier_invoices si ON sp.invoice_id = si.id
+      LEFT JOIN suppliers s ON si.supplier_id = s.id
+      WHERE sp.company_id = ?
+      ORDER BY sp.payment_date DESC LIMIT 100
+    `).bind(companyId).all();
+    return c.json({ payments: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    return c.json({ payments: [], total: 0 });
+  }
+});
+
+invoices.get('/bills', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(`
+      SELECT si.*, s.supplier_name, s.supplier_code
+      FROM supplier_invoices si
+      LEFT JOIN suppliers s ON si.supplier_id = s.id
+      WHERE si.company_id = ?
+      ORDER BY si.created_at DESC LIMIT 100
+    `).bind(companyId).all();
+    const bills = (result.results || []).map((inv: any) => ({
+      ...inv,
+      total_amount: inv.total_amount ?? 0,
+      balance_due: inv.balance_due ?? 0,
+      tax_amount: inv.tax_amount ?? 0,
+      subtotal: inv.subtotal ?? 0
+    }));
+    return c.json({ bills, total: bills.length });
+  } catch (error) {
+    console.error('Error fetching bills:', error);
+    return c.json({ bills: [], total: 0 });
+  }
+});
+
+// GET /customers - alias for AR customer list
+invoices.get('/customers', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return c.json({ error: 'Authentication required' }, 401);
+    const token = authHeader.substring(7);
+    const { jwtVerify } = await import('jose');
+    const secret = new TextEncoder().encode(c.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const companyId = (payload as any).company_id;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(
+      'SELECT id, customer_code, customer_name, email, phone, is_active, created_at FROM customers WHERE company_id = ? ORDER BY customer_name ASC'
+    ).bind(companyId).all();
+    return c.json({ customers: result.results || [], total: result.results?.length || 0 });
+  } catch (error) {
+    return c.json({ customers: [], total: 0 });
   }
 });
 

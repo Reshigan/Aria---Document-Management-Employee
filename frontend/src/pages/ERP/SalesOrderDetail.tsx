@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
-import { ArrowLeft, Check, Truck, FileText, User, Calendar, Package, DollarSign, Edit, Trash2, AlertCircle, Printer } from 'lucide-react';
+import { ArrowLeft, Check, Truck, FileText, User, Calendar, Package, DollarSign, Edit, Trash2, AlertCircle, Printer, Paperclip, Upload } from 'lucide-react';
 import { LineItemsTable, LineItem } from '../../components/LineItemsTable';
 import { PostingStatus } from '../../components/PostingStatus';
 import { AutomationPanel } from '../../components/AutomationPanel';
@@ -22,6 +22,10 @@ interface SalesOrderDetail {
   total_amount: number;
   notes?: string;
   warehouse_id?: string;
+  customer_po_number?: string;
+  customer_reference?: string;
+  delivery_address?: string;
+  shipping_method?: string;
   created_at: string;
   updated_at: string;
   lines: OrderLine[];
@@ -72,6 +76,8 @@ export default function SalesOrderDetail() {
   const [order, setOrder] = useState<SalesOrderDetail | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [attachments, setAttachments] = useState<any[]>([]);
+  const [attachmentUploading, setAttachmentUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,6 +95,7 @@ export default function SalesOrderDetail() {
 
       loadDeliveries(id);
       loadInvoices(id);
+      loadAttachments(id);
     } catch (error: any) {
       console.error('Error loading sales order:', error);
       setError(error.response?.data?.detail || 'Failed to load sales order details');
@@ -118,6 +125,37 @@ export default function SalesOrderDetail() {
       setInvoices(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading invoices:', error);
+    }
+  };
+
+  const loadAttachments = async (orderId: string) => {
+    try {
+      const response = await api.get(`/attachments/sales_order/${orderId}`);
+      const data = response.data?.data || response.data?.attachments || response.data || [];
+      setAttachments(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error loading attachments:', error);
+    }
+  };
+
+  const handleUploadAttachment = async () => {
+    if (!id) return;
+    const url = prompt('Enter file URL for the attachment:');
+    if (!url) return;
+    const fileName = prompt('Enter file name:') || 'Attachment';
+    setAttachmentUploading(true);
+    try {
+      await api.post(`/attachments/sales_order/${id}` , {
+        file_name: fileName,
+        file_url: url,
+        file_type: url.split('.').pop() || 'pdf',
+        attachment_type: 'general'
+      });
+      await loadAttachments(id);
+    } catch (error) {
+      console.error('Error uploading attachment:', error);
+    } finally {
+      setAttachmentUploading(false);
     }
   };
 
@@ -169,15 +207,15 @@ export default function SalesOrderDetail() {
 
   const calculateFulfillmentProgress = () => {
     if (!order) return 0;
-    const totalQuantity = order.lines.reduce((sum, line) => sum + line.quantity, 0);
-    const deliveredQuantity = order.lines.reduce((sum, line) => sum + line.quantity_delivered, 0);
+    const totalQuantity = order.lines.reduce((sum, line) => sum + (line.quantity || 0), 0);
+    const deliveredQuantity = order.lines.reduce((sum, line) => sum + (line.quantity_delivered || 0), 0);
     return totalQuantity > 0 ? (deliveredQuantity / totalQuantity) * 100 : 0;
   };
 
   if (loading) {
     return (
       <div className="p-8 text-center">
-        <div className="text-lg text-gray-500 dark:text-gray-400">Loading sales order details...</div>
+        <div className="text-lg text-gray-500 dark:text-gray-300">Loading sales order details...</div>
       </div>
     );
   }
@@ -190,7 +228,7 @@ export default function SalesOrderDetail() {
         </div>
         <button
           onClick={() => navigate('/erp/sales-orders')}
-          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700  transition-all"
         >
           Back to Sales Orders
         </button>
@@ -202,8 +240,8 @@ export default function SalesOrderDetail() {
   const fulfillmentProgress = calculateFulfillmentProgress();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
       {/* Header */}
       <div className="mb-8">
         <div className="flex gap-2 mb-4">
@@ -223,12 +261,12 @@ export default function SalesOrderDetail() {
           </button>
         </div>
 
-        <div className="flex justify-between items-start flex-wrap gap-4">
+        <div className="flex justify-between items-start flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               Sales Order {order.order_number}
             </h1>
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                 order.status === 'draft' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' :
                 order.status === 'approved' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
@@ -239,12 +277,12 @@ export default function SalesOrderDetail() {
                 {order.status.toUpperCase()}
               </span>
               {order.quote_number && (
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-gray-500 dark:text-gray-300">
                   From Quote: <a href={`/erp/quotes/${order.quote_id}`} className="text-blue-600 dark:text-blue-400 underline">{order.quote_number}</a>
                 </span>
               )}
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Created {new Date(order.created_at).toLocaleDateString()}
+              <span className="text-xs text-gray-500 dark:text-gray-300">
+                Created {(order.created_at ? new Date(order.created_at).toLocaleDateString() : "-")}
               </span>
             </div>
           </div>
@@ -255,14 +293,14 @@ export default function SalesOrderDetail() {
               <>
                 <button
                   onClick={handleApprove}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700  transition-all"
                 >
                   <Check size={16} />
                   Approve
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-medium hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/30 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-medium hover:from-red-600 hover:to-red-700  transition-all"
                 >
                   <Trash2 size={16} />
                   Delete
@@ -272,7 +310,7 @@ export default function SalesOrderDetail() {
             {(order.status === 'approved' || order.status === 'in_progress') && (
               <button
                 onClick={handleCreateDelivery}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium hover:from-emerald-600 hover:to-emerald-700  transition-all"
               >
                 <Truck size={16} />
                 Create Delivery
@@ -284,10 +322,10 @@ export default function SalesOrderDetail() {
 
       {/* Fulfillment Progress */}
       {order.status !== 'draft' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-6">
           <div className="flex justify-between mb-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Fulfillment Progress</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{fulfillmentProgress.toFixed(0)}%</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{Number(fulfillmentProgress ?? 0).toFixed(0)}%</span>
           </div>
           <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div 
@@ -302,51 +340,80 @@ export default function SalesOrderDetail() {
         {/* Main Content */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           {/* Order Details Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Order Details</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Customer</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Customer</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <User size={16} className="text-gray-400" />
+                  <User size={16} className="text-gray-300" />
                   {order.customer_name}
                 </div>
               </div>
               {order.customer_email && (
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Email</div>
                   <div className="font-medium text-gray-900 dark:text-white">{order.customer_email}</div>
                 </div>
               )}
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Order Date</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Order Date</div>
                 <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <Calendar size={16} className="text-gray-400" />
-                  {new Date(order.order_date).toLocaleDateString()}
+                  <Calendar size={16} className="text-gray-300" />
+                  {(order.order_date ? new Date(order.order_date).toLocaleDateString() : "-")}
                 </div>
               </div>
               {order.required_date && (
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Required Date</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Required Date</div>
                   <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                    <Calendar size={16} className="text-gray-400" />
-                    {new Date(order.required_date).toLocaleDateString()}
+                    <Calendar size={16} className="text-gray-300" />
+                    {(order.required_date ? new Date(order.required_date).toLocaleDateString() : "-")}
                   </div>
                 </div>
               )}
             </div>
 
+            {(order.customer_po_number || order.customer_reference || order.delivery_address || order.shipping_method) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                {order.customer_po_number && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Customer PO Number</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.customer_po_number}</div>
+                  </div>
+                )}
+                {order.customer_reference && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Customer Reference</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.customer_reference}</div>
+                  </div>
+                )}
+                {order.delivery_address && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Delivery Address</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.delivery_address}</div>
+                  </div>
+                )}
+                {order.shipping_method && (
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Shipping Method</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{order.shipping_method}</div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {order.notes && (
               <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{order.notes}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{order.notes}</div>
               </div>
             )}
           </div>
 
           {/* Line Items */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <LineItemsTable
               items={order.lines}
               onChange={() => {}}
@@ -356,19 +423,19 @@ export default function SalesOrderDetail() {
           </div>
 
           {/* Audit Trail */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Audit Trail</h2>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Created</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Created</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(order.created_at).toLocaleString()}
+                  {order.created_at ? new Date(order.created_at).toLocaleString() : '-'}
                 </span>
               </div>
               <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Last Updated</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Last Updated</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {new Date(order.updated_at).toLocaleString()}
+                  {order.updated_at ? new Date(order.updated_at).toLocaleString() : '-'}
                 </span>
               </div>
             </div>
@@ -396,13 +463,13 @@ export default function SalesOrderDetail() {
           />
 
           {/* Deliveries */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Truck size={18} />
               Deliveries ({deliveries.length})
             </h3>
             {deliveries.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">No deliveries yet</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">No deliveries yet</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {deliveries.map((delivery) => (
@@ -413,10 +480,10 @@ export default function SalesOrderDetail() {
                   >
                     <div className="flex justify-between mb-1">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{delivery.delivery_number}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{delivery.status}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">{delivery.status}</span>
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(delivery.delivery_date).toLocaleDateString()}
+                    <div className="text-xs text-gray-500 dark:text-gray-300">
+                      {(delivery.delivery_date ? new Date(delivery.delivery_date).toLocaleDateString() : "-")}
                     </div>
                   </div>
                 ))}
@@ -425,13 +492,13 @@ export default function SalesOrderDetail() {
           </div>
 
           {/* Invoices */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <FileText size={18} />
               Invoices ({invoices.length})
             </h3>
             {invoices.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">No invoices yet</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">No invoices yet</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {invoices.map((invoice) => (
@@ -442,19 +509,19 @@ export default function SalesOrderDetail() {
                   >
                     <div className="flex justify-between mb-1">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{invoice.invoice_number}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{invoice.status}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">{invoice.status}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(invoice.invoice_date).toLocaleDateString()}
+                      <span className="text-xs text-gray-500 dark:text-gray-300">
+                        {(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        R {invoice.total_amount.toFixed(2)}
+                        R {Number(invoice.total_amount ?? 0).toFixed(2)}
                       </span>
                     </div>
                     {invoice.amount_due > 0 && (
                       <div className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                        Due: R {invoice.amount_due.toFixed(2)}
+                        Due: R {Number(invoice.amount_due ?? 0).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -463,32 +530,60 @@ export default function SalesOrderDetail() {
             )}
           </div>
 
+          {/* Document Attachments */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Paperclip size={18} />
+                Attachments ({attachments.length})
+              </h3>
+              <button onClick={handleUploadAttachment} disabled={attachmentUploading} className="text-xs px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:opacity-50 flex items-center gap-1">
+                <Upload size={12} />{attachmentUploading ? 'Uploading...' : 'Add'}
+              </button>
+            </div>
+            {attachments.length === 0 ? (
+              <p className="text-xs text-gray-500 dark:text-gray-300">No attachments yet</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {attachments.map((att: any) => (
+                  <a key={att.id} href={att.file_url} target="_blank" rel="noreferrer" className="p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2">
+                    <FileText size={14} className="text-gray-400" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{att.file_name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">{att.attachment_type} {att.file_size ? `- ${(att.file_size / 1024).toFixed(1)}KB` : ''}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Quick Stats */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h3>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Total Items</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Total Items</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {order.lines.reduce((sum, line) => sum + line.quantity, 0)}
+                  {order.lines.reduce((sum, line) => sum + (line.quantity || 0), 0)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Items Delivered</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Items Delivered</span>
                 <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                  {order.lines.reduce((sum, line) => sum + line.quantity_delivered, 0)}
+                  {order.lines.reduce((sum, line) => sum + (line.quantity_delivered || 0), 0)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Items Remaining</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Items Remaining</span>
                 <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                  {order.lines.reduce((sum, line) => sum + line.quantity_remaining, 0)}
+                  {order.lines.reduce((sum, line) => sum + (line.quantity_remaining || 0), 0)}
                 </span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Order Value</span>
+                <span className="text-xs text-gray-500 dark:text-gray-300">Order Value</span>
                 <span className="text-base font-semibold text-gray-900 dark:text-white">
-                  R {order.total_amount.toFixed(2)}
+                  R {Number(order.total_amount ?? 0).toFixed(2)}
                 </span>
               </div>
             </div>

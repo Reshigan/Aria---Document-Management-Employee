@@ -5,6 +5,7 @@
 
 import { Hono } from 'hono';
 import { getSecureCompanyId } from '../middleware/auth';
+import { validateSalesOrder, validateStatusTransition, calculateLineTotals, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -27,6 +28,10 @@ interface SalesOrder {
   total_amount: number;
   shipping_address: string | null;
   notes: string | null;
+  customer_po_number: string | null;
+  customer_reference: string | null;
+  delivery_address: string | null;
+  shipping_method: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -111,6 +116,10 @@ salesOrders.get('/', async (c) => {
         tax_amount: order.tax_amount,
         discount_amount: order.discount_amount,
         total_amount: order.total_amount,
+        customer_po_number: (order as any).customer_po_number || null,
+        customer_reference: (order as any).customer_reference || null,
+        delivery_address: (order as any).delivery_address || null,
+        shipping_method: (order as any).shipping_method || null,
         created_at: order.created_at,
         updated_at: order.updated_at,
       })),
@@ -154,21 +163,25 @@ salesOrders.get('/:id', async (c) => {
       ORDER BY soi.sort_order
     `).bind(orderId).all<SalesOrderItem & { product_name: string; product_code: string }>();
 
+    const mappedItems = items.results.map(item => ({
+      id: item.id,
+      product_id: item.product_id,
+      product_name: item.product_name,
+      product_code: item.product_code,
+      description: item.description,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      discount_percent: item.discount_percent,
+      tax_rate: item.tax_rate,
+      line_total: item.line_total,
+      quantity_delivered: item.quantity_delivered,
+    }));
+
     return c.json({
       ...order,
-      items: items.results.map(item => ({
-        id: item.id,
-        product_id: item.product_id,
-        product_name: item.product_name,
-        product_code: item.product_code,
-        description: item.description,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        discount_percent: item.discount_percent,
-        tax_rate: item.tax_rate,
-        line_total: item.line_total,
-        quantity_delivered: item.quantity_delivered,
-      })),
+      items: mappedItems,
+      lines: mappedItems,
+      line_items: mappedItems,
     });
   } catch (error) {
     console.error('Get sales order error:', error);
@@ -183,8 +196,9 @@ salesOrders.post('/', async (c) => {
     if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<SalesOrder> & { items?: Partial<SalesOrderItem>[] }>();
 
-    if (!body.customer_id) {
-      return c.json({ error: 'Customer is required' }, 400);
+    const validation = validateSalesOrder(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
     }
 
     // Generate order number
@@ -198,24 +212,16 @@ salesOrders.post('/', async (c) => {
     const orderId = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    // Calculate totals from items
-    let subtotal = 0;
-    let taxAmount = 0;
-    const items = body.items || [];
-    
-    for (const item of items) {
-      const lineTotal = (item.quantity || 1) * (item.unit_price || 0) * (1 - (item.discount_percent || 0) / 100);
-      const lineTax = lineTotal * ((item.tax_rate || 15) / 100);
-      subtotal += lineTotal;
-      taxAmount += lineTax;
-    }
-
-    const discountAmount = body.discount_amount || 0;
-    const totalAmount = subtotal + taxAmount - discountAmount;
+    const items = body.items || (body as any).lines || [];
+    const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
+    const subtotal = totals.subtotal;
+    const taxAmount = totals.tax_amount;
+    const discountAmount = safeNumber(body.discount_amount);
+    const totalAmount = totals.total_amount - discountAmount;
 
     await c.env.DB.prepare(`
-      INSERT INTO sales_orders (id, company_id, order_number, customer_id, quote_id, order_date, expected_delivery_date, status, subtotal, tax_amount, discount_amount, total_amount, shipping_address, notes, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO sales_orders (id, company_id, order_number, customer_id, quote_id, order_date, expected_delivery_date, status, subtotal, tax_amount, discount_amount, total_amount, shipping_address, notes, customer_po_number, customer_reference, delivery_address, shipping_method, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       orderId,
       companyId,
@@ -223,7 +229,7 @@ salesOrders.post('/', async (c) => {
       body.customer_id,
       body.quote_id || null,
       body.order_date || now.split('T')[0],
-      body.expected_delivery_date || null,
+      body.expected_delivery_date || (body as any).required_date || null,
       'pending',
       subtotal,
       taxAmount,
@@ -231,6 +237,10 @@ salesOrders.post('/', async (c) => {
       totalAmount,
       body.shipping_address || null,
       body.notes || null,
+      body.customer_po_number || null,
+      body.customer_reference || null,
+      body.delivery_address || null,
+      body.shipping_method || null,
       now,
       now
     ).run();
@@ -270,6 +280,80 @@ salesOrders.post('/', async (c) => {
   }
 });
 
+// Update sales order (general)
+salesOrders.put('/:id', async (c) => {
+  try {
+    const orderId = c.req.param('id');
+    const companyId = await getSecureCompanyId(c);
+    const body = await c.req.json<Partial<SalesOrder> & { items?: Partial<SalesOrderItem>[]; lines?: Partial<SalesOrderItem>[] }>();
+
+    const existing = await c.env.DB.prepare(
+      'SELECT * FROM sales_orders WHERE id = ? AND company_id = ?'
+    ).bind(orderId, companyId).first<SalesOrder>();
+    if (!existing) return c.json({ error: 'Sales order not found' }, 404);
+
+    if (existing.status === 'invoiced' || existing.status === 'completed' || existing.status === 'cancelled') {
+      return c.json({ error: `Cannot edit a ${existing.status} order` }, 400);
+    }
+
+    const now = new Date().toISOString();
+    const items = body.items || body.lines || [];
+
+    let subtotal = existing.subtotal;
+    let taxAmount = existing.tax_amount;
+    let discountAmount = safeNumber(body.discount_amount ?? existing.discount_amount);
+    let totalAmount = existing.total_amount;
+
+    if (items.length > 0) {
+      const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
+      subtotal = totals.subtotal;
+      taxAmount = totals.tax_amount;
+      totalAmount = totals.total_amount - discountAmount;
+
+      await c.env.DB.prepare('DELETE FROM sales_order_items WHERE sales_order_id = ?').bind(orderId).run();
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const lineTotal = (item.quantity || 1) * (item.unit_price || 0) * (1 - (item.discount_percent || 0) / 100);
+        await c.env.DB.prepare(`
+          INSERT INTO sales_order_items (id, sales_order_id, product_id, description, quantity, unit_price, discount_percent, tax_rate, line_total, sort_order, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          crypto.randomUUID(), orderId, item.product_id || null, item.description || '',
+          item.quantity || 1, item.unit_price || 0, item.discount_percent || 0,
+          item.tax_rate || 15, lineTotal, i, now
+        ).run();
+      }
+    }
+
+    await c.env.DB.prepare(`
+      UPDATE sales_orders SET
+        customer_id = ?, order_date = ?, expected_delivery_date = ?,
+        subtotal = ?, tax_amount = ?, discount_amount = ?, total_amount = ?,
+        shipping_address = ?, notes = ?,
+        customer_po_number = ?, customer_reference = ?, delivery_address = ?, shipping_method = ?,
+        updated_at = ?
+      WHERE id = ? AND company_id = ?
+    `).bind(
+      body.customer_id ?? existing.customer_id,
+      body.order_date ?? existing.order_date,
+      body.expected_delivery_date ?? (body as any).required_date ?? existing.expected_delivery_date,
+      subtotal, taxAmount, discountAmount, totalAmount,
+      body.shipping_address ?? existing.shipping_address,
+      body.notes ?? existing.notes,
+      body.customer_po_number ?? existing.customer_po_number ?? null,
+      body.customer_reference ?? existing.customer_reference ?? null,
+      body.delivery_address ?? existing.delivery_address ?? null,
+      body.shipping_method ?? existing.shipping_method ?? null,
+      now, orderId, companyId
+    ).run();
+
+    return c.json({ message: 'Sales order updated successfully', id: orderId });
+  } catch (error) {
+    console.error('Update sales order error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 // Update sales order status
 salesOrders.put('/:id/status', async (c) => {
   try {
@@ -278,9 +362,14 @@ salesOrders.put('/:id/status', async (c) => {
     if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ status: string }>();
 
-    const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'invoiced'];
-    if (!validStatuses.includes(body.status)) {
-      return c.json({ error: 'Invalid status' }, 400);
+    const existing = await c.env.DB.prepare(
+      'SELECT status FROM sales_orders WHERE id = ? AND company_id = ?'
+    ).bind(orderId, companyId).first<{ status: string }>();
+    if (!existing) return c.json({ error: 'Sales order not found' }, 404);
+
+    const transition = validateStatusTransition('sales_order', existing.status, body.status);
+    if (!transition.valid) {
+      return c.json({ error: transition.errors.join('; ') }, 400);
     }
 
     const result = await c.env.DB.prepare(`

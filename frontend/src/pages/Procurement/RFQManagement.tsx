@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, FileText, X, Edit, Trash2, Send, CheckCircle, XCircle, AlertTriangle, Clock, Users, DollarSign, Search, Layers, ShoppingCart } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface SupplierQuote {
   supplier_id: string;
   supplier_name: string;
@@ -77,7 +79,7 @@ const RFQManagement: React.FC = () => {
 
   const fetchRFQs = async () => {
     try {
-      const response = await fetch('https://aria.vantax.co.za/api/erp/procurement/rfq');
+      const response = await fetch(`${API_BASE}/erp/procurement/rfq`);
       const data = await response.json();
       setRFQs(data.rfqs || []);
     } catch (error) {
@@ -121,8 +123,8 @@ const RFQManagement: React.FC = () => {
   const handleDelete = async (rfqId: string) => {
     if (!confirm('Are you sure you want to delete this RFQ?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfqId}`, {
-        method: 'DELETE'
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfqId}`, {
+              method: 'DELETE'
       });
       setSuccess('RFQ deleted successfully');
       fetchRFQs();
@@ -142,10 +144,10 @@ const RFQManagement: React.FC = () => {
       return;
     }
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rfq, status: 'sent' })
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...rfq, status: 'sent' })
       });
       setSuccess('RFQ sent to suppliers');
       fetchRFQs();
@@ -175,10 +177,10 @@ const RFQManagement: React.FC = () => {
     }
     try {
       const updatedQuotes = [...(selectedRfq.quotes || []), { ...quoteData, received_date: new Date().toISOString() }];
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${selectedRfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...selectedRfq, quotes: updatedQuotes, status: 'received' })
+            await fetch(`${API_BASE}/erp/procurement/rfq/${selectedRfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...selectedRfq, quotes: updatedQuotes, status: 'received' })
       });
       setShowQuoteModal(false);
       setSuccess('Quote recorded successfully');
@@ -192,13 +194,13 @@ const RFQManagement: React.FC = () => {
   const handleAwardAndConvertToPO = async (rfq: RFQ, supplierName: string, quotedAmount: number) => {
     try {
       // Update RFQ status to awarded
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rfq, status: 'awarded', selected_supplier: supplierName })
-      });
-      // Create Purchase Order
-      await fetch('https://aria.vantax.co.za/api/erp/purchase-orders', {
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...rfq, status: 'awarded', selected_supplier: supplierName })
+            });
+            // Create Purchase Order
+            await fetch(`${API_BASE}/erp/purchase-orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -224,10 +226,10 @@ const RFQManagement: React.FC = () => {
     }
     if (!confirm('Are you sure you want to cancel this RFQ?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/erp/procurement/rfq/${rfq.rfq_id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rfq, status: 'cancelled' })
+            await fetch(`${API_BASE}/erp/procurement/rfq/${rfq.rfq_id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...rfq, status: 'cancelled' })
       });
       setSuccess('RFQ cancelled');
       fetchRFQs();
@@ -244,8 +246,8 @@ const RFQManagement: React.FC = () => {
     }
     try {
       const url = editingRfq 
-        ? `https://aria.vantax.co.za/api/erp/procurement/rfq/${editingRfq.rfq_id}`
-        : 'https://aria.vantax.co.za/api/erp/procurement/rfq';
+                ? `${API_BASE}/erp/procurement/rfq/${editingRfq.rfq_id}`
+                : `${API_BASE}/erp/procurement/rfq`;
       const method = editingRfq ? 'PUT' : 'POST';
       
       const payload = {
@@ -291,16 +293,16 @@ const RFQManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-4">
+      <div className="mx-auto">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Request for Quotation (RFQ)</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage supplier quotes and procurement requests</p>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Request for Quotation (RFQ)</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">Manage supplier quotes and procurement requests</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
               <input
                 type="text"
                 placeholder="Search RFQs..."
@@ -311,7 +313,7 @@ const RFQManagement: React.FC = () => {
             </div>
             <button 
               onClick={handleCreate}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700  transition-all"
             >
               <Plus size={20} />
               Create RFQ
@@ -337,14 +339,14 @@ const RFQManagement: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           <button onClick={() => setFilter('all')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'all' ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
-              <div><p className="text-xs text-gray-500">Total</p><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p></div>
+              <div><p className="text-xs text-gray-500">Total</p><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p></div>
               <Layers className="text-blue-500" size={20} />
             </div>
           </button>
           <button onClick={() => setFilter('draft')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'draft' ? 'border-gray-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
             <div className="flex items-center justify-between">
               <div><p className="text-xs text-gray-500">Draft</p><p className="text-2xl font-bold text-gray-600">{stats.draft}</p></div>
-              <FileText className="text-gray-400" size={20} />
+              <FileText className="text-gray-300" size={20} />
             </div>
           </button>
           <button onClick={() => setFilter('sent')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'sent' ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
@@ -373,13 +375,13 @@ const RFQManagement: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">RFQ ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Title</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Suppliers</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Best Quote</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Due Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">RFQ ID</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Title</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Suppliers</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Best Quote</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Due Date</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -403,11 +405,11 @@ const RFQManagement: React.FC = () => {
                         <td className="px-6 py-4 text-sm">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(rfq.status)}`}>{rfq.status}</span>
                         </td>
-                        <td className="px-6 py-4 text-sm"><div className="flex items-center gap-1"><Users size={14} className="text-gray-400" />{rfq.suppliers?.length || 0}</div></td>
+                        <td className="px-6 py-4 text-sm"><div className="flex items-center gap-1"><Users size={14} className="text-gray-300" />{rfq.suppliers?.length || 0}</div></td>
                         <td className="px-6 py-4 text-sm">
                           {bestQuote ? (
-                            <span className="flex items-center gap-1 text-emerald-600 font-medium"><DollarSign size={14} />{bestQuote.quoted_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
-                          ) : <span className="text-gray-400">-</span>}
+                            <span className="flex items-center gap-1 text-emerald-600 font-medium"><DollarSign size={14} />{Number(bestQuote.quoted_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                          ) : <span className="text-gray-300">-</span>}
                         </td>
                         <td className="px-6 py-4 text-sm">{rfq.due_date ? new Date(rfq.due_date).toLocaleDateString() : '-'}</td>
                         <td className="px-6 py-4 text-sm">
@@ -442,7 +444,7 @@ const RFQManagement: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editingRfq ? 'Edit RFQ' : 'Create RFQ'}</h2>
               <button onClick={() => { setShowModal(false); resetForm(); }} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
@@ -454,9 +456,9 @@ const RFQManagement: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full border rounded-xl px-3 py-2 dark:bg-gray-700 dark:border-gray-600" rows={3} />
+                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full border rounded-xl px-3 py-2 dark:bg-gray-700 dark:border-gray-600" rows={2} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Issue Date</label>
                   <input type="date" value={formData.issue_date} onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })} className="w-full border rounded-xl px-3 py-2 dark:bg-gray-700 dark:border-gray-600" required />
@@ -485,7 +487,7 @@ const RFQManagement: React.FC = () => {
 
       {showQuoteModal && selectedRfq && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Record Supplier Quote</h2>
               <button onClick={() => setShowQuoteModal(false)} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>

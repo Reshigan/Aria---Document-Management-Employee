@@ -11,8 +11,8 @@ export const DECIMAL_PLACES = 2;
 /**
  * Format amount as ZAR currency
  */
-export function formatCurrency(amount: number): string {
-  return `${CURRENCY_SYMBOL} ${amount.toLocaleString('en-ZA', {
+export function formatCurrency(amount: number | null | undefined): string {
+  return `${CURRENCY_SYMBOL} ${Number(amount ?? 0).toLocaleString('en-ZA', {
     minimumFractionDigits: DECIMAL_PLACES,
     maximumFractionDigits: DECIMAL_PLACES
   })}`;
@@ -29,9 +29,9 @@ export function parseCurrency(value: string): number {
 /**
  * Round to specified decimal places using banker's rounding
  */
-export function roundAmount(amount: number, decimals: number = DECIMAL_PLACES): number {
+export function roundAmount(amount: number | null | undefined, decimals: number = DECIMAL_PLACES): number {
   const factor = Math.pow(10, decimals);
-  return Math.round(amount * factor) / factor;
+  return Math.round(Number(amount ?? 0) * factor) / factor;
 }
 
 /**
@@ -123,8 +123,8 @@ export function validateBalance(debitAmount: number, creditAmount: number, toler
 /**
  * Format percentage
  */
-export function formatPercent(value: number, decimals: number = 2): string {
-  return `${value.toFixed(decimals)}%`;
+export function formatPercent(value: number | null | undefined, decimals: number = 2): string {
+  return `${Number(value ?? 0).toFixed(decimals)}%`;
 }
 
 /**

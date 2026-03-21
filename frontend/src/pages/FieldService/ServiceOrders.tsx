@@ -127,7 +127,7 @@ const ServiceOrders: React.FC = () => {
 
   const getPriorityBadge = (priority: string) => {
     const styles: Record<string, string> = {
-      LOW: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400',
+      LOW: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
       MEDIUM: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
       HIGH: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
       URGENT: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
@@ -139,32 +139,30 @@ const ServiceOrders: React.FC = () => {
     );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   if (loading && orders.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading service orders...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading service orders...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8" data-testid="field-service-orders">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="field-service-orders">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl ">
             <ClipboardList className="h-7 w-7 text-white" />
           </div>
           Service Orders
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage field service orders and assignments</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage field service orders and assignments</p>
       </div>
 
       {error && (
@@ -177,7 +175,7 @@ const ServiceOrders: React.FC = () => {
       <div className="flex justify-end mb-6">
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-cyan-500/40 transition-all duration-200"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -187,66 +185,66 @@ const ServiceOrders: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Calendar className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Calendar className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'SCHEDULED').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Scheduled</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'SCHEDULED').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Scheduled</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'IN_PROGRESS').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'IN_PROGRESS').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl shadow-lg shadow-emerald-500/30">
-              <CheckCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl ">
+              <CheckCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'COMPLETED').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Completed</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.filter(o => o.status === 'COMPLETED').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Completed</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl shadow-lg shadow-cyan-500/30">
-              <ClipboardList className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl ">
+              <ClipboardList className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{orders.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{orders.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full" data-testid="orders-table">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order #</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Service Type</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Technician</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Scheduled</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order #</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service Type</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Technician</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Scheduled</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -254,18 +252,18 @@ const ServiceOrders: React.FC = () => {
                 <tr>
                   <td colSpan={8} className="px-6 py-12 text-center">
                     <Package className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">No service orders found</p>
+                    <p className="text-gray-500 dark:text-gray-300">No service orders found</p>
                   </td>
                 </tr>
               ) : (
                 orders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                     <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{order.order_number}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{order.customer_name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{order.service_type}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{order.technician_name || 'Unassigned'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{order.customer_name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{order.service_type}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{order.technician_name || 'Unassigned'}</td>
                     <td className="px-6 py-4">{getPriorityBadge(order.priority)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{formatDate(order.scheduled_date)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatDate(order.scheduled_date)}</td>
                     <td className="px-6 py-4">{getStatusBadge(order.status)}</td>
                     <td className="px-6 py-4 text-right">
                       <button
@@ -293,14 +291,14 @@ const ServiceOrders: React.FC = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <ClipboardList className="h-6 w-6" />
                 {editingOrder ? 'Edit Service Order' : 'New Service Order'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Order Number *</label>
                   <input
@@ -320,7 +318,7 @@ const ServiceOrders: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Service Type *</label>
                   <input
@@ -349,7 +347,7 @@ const ServiceOrders: React.FC = () => {
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Priority *</label>
                   <select
@@ -378,7 +376,7 @@ const ServiceOrders: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -387,7 +385,7 @@ const ServiceOrders: React.FC = () => {
               </button>
               <button
                 onClick={handleSave}
-                className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all"
+                className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-cyan-500/40 transition-all"
               >
                 Save
               </button>
@@ -401,7 +399,7 @@ const ServiceOrders: React.FC = () => {
         title="Delete Service Order"
         message={`Are you sure you want to delete service order ${deleteConfirm.number}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
       />
     </div>
   );

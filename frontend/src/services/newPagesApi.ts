@@ -45,11 +45,41 @@ export const expenseClaimsApi = {
   reject: (id: string, reason: string) => api.put(`/new-pages/expense-claims/${id}/reject`, { reason }),
 };
 
-// Credit Notes
+// Credit Notes (reverse-logistics endpoint)
 export const creditNotesApi = {
-  getAll: () => api.get('/new-pages/credit-notes'),
-  create: (data: any) => api.post('/new-pages/credit-notes', data),
-  issue: (id: string) => api.put(`/new-pages/credit-notes/${id}/issue`),
+  getAll: () => api.get('/reverse-logistics/credit-notes'),
+  getById: (id: string) => api.get(`/reverse-logistics/credit-notes/${id}`),
+  create: (data: any) => api.post('/reverse-logistics/credit-notes', data),
+  issue: (id: string) => api.put(`/reverse-logistics/credit-notes/${id}/issue`),
+  apply: (id: string, data?: any) => api.put(`/reverse-logistics/credit-notes/${id}/apply`, data),
+  delete: (id: string) => api.delete(`/reverse-logistics/credit-notes/${id}`),
+};
+
+// Sales Returns (reverse-logistics)
+export const salesReturnsApi = {
+  getAll: (params?: Record<string, string>) => api.get('/reverse-logistics/returns', { params }),
+  getById: (id: string) => api.get(`/reverse-logistics/returns/${id}`),
+  create: (data: any) => api.post('/reverse-logistics/returns', data),
+  updateStatus: (id: string, data: any) => api.put(`/reverse-logistics/returns/${id}/status`, data),
+  receive: (id: string, data: any) => api.put(`/reverse-logistics/returns/${id}/receive`, data),
+  createCreditNote: (id: string) => api.post(`/reverse-logistics/returns/${id}/create-credit-note`),
+  createRefund: (id: string, data?: any) => api.post(`/reverse-logistics/returns/${id}/create-refund`, data),
+  delete: (id: string) => api.delete(`/reverse-logistics/returns/${id}`),
+};
+
+// Customer Refunds (reverse-logistics)
+export const customerRefundsApi = {
+  getAll: (params?: Record<string, string>) => api.get('/reverse-logistics/refunds', { params }),
+  getById: (id: string) => api.get(`/reverse-logistics/refunds/${id}`),
+  create: (data: any) => api.post('/reverse-logistics/refunds', data),
+  updateStatus: (id: string, data: any) => api.put(`/reverse-logistics/refunds/${id}/status`, data),
+  process: (id: string, data?: any) => api.put(`/reverse-logistics/refunds/${id}/process`, data),
+  delete: (id: string) => api.delete(`/reverse-logistics/refunds/${id}`),
+};
+
+// Reverse Logistics Summary
+export const reverseLogisticsSummaryApi = {
+  get: () => api.get('/reverse-logistics/summary'),
 };
 
 // Collections

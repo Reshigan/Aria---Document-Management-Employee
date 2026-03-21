@@ -182,9 +182,9 @@ const ComprehensiveReporting: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredKpis.map((kpi) => (
-            <div key={kpi.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+            <div key={kpi.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{kpi.kpi_name}</h4>
@@ -199,7 +199,7 @@ const ComprehensiveReporting: React.FC = () => {
               
               <div className="space-y-2">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Target:</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-300">Target:</span>
                   <span className="text-lg font-bold text-gray-900 dark:text-white">
                     {kpi.target_value?.toLocaleString()} {kpi.unit}
                   </span>
@@ -207,16 +207,16 @@ const ComprehensiveReporting: React.FC = () => {
                 {kpi.current_value !== undefined && (
                   <>
                     <div className="flex justify-between items-baseline">
-                      <span className="text-sm text-gray-500 dark:text-gray-400">Current:</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-300">Current:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                        {kpi.current_value.toLocaleString()} {kpi.unit}
+                        {Number(kpi.current_value ?? 0).toLocaleString()} {kpi.unit}
                       </span>
                     </div>
                     {kpi.variance !== undefined && (
                       <div className="flex justify-between items-baseline">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Variance:</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-300">Variance:</span>
                         <span className={`text-sm font-medium ${kpi.variance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {kpi.variance >= 0 ? '+' : ''}{kpi.variance.toLocaleString()} {kpi.unit}
+                          {kpi.variance >= 0 ? '+' : ''}{Number(kpi.variance ?? 0).toLocaleString()} {kpi.unit}
                         </span>
                       </div>
                     )}
@@ -228,7 +228,7 @@ const ComprehensiveReporting: React.FC = () => {
                 <button className="flex-1 px-3 py-2 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100 dark:bg-blue-900/30">
                   Calculate
                 </button>
-                <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
+                <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
                   View History
                 </button>
               </div>
@@ -238,8 +238,8 @@ const ComprehensiveReporting: React.FC = () => {
 
         {filteredKpis.length === 0 && !loading && (
           <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
-            <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">No KPIs found</p>
+            <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-300">No KPIs found</p>
             <button className="mt-4 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700">
               Create Your First KPI
             </button>
@@ -259,9 +259,9 @@ const ComprehensiveReporting: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {dashboards.map((dashboard) => (
-          <div key={dashboard.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow cursor-pointer">
+          <div key={dashboard.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow cursor-pointer">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -269,7 +269,7 @@ const ComprehensiveReporting: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">{dashboard.dashboard_name}</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{dashboard.dashboard_type}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">{dashboard.dashboard_type}</p>
                 </div>
               </div>
               {dashboard.is_default && (
@@ -279,13 +279,13 @@ const ComprehensiveReporting: React.FC = () => {
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Layout:</span>
+                <span className="text-gray-500 dark:text-gray-300">Layout:</span>
                 <span className="font-medium">
                   {dashboard.layout_config?.columns || 3} × {dashboard.layout_config?.rows || 3}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Status:</span>
+                <span className="text-gray-500 dark:text-gray-300">Status:</span>
                 {getStatusBadge(dashboard.is_active ? 'active' : 'inactive')}
               </div>
             </div>
@@ -294,7 +294,7 @@ const ComprehensiveReporting: React.FC = () => {
               <button className="flex-1 px-3 py-2 text-sm bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded hover:bg-purple-100 dark:bg-purple-900/30">
                 View Dashboard
               </button>
-              <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
+              <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
                 Edit
               </button>
             </div>
@@ -304,8 +304,8 @@ const ComprehensiveReporting: React.FC = () => {
 
       {dashboards.length === 0 && !loading && (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">No dashboards configured</p>
+          <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">No dashboards configured</p>
           <button className="mt-4 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700">
             Create Your First Dashboard
           </button>
@@ -324,37 +324,37 @@ const ComprehensiveReporting: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Report Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Schedule</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Recipients</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Next Run</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Report Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Schedule</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Recipients</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Last Run</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Next Run</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {scheduledReports.map((report) => (
               <tr key={report.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{report.report_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{report.report_type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">{report.schedule_cron}</td>
-                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{report.recipients.length} recipient(s)</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{report.report_type}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300 font-mono">{report.schedule_cron}</td>
+                <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">{report.recipients.length} recipient(s)</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   {report.last_run_at ? new Date(report.last_run_at).toLocaleString() : 'Never'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   {report.next_run_at ? new Date(report.next_run_at).toLocaleString() : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(report.is_active ? 'active' : 'inactive')}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Run Now</button>
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">Edit</button>
                 </td>
@@ -376,7 +376,7 @@ const ComprehensiveReporting: React.FC = () => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Financial Analytics</h3>
           <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
@@ -385,13 +385,13 @@ const ComprehensiveReporting: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
-                  R {financialSummary.total_revenue.toLocaleString()}
+                  R {Number(financialSummary.total_revenue ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -400,12 +400,12 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Expenses</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Total Expenses</p>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
-                  R {financialSummary.total_expenses.toLocaleString()}
+                  R {Number(financialSummary.total_expenses ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
@@ -414,15 +414,15 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Net Profit</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Net Profit</p>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
-                  R {financialSummary.profit.toLocaleString()}
+                  R {Number(financialSummary.profit ?? 0).toLocaleString()}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Margin: {financialSummary.profit_margin.toFixed(1)}%
+                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
+                  Margin: {Number(financialSummary.profit_margin ?? 0).toFixed(1)}%
                 </p>
               </div>
               <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
@@ -431,12 +431,12 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding AR</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Outstanding AR</p>
                 <p className="text-2xl font-bold text-orange-600 mt-1">
-                  R {financialSummary.outstanding_ar.toLocaleString()}
+                  R {Number(financialSummary.outstanding_ar ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-orange-100 rounded-lg">
@@ -445,12 +445,12 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding AP</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Outstanding AP</p>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">
-                  R {financialSummary.outstanding_ap.toLocaleString()}
+                  R {Number(financialSummary.outstanding_ap ?? 0).toLocaleString()}
                 </p>
               </div>
               <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -459,10 +459,10 @@ const ComprehensiveReporting: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Working Capital</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">Working Capital</p>
                 <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
                   R {(financialSummary.outstanding_ar - financialSummary.outstanding_ap).toLocaleString()}
                 </p>
@@ -480,7 +480,7 @@ const ComprehensiveReporting: React.FC = () => {
             <div>
               <h4 className="font-semibold text-blue-900 dark:text-blue-100">Analytics Insights</h4>
               <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
-                Your profit margin is {financialSummary.profit_margin.toFixed(1)}%. 
+                Your profit margin is {Number(financialSummary.profit_margin ?? 0).toFixed(1)}%. 
                 {financialSummary.profit_margin < 20 && ' Consider reviewing expenses to improve profitability.'}
                 {financialSummary.profit_margin >= 20 && financialSummary.profit_margin < 40 && ' You have a healthy profit margin.'}
                 {financialSummary.profit_margin >= 40 && ' Excellent profit margin! Keep up the good work.'}
@@ -497,18 +497,18 @@ const ComprehensiveReporting: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Please select a company to view reporting data</p>
+          <p className="text-gray-600 dark:text-gray-300">Please select a company to view reporting data</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-3">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Comprehensive Reporting</h1>
-          <p className="text-gray-600 dark:text-gray-400">KPIs, dashboards, scheduled reports, and analytics</p>
+          <p className="text-gray-600 dark:text-gray-300">KPIs, dashboards, scheduled reports, and analytics</p>
         </div>
       </div>
 

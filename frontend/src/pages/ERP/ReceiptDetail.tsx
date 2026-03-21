@@ -92,8 +92,8 @@ export default function ReceiptDetail() {
     if (preselectedInvoiceId && invoices.length > 0) {
       const invoice = invoices.find((inv) => inv.id === preselectedInvoiceId);
       if (invoice && allocations.length === 0) {
-        setAllocations([{ invoice_id: invoice.id, amount: invoice.amount_outstanding.toFixed(2) }]);
-        setAmount(invoice.amount_outstanding.toFixed(2));
+        setAllocations([{ invoice_id: invoice.id, amount: Number(invoice.amount_outstanding ?? 0).toFixed(2) }]);
+        setAmount(Number(invoice.amount_outstanding ?? 0).toFixed(2));
       }
     }
   }, [preselectedInvoiceId, invoices]);
@@ -104,8 +104,10 @@ export default function ReceiptDetail() {
         api.get('/erp/master-data/customers'),
         api.get('/erp/master-data/bank-accounts')
       ]);
-      setCustomers(customersRes.data);
-      setBankAccounts(bankAccountsRes.data);
+      const cd = customersRes.data;
+      setCustomers(Array.isArray(cd) ? cd : cd.customers || cd.data || []);
+      const bd = bankAccountsRes.data;
+      setBankAccounts(Array.isArray(bd) ? bd : bd.accounts || bd.data || []);
     } catch (err) {
       console.error('Error loading master data:', err);
     }
@@ -114,7 +116,8 @@ export default function ReceiptDetail() {
   const loadCustomerInvoices = async (custId: string) => {
     try {
       const response = await api.get(`/api/ar/invoices?customer_id=${custId}&payment_status=unpaid,partial`);
-      setInvoices(response.data);
+      const d = response.data;
+      setInvoices(Array.isArray(d) ? d : d.invoices || d.data || []);
     } catch (err) {
       console.error('Error loading customer invoices:', err);
     }
@@ -131,12 +134,12 @@ export default function ReceiptDetail() {
       setBankAccountId(receiptData.bank_account_id);
       setPaymentMethod(receiptData.payment_method);
       setReference(receiptData.reference || '');
-      setAmount(receiptData.amount.toFixed(2));
+      setAmount(Number(receiptData.amount ?? 0).toFixed(2));
       setNotes(receiptData.notes || '');
       setAllocations(
         receiptData.allocations.map((alloc: ReceiptAllocation) => ({
           invoice_id: alloc.invoice_id,
-          amount: alloc.amount.toFixed(2)
+          amount: Number(alloc.amount ?? 0).toFixed(2)
         }))
       );
       setError(null);
@@ -171,7 +174,7 @@ export default function ReceiptDetail() {
 
     const totalAllocated = allocations.reduce((sum, alloc) => sum + parseFloat(alloc.amount), 0);
     if (Math.abs(totalAllocated - parseFloat(amount)) > 0.01) {
-      setError(`Total allocated (R ${totalAllocated.toFixed(2)}) must equal payment amount (R ${amount})`);
+      setError(`Total allocated (R ${Number(totalAllocated ?? 0).toFixed(2)}) must equal payment amount (R ${amount})`);
       return;
     }
 
@@ -282,7 +285,7 @@ export default function ReceiptDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TransactionCard title="Payment Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -346,7 +349,7 @@ export default function ReceiptDetail() {
                 type="textarea"
                 value={notes}
                 onChange={setNotes}
-                rows={3}
+                rows={2}
                 disabled={receipt?.status !== 'draft' && !isNew}
               />
             </div>
@@ -358,7 +361,7 @@ export default function ReceiptDetail() {
               (receipt?.status === 'draft' || isNew) && (
                 <button
                   onClick={addAllocation}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-blue-700  transition-all"
                 >
                   Add Allocation
                 </button>
@@ -366,11 +369,11 @@ export default function ReceiptDetail() {
             }
           >
             {allocations.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                 No allocations added. Click "Add Allocation" to allocate payment to invoices.
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 {allocations.map((alloc, index) => (
                   <div
                     key={index}
@@ -389,7 +392,7 @@ export default function ReceiptDetail() {
                         <option value="">Select invoice...</option>
                         {invoices.map((inv) => (
                           <option key={inv.id} value={inv.id}>
-                            {inv.invoice_number} - Outstanding: R {inv.amount_outstanding.toFixed(2)}
+                            {inv.invoice_number} - Outstanding: R {Number(inv.amount_outstanding ?? 0).toFixed(2)}
                           </option>
                         ))}
                       </select>
@@ -450,17 +453,17 @@ export default function ReceiptDetail() {
           <TransactionCard title="Allocation Summary">
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Payment Amount:</span>
+                <span className="text-gray-500 dark:text-gray-300">Payment Amount:</span>
                 <span className="font-medium text-gray-900 dark:text-white">R {parseFloat(amount).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Total Allocated:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totalAllocated.toFixed(2)}</span>
+                <span className="text-gray-500 dark:text-gray-300">Total Allocated:</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totalAllocated ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Unallocated:</span>
                 <span className={unallocated > 0.01 ? 'text-red-500' : 'text-emerald-500'}>
-                  R {unallocated.toFixed(2)}
+                  R {Number(unallocated ?? 0).toFixed(2)}
                 </span>
               </div>
               {unallocated > 0.01 && (
@@ -475,14 +478,14 @@ export default function ReceiptDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(receipt.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{receipt.created_at ? new Date(receipt.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(receipt.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{receipt.updated_at ? new Date(receipt.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>

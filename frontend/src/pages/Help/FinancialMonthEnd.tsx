@@ -12,16 +12,18 @@ interface ChecklistItem {
 const FinancialMonthEnd: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
-    { id: '1', task: 'Bank Reconciliation', description: 'Reconcile all bank accounts and resolve discrepancies', completed: false },
-    { id: '2', task: 'Accounts Receivable Review', description: 'Review aging report and follow up on overdue invoices', completed: false },
-    { id: '3', task: 'Accounts Payable Review', description: 'Ensure all supplier invoices are captured and scheduled', completed: false },
-    { id: '4', task: 'Expense Accruals', description: 'Accrue for expenses incurred but not yet invoiced', completed: false },
-    { id: '5', task: 'Revenue Recognition', description: 'Review and adjust revenue recognition entries', completed: false },
-    { id: '6', task: 'Depreciation Run', description: 'Run monthly depreciation for fixed assets', completed: false },
-    { id: '7', task: 'Inventory Valuation', description: 'Review inventory counts and adjust valuations', completed: false },
-    { id: '8', task: 'Intercompany Reconciliation', description: 'Reconcile intercompany balances if applicable', completed: false },
-    { id: '9', task: 'Trial Balance Review', description: 'Review trial balance for unusual balances', completed: false },
-    { id: '10', task: 'Generate Financial Statements', description: 'Generate P&L, Balance Sheet, and Cash Flow', completed: false },
+    { id: '1', task: 'Bank Reconciliation', description: 'Go to Banking > Reconciliation. Match all bank statement lines to GL entries. Resolve outstanding items and ensure bank balance agrees to GL.', completed: false },
+    { id: '2', task: 'Accounts Receivable Review', description: 'Review AR Aging report (Reports > AR/AP > AR Aging). Follow up on 60+ day overdue invoices. Process any bad debt write-offs and ensure collections are up to date.', completed: false },
+    { id: '3', task: 'Accounts Payable Review', description: 'Ensure all supplier invoices received this month are captured in AP. Check AP Aging for missed payments. Schedule upcoming payments and process payment batches.', completed: false },
+    { id: '4', task: 'Expense Accruals', description: 'Post journal entries for expenses incurred but not yet invoiced (utilities, rent, professional fees). Reverse prior month accruals that have now been invoiced.', completed: false },
+    { id: '5', task: 'Revenue Recognition', description: 'Review deferred revenue and recognise earned portions. Ensure sales cut-off is correct — no next-month invoices in current period. Adjust prepaid income entries.', completed: false },
+    { id: '6', task: 'Fixed Asset Depreciation', description: 'Run monthly depreciation schedule for all asset classes (straight-line or reducing balance). Review new acquisitions and disposals. Post depreciation journal entry.', completed: false },
+    { id: '7', task: 'Inventory Valuation', description: 'Go to Inventory > Valuation. Verify stock counts match system quantities. Process adjustments for damaged/obsolete stock. Review weighted average cost calculations.', completed: false },
+    { id: '8', task: 'VAT Reconciliation', description: 'Reconcile VAT output (from sales) and VAT input (from purchases) to the VAT control accounts. Prepare VAT201 return data. Ensure all tax invoices meet SARS requirements.', completed: false },
+    { id: '9', task: 'Intercompany Reconciliation', description: 'If applicable, reconcile all intercompany loan accounts, management fees, and shared cost allocations. Ensure both entities agree on balances before period close.', completed: false },
+    { id: '10', task: 'Trial Balance Review', description: 'Generate Trial Balance (Reports > Financial > Trial Balance). Investigate unusual balances, suspense account items, and variance to prior month. Clear all reconciling items.', completed: false },
+    { id: '11', task: 'Payroll Reconciliation', description: 'Verify payroll journals are posted correctly. Reconcile PAYE, UIF, and SDL control accounts to EMP201 submission. Check net pay clearing account is zero.', completed: false },
+    { id: '12', task: 'Generate Financial Statements', description: 'Generate Income Statement, Balance Sheet, and Cash Flow Statement. Compare to budget and prior period. Document significant variances. Present to management for review.', completed: false },
   ]);
 
   const handleToggle = (id: string) => {
@@ -32,11 +34,10 @@ const FinancialMonthEnd: React.FC = () => {
   const progress = (completedCount / checklist.length) * 100;
 
   const steps = [
-    { label: 'Bank & Receivables', items: checklist.slice(0, 2) },
-    { label: 'Payables & Accruals', items: checklist.slice(2, 4) },
-    { label: 'Revenue & Assets', items: checklist.slice(4, 6) },
-    { label: 'Inventory & Intercompany', items: checklist.slice(6, 8) },
-    { label: 'Review & Reporting', items: checklist.slice(8, 10) },
+    { label: 'Bank & Receivables', items: checklist.slice(0, 3) },
+    { label: 'Accruals & Revenue', items: checklist.slice(3, 6) },
+    { label: 'Inventory & VAT', items: checklist.slice(6, 9) },
+    { label: 'Review & Reporting', items: checklist.slice(9, 12) },
   ];
 
   return (

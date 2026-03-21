@@ -5,6 +5,7 @@
 
 import { Hono } from 'hono';
 import { getSecureCompanyId } from '../middleware/auth';
+import { validateProduct, safeNumber } from '../services/business-rules';
 
 interface Env {
   DB: D1Database;
@@ -94,11 +95,12 @@ products.get('/', async (c) => {
         description: product.description,
         category: product.category,
         unit_of_measure: product.unit_of_measure,
-        unit_price: product.unit_price,
-        cost_price: product.cost_price,
-        tax_rate: product.tax_rate,
-        quantity_on_hand: product.quantity_on_hand,
-        reorder_level: product.reorder_level,
+        unit_price: product.unit_price ?? 0,
+        selling_price: product.unit_price ?? 0,
+        cost_price: product.cost_price ?? 0,
+        tax_rate: product.tax_rate ?? 15,
+        quantity_on_hand: product.quantity_on_hand ?? 0,
+        reorder_level: product.reorder_level ?? 0,
         is_active: product.is_active === 1,
         is_service: product.is_service === 1,
         created_at: product.created_at,
@@ -135,16 +137,19 @@ products.get('/:id', async (c) => {
 
     return c.json({
       id: product.id,
+      code: product.product_code,
       product_code: product.product_code,
+      name: product.product_name,
       product_name: product.product_name,
       description: product.description,
       category: product.category,
       unit_of_measure: product.unit_of_measure,
-      unit_price: product.unit_price,
-      cost_price: product.cost_price,
-      tax_rate: product.tax_rate,
-      quantity_on_hand: product.quantity_on_hand,
-      reorder_level: product.reorder_level,
+      unit_price: product.unit_price ?? 0,
+      selling_price: product.unit_price ?? 0,
+      cost_price: product.cost_price ?? 0,
+      tax_rate: product.tax_rate ?? 15,
+      quantity_on_hand: product.quantity_on_hand ?? 0,
+      reorder_level: product.reorder_level ?? 0,
       is_active: product.is_active === 1,
       is_service: product.is_service === 1,
       created_at: product.created_at,
@@ -163,8 +168,9 @@ products.post('/', async (c) => {
     if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<Product>>();
 
-    if (!body.product_name) {
-      return c.json({ error: 'Product name is required' }, 400);
+    const validation = validateProduct(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
     }
 
     let productCode = body.product_code;

@@ -87,15 +87,15 @@ export default function VATReturns() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-red-50 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-red-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
-          <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
             <Calculator className="h-7 w-7 text-white" />
           </div>
           VAT Returns
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">Manage VAT returns and submissions to SARS</p>
+        <p className="text-gray-600 dark:text-gray-300">Manage VAT returns and submissions to SARS</p>
       </div>
 
       {loading ? (
@@ -105,56 +105,56 @@ export default function VATReturns() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <TrendingUp className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Output VAT (Sales)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Output VAT (Sales)</p>
                   <p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(summary.output_vat)}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-                  <TrendingDown className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+                  <TrendingDown className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Input VAT (Purchases)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Input VAT (Purchases)</p>
                   <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(summary.input_vat)}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-                  <DollarSign className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+                  <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Net VAT Payable</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Net VAT Payable</p>
                   <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{formatCurrency(summary.net_vat)}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-                  <Calendar className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
+                  <Calendar className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Next Submission</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Next Submission</p>
                   <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{summary.next_submission}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input
                   type="text"
                   placeholder="Search VAT returns..."
@@ -163,7 +163,7 @@ export default function VATReturns() {
                   className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 dark:text-white"
                 />
               </div>
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl font-semibold shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40 transition-all">
+              <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-red-500/40 transition-all">
                 <Plus className="h-5 w-5" />
                 New VAT Return
               </button>
@@ -173,10 +173,10 @@ export default function VATReturns() {
               <div className="p-12 text-center">
                 <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No VAT returns yet</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                <p className="text-gray-500 dark:text-gray-300 mb-6">
                   Create your first VAT return to submit to SARS
                 </p>
-                <button className="px-6 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl font-semibold shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40 transition-all">
+                <button className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-red-500/40 transition-all">
                   Create VAT Return
                 </button>
               </div>
@@ -185,11 +185,11 @@ export default function VATReturns() {
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Period</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Output VAT</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Input VAT</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Net VAT</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Period</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Output VAT</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Input VAT</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Net VAT</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -215,7 +215,7 @@ export default function VATReturns() {
             )}
           </div>
 
-          <div className="p-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-2xl">
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-2xl">
             <div className="flex items-center gap-2 mb-3">
               <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <h3 className="font-semibold text-blue-900 dark:text-blue-100">VAT Compliance</h3>

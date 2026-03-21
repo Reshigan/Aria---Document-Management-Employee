@@ -178,7 +178,7 @@ const DocumentAnalysisResults: React.FC<DocumentAnalysisResultsProps> = ({
                   <div>
                     <p className="text-sm font-medium">Word Count</p>
                     <p className="text-2xl font-bold">
-                      {ai_analysis.metadata.word_count.toLocaleString()}
+                      {Number(ai_analysis.metadata.word_count ?? 0).toLocaleString()}
                     </p>
                   </div>
                 </div>

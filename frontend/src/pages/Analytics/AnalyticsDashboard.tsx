@@ -109,14 +109,14 @@ export default function AnalyticsDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             Business Intelligence
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Real-time analytics and reporting across your entire ERP</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Real-time analytics and reporting across your entire ERP</p>
         </div>
         <div className="flex gap-3">
           <button
@@ -130,6 +130,7 @@ export default function AnalyticsDashboard() {
             className="px-4 py-2 border rounded-lg"
             onChange={(e) => exportReport(e.target.value)}
             defaultValue=""
+            aria-label="Export report"
           >
             <option value="" disabled>Export...</option>
             <option value="customers">Customers</option>
@@ -199,8 +200,8 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
   formatNumber: (n: number) => string;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
           title="Revenue YTD"
           value={formatCurrency(data.summary.revenue_ytd)}
@@ -229,50 +230,50 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             Master Data
           </h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Customers</span>
+              <span className="text-gray-600 dark:text-gray-300">Customers</span>
               <span className="font-semibold">{formatNumber(data.counts.customers)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Suppliers</span>
+              <span className="text-gray-600 dark:text-gray-300">Suppliers</span>
               <span className="font-semibold">{formatNumber(data.counts.suppliers)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Products</span>
+              <span className="text-gray-600 dark:text-gray-300">Products</span>
               <span className="font-semibold">{formatNumber(data.counts.products)}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Activity className="h-5 w-5 text-green-600 dark:text-green-400" />
             Activity This Month
           </h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Sales Orders</span>
+              <span className="text-gray-600 dark:text-gray-300">Sales Orders</span>
               <span className="font-semibold">{data.activity_this_month.sales_orders.count} ({formatCurrency(data.activity_this_month.sales_orders.value)})</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Purchase Orders</span>
+              <span className="text-gray-600 dark:text-gray-300">Purchase Orders</span>
               <span className="font-semibold">{data.activity_this_month.purchase_orders.count} ({formatCurrency(data.activity_this_month.purchase_orders.value)})</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Invoices</span>
+              <span className="text-gray-600 dark:text-gray-300">Invoices</span>
               <span className="font-semibold">{data.activity_this_month.invoices.count} ({formatCurrency(data.activity_this_month.invoices.value)})</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <PieChart className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             Top Customers
@@ -281,32 +282,32 @@ function ExecutiveDashboardTab({ data, formatCurrency, formatNumber }: {
             {data.top_customers.length > 0 ? (
               data.top_customers.slice(0, 5).map((customer, idx) => (
                 <div key={idx} className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400 truncate">{customer.name}</span>
+                  <span className="text-gray-600 dark:text-gray-300 truncate">{customer.name}</span>
                   <span className="font-medium">{formatCurrency(customer.revenue)}</span>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 text-sm">No customer data yet</p>
+              <p className="text-gray-500 dark:text-gray-300 text-sm">No customer data yet</p>
             )}
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Package className="h-5 w-5 text-orange-600" />
           Top Products by Sales
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           {data.top_products.length > 0 ? (
             data.top_products.slice(0, 5).map((product, idx) => (
               <div key={idx} className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 text-center">
-                <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{product.name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 truncate">{product.name}</p>
                 <p className="text-lg font-bold text-gray-900 dark:text-white">{formatCurrency(product.sales)}</p>
               </div>
             ))
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 col-span-5 text-center py-4">No product sales data yet</p>
+            <p className="text-gray-500 dark:text-gray-300 col-span-5 text-center py-4">No product sales data yet</p>
           )}
         </div>
       </div>
@@ -346,9 +347,9 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
   }, [reportType, dateRange]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-        <div className="flex flex-wrap gap-4 items-center">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="flex flex-wrap gap-3 items-center">
           <div className="flex gap-2">
             {[
               { id: 'profit-loss', label: 'P&L' },
@@ -371,19 +372,21 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
             ))}
           </div>
           <div className="flex gap-2 items-center ml-auto">
-            <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+            <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-300" />
             <input
               type="date"
               value={dateRange.start}
               onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
               className="px-3 py-2 border rounded-lg text-sm"
+              aria-label="Start date"
             />
-            <span className="text-gray-500 dark:text-gray-400">to</span>
+            <span className="text-gray-500 dark:text-gray-300">to</span>
             <input
               type="date"
               value={dateRange.end}
               onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
               className="px-3 py-2 border rounded-lg text-sm"
+              aria-label="End date"
             />
           </div>
         </div>
@@ -394,7 +397,7 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : reportData ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
           {reportType === 'profit-loss' && <ProfitLossReport data={reportData} formatCurrency={formatCurrency} />}
           {reportType === 'balance-sheet' && <BalanceSheetReport data={reportData} formatCurrency={formatCurrency} />}
           {reportType === 'cash-flow' && <CashFlowReport data={reportData} formatCurrency={formatCurrency} />}
@@ -407,16 +410,16 @@ function FinancialReportsTab({ dateRange, setDateRange, formatCurrency }: {
 
 function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency: (n: number) => string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <h3 className="text-xl font-bold mb-6">Profit & Loss Statement</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Period: {data.period?.start_date} to {data.period?.end_date}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-300 mb-4">Period: {data.period?.start_date} to {data.period?.end_date}</p>
       
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
         <div>
           <h4 className="font-semibold text-green-700 dark:text-green-300 mb-2">Revenue</h4>
           {(data.revenue?.accounts || []).map((acc: any, idx: number) => (
             <div key={idx} className="flex justify-between py-1 text-sm">
-              <span className="text-gray-600 dark:text-gray-400">{acc.account_code} - {acc.account_name}</span>
+              <span className="text-gray-600 dark:text-gray-300">{acc.account_code} - {acc.account_name}</span>
               <span>{formatCurrency(acc.balance)}</span>
             </div>
           ))}
@@ -430,7 +433,7 @@ function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency:
           <h4 className="font-semibold text-red-700 dark:text-red-300 mb-2">Cost of Sales</h4>
           {(data.cost_of_sales?.accounts || []).map((acc: any, idx: number) => (
             <div key={idx} className="flex justify-between py-1 text-sm">
-              <span className="text-gray-600 dark:text-gray-400">{acc.account_code} - {acc.account_name}</span>
+              <span className="text-gray-600 dark:text-gray-300">{acc.account_code} - {acc.account_name}</span>
               <span>{formatCurrency(acc.balance)}</span>
             </div>
           ))}
@@ -447,7 +450,7 @@ function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency:
               {formatCurrency(data.gross_profit || 0)}
             </span>
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
+          <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
             Gross Margin: {data.gross_margin || 0}%
           </div>
         </div>
@@ -456,7 +459,7 @@ function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency:
           <h4 className="font-semibold text-orange-700 mb-2">Operating Expenses</h4>
           {(data.operating_expenses?.accounts || []).map((acc: any, idx: number) => (
             <div key={idx} className="flex justify-between py-1 text-sm">
-              <span className="text-gray-600 dark:text-gray-400">{acc.account_code} - {acc.account_name}</span>
+              <span className="text-gray-600 dark:text-gray-300">{acc.account_code} - {acc.account_name}</span>
               <span>{formatCurrency(acc.balance)}</span>
             </div>
           ))}
@@ -473,7 +476,7 @@ function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency:
               {formatCurrency(data.net_income || 0)}
             </span>
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
+          <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
             Net Margin: {data.net_margin || 0}%
           </div>
         </div>
@@ -484,17 +487,17 @@ function ProfitLossReport({ data, formatCurrency }: { data: any; formatCurrency:
 
 function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrency: (n: number) => string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <h3 className="text-xl font-bold mb-6">Balance Sheet</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">As of: {data.as_of_date}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-300 mb-4">As of: {data.as_of_date}</p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+        <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
           <div>
             <h4 className="font-semibold text-blue-700 dark:text-blue-300 mb-2">Current Assets</h4>
             {(data.assets?.current?.accounts || []).map((acc: any, idx: number) => (
               <div key={idx} className="flex justify-between py-1 text-sm">
-                <span className="text-gray-600 dark:text-gray-400">{acc.account_code} - {acc.account_name}</span>
+                <span className="text-gray-600 dark:text-gray-300">{acc.account_code} - {acc.account_name}</span>
                 <span>{formatCurrency(acc.balance)}</span>
               </div>
             ))}
@@ -508,7 +511,7 @@ function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrenc
             <h4 className="font-semibold text-blue-700 dark:text-blue-300 mb-2">Non-Current Assets</h4>
             {(data.assets?.non_current?.accounts || []).map((acc: any, idx: number) => (
               <div key={idx} className="flex justify-between py-1 text-sm">
-                <span className="text-gray-600 dark:text-gray-400">{acc.account_code} - {acc.account_name}</span>
+                <span className="text-gray-600 dark:text-gray-300">{acc.account_code} - {acc.account_name}</span>
                 <span>{formatCurrency(acc.balance)}</span>
               </div>
             ))}
@@ -526,12 +529,12 @@ function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrenc
           </div>
         </div>
 
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+        <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
           <div>
             <h4 className="font-semibold text-red-700 dark:text-red-300 mb-2">Current Liabilities</h4>
             {(data.liabilities?.current?.accounts || []).map((acc: any, idx: number) => (
               <div key={idx} className="flex justify-between py-1 text-sm">
-                <span className="text-gray-600 dark:text-gray-400">{acc.account_code} - {acc.account_name}</span>
+                <span className="text-gray-600 dark:text-gray-300">{acc.account_code} - {acc.account_name}</span>
                 <span>{formatCurrency(acc.balance)}</span>
               </div>
             ))}
@@ -545,7 +548,7 @@ function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrenc
             <h4 className="font-semibold text-green-700 dark:text-green-300 mb-2">Equity</h4>
             {(data.equity?.accounts || []).map((acc: any, idx: number) => (
               <div key={idx} className="flex justify-between py-1 text-sm">
-                <span className="text-gray-600 dark:text-gray-400">{acc.account_code} - {acc.account_name}</span>
+                <span className="text-gray-600 dark:text-gray-300">{acc.account_code} - {acc.account_name}</span>
                 <span>{formatCurrency(acc.balance)}</span>
               </div>
             ))}
@@ -585,20 +588,20 @@ function BalanceSheetReport({ data, formatCurrency }: { data: any; formatCurrenc
 
 function CashFlowReport({ data, formatCurrency }: { data: any; formatCurrency: (n: number) => string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <h3 className="text-xl font-bold mb-6">Cash Flow Statement</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Period: {data.period?.start_date} to {data.period?.end_date}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-300 mb-4">Period: {data.period?.start_date} to {data.period?.end_date}</p>
       
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
         <div className="bg-white dark:bg-gray-800 border rounded-lg p-4">
           <h4 className="font-semibold text-blue-700 dark:text-blue-300 mb-3">Operating Activities</h4>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Customer Receipts</span>
+              <span className="text-gray-600 dark:text-gray-300">Customer Receipts</span>
               <span className="text-green-600 dark:text-green-400">{formatCurrency(data.operating_activities?.customer_receipts || 0)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Supplier Payments</span>
+              <span className="text-gray-600 dark:text-gray-300">Supplier Payments</span>
               <span className="text-red-600 dark:text-red-400">({formatCurrency(data.operating_activities?.supplier_payments || 0)})</span>
             </div>
             <div className="flex justify-between font-bold border-t pt-2">
@@ -610,7 +613,7 @@ function CashFlowReport({ data, formatCurrency }: { data: any; formatCurrency: (
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
             <h4 className="font-semibold mb-2">Opening Cash</h4>
             <p className="text-2xl font-bold">{formatCurrency(data.opening_cash || 0)}</p>
@@ -638,11 +641,11 @@ function AgingReport({ data, formatCurrency, type }: { data: any; formatCurrency
   const isAR = type === 'ar-aging';
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <h3 className="text-xl font-bold mb-6">{isAR ? 'Accounts Receivable' : 'Accounts Payable'} Aging</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">As of: {data.as_of_date}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-300 mb-4">As of: {data.as_of_date}</p>
       
-      <div className="grid grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-5 gap-3 mb-6">
         {[
           { label: 'Current', key: 'current', color: 'green' },
           { label: '1-30 Days', key: 'days_1_30', color: 'yellow' },
@@ -651,9 +654,9 @@ function AgingReport({ data, formatCurrency, type }: { data: any; formatCurrency
           { label: '90+ Days', key: 'over_90', color: 'red' }
         ].map((bucket) => (
           <div key={bucket.key} className={`bg-${bucket.color}-50 p-4 rounded-lg text-center`}>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{bucket.label}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{bucket.label}</p>
             <p className="text-xl font-bold">{formatCurrency(data.totals?.[bucket.key] || 0)}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{(data.buckets?.[bucket.key] || []).length} invoices</p>
+            <p className="text-xs text-gray-500 dark:text-gray-300">{(data.buckets?.[bucket.key] || []).length} invoices</p>
           </div>
         ))}
       </div>
@@ -663,7 +666,7 @@ function AgingReport({ data, formatCurrency, type }: { data: any; formatCurrency
           <span>Total Outstanding</span>
           <span>{formatCurrency(data.grand_total || 0)}</span>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{data.invoice_count || 0} invoices</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300">{data.invoice_count || 0} invoices</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -733,29 +736,31 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex gap-2 items-center">
-          <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-300" />
           <input
             type="date"
             value={dateRange.start}
             onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Sales analytics start date"
           />
-          <span className="text-gray-500 dark:text-gray-400">to</span>
+          <span className="text-gray-500 dark:text-gray-300">to</span>
           <input
             type="date"
             value={dateRange.end}
             onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Sales analytics end date"
           />
         </div>
       </div>
 
       {data && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <MetricCard
               title="Total Quotes"
               value={String(data.quote_conversion?.total_quotes || 0)}
@@ -783,12 +788,12 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-semibold mb-4">Sales by Month</h3>
               <div className="space-y-2">
                 {(data.sales_by_month || []).map((month: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-4">
-                    <span className="w-20 text-sm text-gray-600 dark:text-gray-400">{month.month}</span>
+                  <div key={idx} className="flex items-center gap-3">
+                    <span className="w-20 text-sm text-gray-600 dark:text-gray-300">{month.month}</span>
                     <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-4">
                       <div 
                         className="bg-blue-600 dark:bg-blue-500 h-4 rounded-full" 
@@ -801,12 +806,12 @@ function SalesAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-semibold mb-4">Top Customers</h3>
               <div className="space-y-2">
                 {(data.sales_by_customer || []).slice(0, 10).map((customer: any, idx: number) => (
                   <div key={idx} className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600 dark:text-gray-400">{customer.customer_name}</span>
+                    <span className="text-gray-600 dark:text-gray-300">{customer.customer_name}</span>
                     <span className="font-medium">{formatCurrency(customer.revenue)}</span>
                   </div>
                 ))}
@@ -852,29 +857,31 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex gap-2 items-center">
-          <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-300" />
           <input
             type="date"
             value={dateRange.start}
             onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Procurement analytics start date"
           />
-          <span className="text-gray-500 dark:text-gray-400">to</span>
+          <span className="text-gray-500 dark:text-gray-300">to</span>
           <input
             type="date"
             value={dateRange.end}
             onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
             className="px-3 py-2 border rounded-lg text-sm"
+            aria-label="Procurement analytics end date"
           />
         </div>
       </div>
 
       {data && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <MetricCard
               title="Total POs"
               value={String(data.po_fulfillment?.total_pos || 0)}
@@ -902,12 +909,12 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-semibold mb-4">Spend by Month</h3>
               <div className="space-y-2">
                 {(data.spend_by_month || []).map((month: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-4">
-                    <span className="w-20 text-sm text-gray-600 dark:text-gray-400">{month.month}</span>
+                  <div key={idx} className="flex items-center gap-3">
+                    <span className="w-20 text-sm text-gray-600 dark:text-gray-300">{month.month}</span>
                     <div className="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-4">
                       <div 
                         className="bg-orange-600 h-4 rounded-full" 
@@ -920,12 +927,12 @@ function ProcurementAnalyticsTab({ dateRange, setDateRange, formatCurrency }: {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-semibold mb-4">Top Suppliers by Spend</h3>
               <div className="space-y-2">
                 {(data.spend_by_supplier || []).slice(0, 10).map((supplier: any, idx: number) => (
                   <div key={idx} className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600 dark:text-gray-400">{supplier.supplier_name}</span>
+                    <span className="text-gray-600 dark:text-gray-300">{supplier.supplier_name}</span>
                     <span className="font-medium">{formatCurrency(supplier.spend)}</span>
                   </div>
                 ))}
@@ -966,12 +973,12 @@ function DataIntegrityTab({ data, onRefresh }: { data: IntegrityResult; onRefres
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-xl font-bold">Data Integrity Checks</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Verify accounting integrity and data consistency</p>
+            <p className="text-xs text-gray-500 dark:text-gray-300">Verify accounting integrity and data consistency</p>
           </div>
           <button
             onClick={onRefresh}
@@ -982,22 +989,22 @@ function DataIntegrityTab({ data, onRefresh }: { data: IntegrityResult; onRefres
           </button>
         </div>
 
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-4 gap-3 mb-6">
           <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg text-center">
-            <p className="text-3xl font-bold">{data.summary.total_checks}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Total Checks</p>
+            <p className="text-2xl font-bold">{data.summary.total_checks}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Total Checks</p>
           </div>
           <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg text-center">
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">{data.summary.passed}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Passed</p>
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">{data.summary.passed}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Passed</p>
           </div>
           <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg text-center">
-            <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{data.summary.warnings}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Warnings</p>
+            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{data.summary.warnings}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Warnings</p>
           </div>
           <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg text-center">
-            <p className="text-3xl font-bold text-red-600 dark:text-red-400">{data.summary.failed}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Failed</p>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400">{data.summary.failed}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Failed</p>
           </div>
         </div>
 
@@ -1021,7 +1028,7 @@ function DataIntegrityTab({ data, onRefresh }: { data: IntegrityResult; onRefres
                   {getStatusIcon(check.status)}
                   <div>
                     <h4 className="font-semibold">{check.name}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{check.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{check.description}</p>
                   </div>
                 </div>
                 <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(check.status)}`}>
@@ -1060,15 +1067,15 @@ function MetricCard({ title, value, subtitle, icon, color }: {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-gray-600 dark:text-gray-400">{title}</span>
+        <span className="text-sm text-gray-600 dark:text-gray-300">{title}</span>
         <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
           {icon}
         </div>
       </div>
       <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{value}</p>
-      {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{subtitle}</p>}
     </div>
   );
 }

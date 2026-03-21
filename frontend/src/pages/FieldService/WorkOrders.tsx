@@ -209,81 +209,81 @@ export default function WorkOrders() {
 
   if (loading && workOrders.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading work orders...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading work orders...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl ">
             <Wrench className="h-7 w-7 text-white" />
           </div>
           Work Orders
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage field service work orders and technician dispatch</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage field service work orders and technician dispatch</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/30">
-              <Wrench className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl ">
+              <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{workOrders.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{workOrders.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Calendar className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Calendar className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{scheduledToday.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Scheduled Today</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{scheduledToday.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Scheduled Today</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{workOrders.filter(o => o.status === 'in_progress').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{workOrders.filter(o => o.status === 'in_progress').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30">
-              <CheckCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl ">
+              <CheckCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalRevenue.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalRevenue ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Action Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-        <div className="p-4 flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="p-4 flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search work orders..."
@@ -316,7 +316,7 @@ export default function WorkOrders() {
           </select>
           <button
             onClick={() => { setEditingOrder(null); resetForm(); setShowForm(true); }}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-200"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-200"
           >
             <Plus className="h-5 w-5" />
             New Work Order
@@ -325,20 +325,20 @@ export default function WorkOrders() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
 
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Order</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Technician</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Schedule</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Priority</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cost</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Technician</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Schedule</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cost</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -346,12 +346,12 @@ export default function WorkOrders() {
                 <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-semibold text-gray-900 dark:text-white">#{order.order_number}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">{order.title}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">{order.title}</div>
                   </td>
                   <td className="px-6 py-4">
                     {order.location_name ? (
                       <div className="flex items-center gap-2">
-                        <MapPin size={16} className="text-gray-400" />
+                        <MapPin size={16} className="text-gray-300" />
                         <div>
                           <div className="text-sm text-gray-900">{order.location_name}</div>
                           {order.location_address && (
@@ -362,32 +362,32 @@ export default function WorkOrders() {
                         </div>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     {order.technician_name ? (
                       <div className="flex items-center gap-2">
-                        <User size={16} className="text-gray-400" />
+                        <User size={16} className="text-gray-300" />
                         <span className="text-sm text-gray-900">{order.technician_name}</span>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">Unassigned</span>
+                      <span className="text-xs text-gray-300">Unassigned</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     {order.scheduled_date ? (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Calendar size={14} className="text-gray-400" />
+                        <Calendar size={14} className="text-gray-300" />
                         <div>
-                          <div>{new Date(order.scheduled_date).toLocaleDateString()}</div>
+                          <div>{(order.scheduled_date ? new Date(order.scheduled_date).toLocaleDateString() : "-")}</div>
                           {order.scheduled_time && (
                             <div className="text-xs text-gray-500">{order.scheduled_time}</div>
                           )}
                         </div>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">Not scheduled</span>
+                      <span className="text-xs text-gray-300">Not scheduled</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -403,10 +403,10 @@ export default function WorkOrders() {
                   <td className="px-6 py-4 text-right">
                     {order.total_cost ? (
                       <span className="text-sm font-medium text-gray-900">
-                        R {order.total_cost.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                        R {Number(order.total_cost ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     ) : (
-                      <span className="text-sm text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -440,13 +440,13 @@ export default function WorkOrders() {
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <Wrench className="h-6 w-6" />
                 {editingOrder ? 'Edit Work Order' : 'New Work Order'}
               </h2>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                 <input
@@ -467,7 +467,7 @@ export default function WorkOrders() {
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Location</label>
                   <select
@@ -554,7 +554,7 @@ export default function WorkOrders() {
                 </div>
               )}
             </form>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditingOrder(null); resetForm(); }}
@@ -565,7 +565,7 @@ export default function WorkOrders() {
               <button
                 type="button"
                 onClick={handleSubmit as any}
-                className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all"
+                className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-orange-500/40 transition-all"
               >
                 {editingOrder ? 'Update' : 'Create'} Work Order
               </button>

@@ -124,7 +124,7 @@ export default function ProductCategories() {
         >
           <button
             onClick={() => hasChildren && toggleExpand(category.id)}
-            className="mr-2 text-gray-400"
+            className="mr-2 text-gray-300"
           >
             {hasChildren ? (
               isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />
@@ -136,7 +136,7 @@ export default function ProductCategories() {
           <div className="flex-1">
             <div className="font-medium text-gray-900 dark:text-white">{category.name}</div>
             {category.code && (
-              <div className="text-sm text-gray-500 dark:text-gray-400">Code: {category.code}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300">Code: {category.code}</div>
             )}
           </div>
           <span className={`px-2 py-1 text-xs rounded-full mr-4 ${
@@ -163,19 +163,19 @@ export default function ProductCategories() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <FolderTree size={28} className="text-purple-500" />
           Product Categories
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Organize products with multi-level category hierarchy</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Organize products with multi-level category hierarchy</p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 mb-6">
-        <div className="p-4 border-b flex gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="p-4 border-b flex gap-3">
           <div className="flex-1 relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search categories..."
@@ -194,9 +194,9 @@ export default function ProductCategories() {
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading categories...</div>
+          <div className="p-8 text-center text-gray-500 dark:text-gray-300">Loading categories...</div>
         ) : rootCategories.length === 0 ? (
-          <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+          <div className="p-8 text-center text-gray-500 dark:text-gray-300">
             {searchTerm ? 'No categories found matching your search' : 'No categories yet. Create your first one!'}
           </div>
         ) : (
@@ -208,7 +208,7 @@ export default function ProductCategories() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-4">
             <h2 className="text-xl font-bold mb-4">
               {editingCategory ? 'Edit Category' : 'Add Category'}
             </h2>

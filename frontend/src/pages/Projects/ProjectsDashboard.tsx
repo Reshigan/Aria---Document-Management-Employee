@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FolderOpen, Plus, Search, X, Edit2, Trash2, DollarSign, TrendingUp, Activity } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
 interface Project {
   id: number;
   name: string;
@@ -45,7 +47,9 @@ export default function ProjectsDashboard() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://aria.vantax.co.za/api/new-pages/projects');
+      const response = await fetch(`${API_BASE}/new-pages/projects`);
+      const ct = response.headers.get('content-type');
+      if (!response.ok || !ct?.includes('application/json')) { setProjects([]); return; }
       const data = await response.json();
       setProjects(data.projects || []);
     } catch (error) {
@@ -89,7 +93,7 @@ export default function ProjectsDashboard() {
   const handleDelete = async (projectId: number) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
-      await fetch(`https://aria.vantax.co.za/api/new-pages/projects/${projectId}`, {
+      await fetch(`${API_BASE}/new-pages/projects/${projectId}`, {
         method: 'DELETE'
       });
       fetchProjects();
@@ -102,8 +106,8 @@ export default function ProjectsDashboard() {
     e.preventDefault();
     try {
       const url = editingProject 
-        ? `https://aria.vantax.co.za/api/new-pages/projects/${editingProject.id}`
-        : 'https://aria.vantax.co.za/api/new-pages/projects';
+                ? `${API_BASE}/new-pages/projects/${editingProject.id}`
+                : `${API_BASE}/new-pages/projects`;
       const method = editingProject ? 'PUT' : 'POST';
       
       await fetch(url, {
@@ -127,7 +131,7 @@ export default function ProjectsDashboard() {
 
   const totalRevenue = projects.reduce((sum, p) => sum + (p.revenue || 0), 0);
   const totalCosts = projects.reduce((sum, p) => sum + (p.actual_cost || 0), 0);
-  const profitMargin = totalRevenue > 0 ? ((totalRevenue - totalCosts) / totalRevenue * 100).toFixed(1) : '0';
+  const profitMargin = totalRevenue > 0 ? Number(((totalRevenue - totalCosts) / totalRevenue * 100) || 0).toFixed(1) : '0';
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -142,7 +146,7 @@ export default function ProjectsDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
         </div>
@@ -151,24 +155,24 @@ export default function ProjectsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
             <FolderOpen className="h-7 w-7 text-white" />
           </div>
           Projects
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-gray-500 dark:text-gray-300 mt-1">
           Manage projects, track time, expenses, and profitability
         </p>
       </div>
 
       {/* Action Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search projects..."
@@ -179,7 +183,7 @@ export default function ProjectsDashboard() {
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
         >
           <Plus className="h-5 w-5" />
           New Project
@@ -188,47 +192,47 @@ export default function ProjectsDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-              <Activity className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
+              <Activity className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{projects.filter(p => p.status === 'active').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Projects</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{projects.filter(p => p.status === 'active').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Projects</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalRevenue.toLocaleString()}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalRevenue ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">R {totalCosts.toLocaleString()}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Costs</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">R {Number(totalCosts ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Costs</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <TrendingUp className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{profitMargin}%</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Profit Margin</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{profitMargin}%</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Profit Margin</p>
             </div>
           </div>
         </div>
@@ -236,21 +240,21 @@ export default function ProjectsDashboard() {
 
       {/* Projects Table or Empty State */}
       {filteredProjects.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <FolderOpen className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No projects yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-gray-500 dark:text-gray-300 mb-6">
             Create your first project to track time, expenses, and profitability
           </p>
           <button
             onClick={handleCreate}
-            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 font-medium"
+            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  font-medium"
           >
             Create Your First Project
           </button>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
               <tr>
@@ -265,7 +269,7 @@ export default function ProjectsDashboard() {
               {filteredProjects.map((project) => (
                 <tr key={project.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-indigo-600 dark:text-indigo-400">{project.name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{project.client}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{project.client}</td>
                   <td className="px-6 py-4">{getStatusBadge(project.status)}</td>
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">R {project.budget?.toLocaleString() || '0'}</td>
                   <td className="px-6 py-4">
@@ -286,7 +290,7 @@ export default function ProjectsDashboard() {
       )}
 
       {error && (
-        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-300 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400 px-4 py-3 rounded-xl shadow-lg">
+        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-300 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400 px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
@@ -295,16 +299,16 @@ export default function ProjectsDashboard() {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-t-2xl flex items-center justify-between">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-t-2xl flex items-center justify-between">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <FolderOpen className="h-6 w-6" />
                 {editingProject ? 'Edit Project' : 'New Project'}
               </h2>
-              <button onClick={() => setShowModal(false)} className="text-white/80 hover:text-white transition-colors">
+              <button onClick={() => setShowModal(false)} className="text-white/80 hover:text-white transition-colors" aria-label="Close modal" title="Close">
                 <X className="h-6 w-6" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project Name *</label>
                 <input
@@ -313,6 +317,7 @@ export default function ProjectsDashboard() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  aria-label="Project name"
                 />
               </div>
               <div>
@@ -322,15 +327,17 @@ export default function ProjectsDashboard() {
                   value={formData.client}
                   onChange={(e) => setFormData({ ...formData, client: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  aria-label="Client name"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="Project status"
                   >
                     <option value="planning">Planning</option>
                     <option value="active">Active</option>
@@ -346,10 +353,11 @@ export default function ProjectsDashboard() {
                     value={formData.budget}
                     onChange={(e) => setFormData({ ...formData, budget: parseFloat(e.target.value) })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="Project budget"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
                   <input
@@ -357,6 +365,7 @@ export default function ProjectsDashboard() {
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="Start date"
                   />
                 </div>
                 <div>
@@ -366,6 +375,7 @@ export default function ProjectsDashboard() {
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    aria-label="End date"
                   />
                 </div>
               </div>
@@ -379,7 +389,7 @@ export default function ProjectsDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30"
+                  className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-600 hover:to-purple-600 transition-all "
                 >
                   {editingProject ? 'Update' : 'Create'}
                 </button>

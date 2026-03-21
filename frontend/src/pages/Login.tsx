@@ -27,7 +27,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%)' }}>
+    <div className="flex" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%)' }}>
       {/* Left Panel - Branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -41,42 +41,42 @@ export default function Login() {
               <span className="text-4xl font-bold text-slate-900">A</span>
             </div>
             <h1 className="text-5xl font-bold text-white mb-4">ARIA</h1>
-            <p className="text-xl text-gray-400">AI-Native Enterprise Resource Planning</p>
+            <p className="text-xl text-gray-300">AI-Native Enterprise Resource Planning</p>
           </div>
           
-          <div className="space-y-6 text-left">
-            <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+          <div className="space-y-3 text-left">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">109 AI Automation Agents</h3>
-                <p className="text-sm text-gray-400">Intelligent bots handling your business processes 24/7</p>
+                <p className="text-xs text-gray-300">Intelligent bots handling your business processes 24/7</p>
               </div>
             </div>
             
-            <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">South African Compliance</h3>
-                <p className="text-sm text-gray-400">Built-in VAT, PAYE, UIF, and B-BBEE compliance</p>
+                <p className="text-xs text-gray-300">Built-in VAT, PAYE, UIF, and B-BBEE compliance</p>
               </div>
             </div>
             
-            <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/20">
               <div className="p-2 rounded-lg bg-amber-500/20">
                 <Sparkles className="w-5 h-5 text-amber-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white mb-1">Complete ERP Suite</h3>
-                <p className="text-sm text-gray-400">Finance, HR, Inventory, CRM, Manufacturing and more</p>
+                <p className="text-xs text-gray-300">Finance, HR, Inventory, CRM, Manufacturing and more</p>
               </div>
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-white/10">
+          <div className="mt-12 pt-8 border-t border-white/20">
             <p className="text-gray-500 text-sm">Powered by</p>
             <p className="text-white font-semibold">Vanta<span className="text-amber-500">X</span> Holdings</p>
           </div>
@@ -88,21 +88,21 @@ export default function Login() {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg shadow-amber-500/30 mb-4">
-              <span className="text-3xl font-bold text-slate-900">A</span>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600  mb-4">
+              <span className="text-2xl font-bold text-slate-900">A</span>
             </div>
-            <h1 className="text-3xl font-bold text-white">ARIA</h1>
-            <p className="text-gray-400 mt-1">AI-Native ERP Platform</p>
+            <h1 className="text-2xl font-bold text-white">ARIA</h1>
+            <p className="text-gray-300 mt-1">AI-Native ERP Platform</p>
           </div>
 
           {/* Login Card */}
-          <div className="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
+          <div className="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/20">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
-              <p className="text-gray-400">Sign in to your account to continue</p>
+              <p className="text-gray-300">Sign in to your account to continue</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {error && (
                 <div data-testid="error-message" className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm flex items-center gap-2">
                   <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -125,7 +125,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
                     placeholder="you@company.com"
                   />
                 </div>
@@ -144,7 +144,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-900/60 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
                     placeholder="Enter your password"
                   />
                 </div>
@@ -153,7 +153,7 @@ export default function Login() {
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-slate-900 text-amber-500 focus:ring-amber-500/50" />
-                  <span className="text-gray-400">Remember me</span>
+                  <span className="text-gray-300">Remember me</span>
                 </label>
                 <a href="#" className="text-amber-500 hover:text-amber-400 transition-colors">
                   Forgot password?
@@ -179,8 +179,8 @@ export default function Login() {
               </button>
             </form>
 
-            <div className="mt-8 pt-6 border-t border-white/10 text-center">
-              <p className="text-gray-400">
+            <div className="mt-8 pt-6 border-t border-white/20 text-center">
+              <p className="text-gray-300">
                 Don't have an account?{' '}
                 <Link to="/register" className="text-amber-500 font-medium hover:text-amber-400 transition-colors">
                   Create Account
@@ -190,7 +190,7 @@ export default function Login() {
           </div>
 
           {/* Footer */}
-          <p className="mt-8 text-center text-sm text-gray-500">
+          <p className="mt-8 text-center text-xs text-gray-500">
             2025 VantaX Holdings. All rights reserved.
           </p>
         </div>

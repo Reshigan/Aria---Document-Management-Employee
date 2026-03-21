@@ -1,5 +1,5 @@
 /**
- * Calendar Agent (Office 365) - Report Page
+ * Calendar Bot (Office 365) - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -51,7 +51,7 @@ export default function CalendarOffice365Report() {
       // Load activities
       const activitiesResponse = await fetch(`${API_BASE}/api/agents/calendar_office365/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
-      setActivities(activitiesData);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : activitiesData?.results || activitiesData?.data || []);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
@@ -68,7 +68,7 @@ export default function CalendarOffice365Report() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Calendar Agent (Office 365) - Report
+        Calendar Bot (Office 365) - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -118,7 +118,7 @@ export default function CalendarOffice365Report() {
                 Success Rate
               </Typography>
               <Typography variant="h4">
-                {successRate.toFixed(1)}%
+                {Number(successRate ?? 0).toFixed(1)}%
               </Typography>
             </CardContent>
           </Card>
@@ -146,7 +146,7 @@ export default function CalendarOffice365Report() {
                 {activities.map((activity, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      {new Date(activity.timestamp).toLocaleString()}
+                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : '-'}
                     </TableCell>
                     <TableCell>
                       {activity.success ? (
@@ -169,7 +169,7 @@ export default function CalendarOffice365Report() {
                       {activity.result?.processed || 0}
                     </TableCell>
                     <TableCell>
-                      {activity.duration ? `${activity.duration.toFixed(2)}s` : 'N/A'}
+                      {activity.duration ? `${Number(activity.duration ?? 0).toFixed(2)}s` : 'N/A'}
                     </TableCell>
                     <TableCell>
                       {activity.result?.successful || 0} successful, {' '}

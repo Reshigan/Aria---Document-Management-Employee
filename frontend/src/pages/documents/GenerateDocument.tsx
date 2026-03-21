@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Mail, MessageSquare, Loader2, CheckCircle } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface Customer {
   id: string;
   name: string;
@@ -31,7 +34,7 @@ export default function GenerateDocumentPage() {
     try {
       const token = localStorage.getItem('token');
       const companyId = localStorage.getItem('selectedCompanyId');
-      const response = await fetch(`/api/customers?search=${encodeURIComponent(query)}&company_id=${companyId}`, {
+      const response = await fetch(`${API_BASE}/customers?search=${encodeURIComponent(query)}&company_id=${companyId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -54,7 +57,7 @@ export default function GenerateDocumentPage() {
       const token = localStorage.getItem('token');
       const companyId = localStorage.getItem('selectedCompanyId');
       
-      const response = await fetch('/api/documents/generate', {
+      const response = await fetch(`${API_BASE}/documents/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,13 +128,13 @@ export default function GenerateDocumentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4 max-w-4xl">
+      <h1 className="text-2xl font-bold mb-6 flex items-center gap-3">
         <FileText className="h-8 w-8" />
         Generate Document
       </h1>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6" data-testid="invoice-form">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 space-y-3" data-testid="invoice-form">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Document Type *
@@ -170,7 +173,7 @@ export default function GenerateDocumentPage() {
                       onClick={() => handleCustomerSelect(customer)}
                     >
                       {customer.name}
-                      {customer.email && <span className="text-sm text-gray-500 ml-2">({customer.email})</span>}
+                      {customer.email && <span className="text-xs text-gray-500 ml-2">({customer.email})</span>}
                     </div>
                   ))}
                 </div>
@@ -239,13 +242,13 @@ export default function GenerateDocumentPage() {
                 </button>
                 <div className="border-t pt-3 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Subtotal:</span>
+                    <span className="text-gray-600 dark:text-gray-300">Subtotal:</span>
                     <span className="font-medium" data-testid="subtotal">
                       R {lineItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">VAT (15%):</span>
+                    <span className="text-gray-600 dark:text-gray-300">VAT (15%):</span>
                     <span className="font-medium" data-testid="vat">
                       R {(lineItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0) * 0.15).toFixed(2)}
                     </span>
@@ -300,11 +303,11 @@ export default function GenerateDocumentPage() {
       {/* PDF Preview Modal */}
       {showPreview && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
               <h2 className="text-2xl font-bold mb-4">Document Preview</h2>
               <div className="border rounded p-8 bg-gray-50 dark:bg-gray-900 min-h-[500px]" data-testid="pdf-preview">
-                <div className="text-center text-gray-500 dark:text-gray-400">PDF Preview would render here</div>
+                <div className="text-center text-gray-500 dark:text-gray-300">PDF Preview would render here</div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button

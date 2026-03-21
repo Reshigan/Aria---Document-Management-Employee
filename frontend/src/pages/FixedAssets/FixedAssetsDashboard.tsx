@@ -111,39 +111,37 @@ export default function FixedAssetsDashboard() {
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   if (loading && assets.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-slate-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading fixed assets...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading fixed assets...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl shadow-lg shadow-slate-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl ">
             <FolderOpen className="h-7 w-7 text-white" />
           </div>
           Fixed Assets
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage fixed assets, depreciation, and asset disposals</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage fixed assets, depreciation, and asset disposals</p>
       </div>
 
       {/* Action Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search assets..."
@@ -154,7 +152,7 @@ export default function FixedAssetsDashboard() {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold shadow-lg shadow-slate-500/30 hover:shadow-xl hover:shadow-slate-500/40 transition-all duration-200"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-slate-500/40 transition-all duration-200"
           >
             <Plus className="h-5 w-5" />
             Add Asset
@@ -164,47 +162,47 @@ export default function FixedAssetsDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl shadow-lg shadow-slate-500/30">
-              <Package className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl ">
+              <Package className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total_assets}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Assets</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{summary.total_assets}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Assets</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl shadow-lg shadow-emerald-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_book_value)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Book Value</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_book_value)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Book Value</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <TrendingDown className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <TrendingDown className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_depreciation)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Accumulated Depreciation</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_depreciation)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Accumulated Depreciation</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_cost)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Cost</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(summary.total_cost)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Cost</p>
             </div>
           </div>
         </div>
@@ -212,32 +210,32 @@ export default function FixedAssetsDashboard() {
 
       {/* Assets Table */}
       {filteredAssets.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <FolderOpen className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No fixed assets yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-gray-500 dark:text-gray-300 mb-6">
             Start by adding your first fixed asset to track depreciation and book value
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold shadow-lg shadow-slate-500/30 hover:shadow-xl hover:shadow-slate-500/40 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-slate-500/40 transition-all"
           >
             Add Your First Asset
           </button>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asset Number</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acquisition Cost</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Depreciation</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Book Value</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acquisition Date</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset Number</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acquisition Cost</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Depreciation</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Book Value</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acquisition Date</th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -245,11 +243,11 @@ export default function FixedAssetsDashboard() {
                 <tr key={asset.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                   <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{asset.asset_number}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{asset.description}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{asset.category_name}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300 text-sm">{asset.category_name}</td>
                   <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{formatCurrency(asset.acquisition_cost)}</td>
                   <td className="px-6 py-4 text-right text-red-600 dark:text-red-400">{formatCurrency(asset.accumulated_depreciation)}</td>
                   <td className="px-6 py-4 text-right font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(asset.book_value)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{formatDate(asset.acquisition_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300 text-sm">{formatDate(asset.acquisition_date)}</td>
                   <td className="px-6 py-4 text-center">
                     <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
                       asset.status === 'active' 
@@ -270,7 +268,7 @@ export default function FixedAssetsDashboard() {
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-slate-500 to-gray-600 rounded-t-2xl flex items-center justify-between">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-slate-500 to-gray-600 rounded-t-2xl flex items-center justify-between">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <FolderOpen className="h-6 w-6" />
                 Add Fixed Asset
@@ -282,7 +280,7 @@ export default function FixedAssetsDashboard() {
                 <X className="h-5 w-5 text-white" />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category *</label>
                 <select
@@ -307,7 +305,7 @@ export default function FixedAssetsDashboard() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Acquisition Date *</label>
                   <input
@@ -329,7 +327,7 @@ export default function FixedAssetsDashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Location</label>
                   <input
@@ -350,7 +348,7 @@ export default function FixedAssetsDashboard() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
               <button
                 onClick={() => setShowAddModal(false)}
                 className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -360,7 +358,7 @@ export default function FixedAssetsDashboard() {
               <button
                 onClick={handleAddAsset}
                 disabled={!newAsset.category_id || !newAsset.description || !newAsset.acquisition_cost}
-                className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold shadow-lg shadow-slate-500/30 hover:shadow-xl hover:shadow-slate-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-gray-600 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-slate-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add Asset
               </button>

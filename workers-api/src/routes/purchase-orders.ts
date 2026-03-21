@@ -4,7 +4,9 @@
  */
 
 import { Hono } from 'hono';
-import { getSecureCompanyId } from '../middleware/auth';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
+import { validatePurchaseOrder, validateStatusTransition, calculateLineTotals, safeNumber } from '../services/business-rules';
+import { onGoodsReceived } from '../services/cross-module-integration';
 
 interface Env {
   DB: D1Database;
@@ -181,8 +183,9 @@ purchaseOrders.post('/', async (c) => {
     if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<PurchaseOrder> & { items?: Partial<PurchaseOrderItem>[] }>();
 
-    if (!body.supplier_id) {
-      return c.json({ error: 'Supplier is required' }, 400);
+    const validation = validatePurchaseOrder(body as Record<string, unknown>);
+    if (!validation.valid) {
+      return c.json({ error: validation.errors.join('; '), errors: validation.errors, warnings: validation.warnings }, 400);
     }
 
     // Generate PO number
@@ -196,20 +199,12 @@ purchaseOrders.post('/', async (c) => {
     const poId = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    // Calculate totals from items
-    let subtotal = 0;
-    let taxAmount = 0;
-    const items = body.items || [];
-    
-    for (const item of items) {
-      const lineTotal = (item.quantity || 1) * (item.unit_price || 0) * (1 - (item.discount_percent || 0) / 100);
-      const lineTax = lineTotal * ((item.tax_rate || 15) / 100);
-      subtotal += lineTotal;
-      taxAmount += lineTax;
-    }
-
-    const discountAmount = body.discount_amount || 0;
-    const totalAmount = subtotal + taxAmount - discountAmount;
+    const items = body.items || (body as any).lines || [];
+    const totals = calculateLineTotals(items as Array<{ quantity?: number; unit_price?: number; discount_percent?: number; tax_rate?: number }>);
+    const subtotal = totals.subtotal;
+    const taxAmount = totals.tax_amount;
+    const discountAmount = safeNumber(body.discount_amount);
+    const totalAmount = totals.total_amount - discountAmount;
 
     await c.env.DB.prepare(`
       INSERT INTO purchase_orders (id, company_id, po_number, supplier_id, po_date, expected_delivery_date, status, subtotal, tax_amount, discount_amount, total_amount, shipping_address, notes, created_at, updated_at)
@@ -275,9 +270,14 @@ purchaseOrders.put('/:id/status', async (c) => {
     if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ status: string }>();
 
-    const validStatuses = ['draft', 'sent', 'confirmed', 'partial', 'received', 'cancelled', 'invoiced'];
-    if (!validStatuses.includes(body.status)) {
-      return c.json({ error: 'Invalid status' }, 400);
+    const existing = await c.env.DB.prepare(
+      'SELECT status FROM purchase_orders WHERE id = ? AND company_id = ?'
+    ).bind(poId, companyId).first<{ status: string }>();
+    if (!existing) return c.json({ error: 'Purchase order not found' }, 404);
+
+    const transition = validateStatusTransition('purchase_order', existing.status, body.status);
+    if (!transition.valid) {
+      return c.json({ error: transition.errors.join('; ') }, 400);
     }
 
     const result = await c.env.DB.prepare(`
@@ -342,7 +342,16 @@ purchaseOrders.post('/:id/receive', async (c) => {
       'UPDATE purchase_orders SET status = ?, updated_at = ? WHERE id = ?'
     ).bind(newStatus, now, poId).run();
 
-    return c.json({ message: 'Goods received successfully', status: newStatus });
+    let integrationResult = null;
+    try {
+      const userId = await getSecureUserId(c);
+      if (!userId) return c.json({ error: "Authentication required" }, 401);
+      integrationResult = await onGoodsReceived(c.env.DB, companyId, userId, poId, body.items);
+    } catch (e) {
+      console.error('Cross-module integration error (non-blocking):', e);
+    }
+
+    return c.json({ message: 'Goods received successfully', status: newStatus, integration: integrationResult });
   } catch (error) {
     console.error('Receive goods error:', error);
     return c.json({ error: 'Internal server error' }, 500);

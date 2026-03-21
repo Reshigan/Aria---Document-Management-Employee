@@ -2,7 +2,7 @@
 Database models package
 """
 from .base import Base
-from .user import User
+from .user import User, PasswordResetToken
 from .document import Document, DocumentType, DocumentStatus
 from .advanced import (
     Folder, FolderPermission, Tag, DocumentVersionSimple, ShareLink, DocumentShare, Comment,
@@ -73,7 +73,7 @@ from .hr import (
 __all__ = [
     "Base",
     # User models
-    "User", "PasswordResetToken", "UserActivity",
+    "User", "PasswordResetToken",
     # Document models
     "Document", "DocumentType", "DocumentStatus",
     # Advanced models

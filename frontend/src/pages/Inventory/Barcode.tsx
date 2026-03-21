@@ -144,7 +144,7 @@ const Barcode: React.FC = () => {
                       size="small" 
                     />
                   </TableCell>
-                  <TableCell>{new Date(item.timestamp).toLocaleString()}</TableCell>
+                  <TableCell>{item.timestamp ? new Date(item.timestamp).toLocaleString() : '-'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -96,15 +96,15 @@ const DataImport: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 max-w-6xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Data Import</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Data Import</h1>
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
           Import bulk data from CSV files into your ERP system
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -138,7 +138,7 @@ const DataImport: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Upload CSV File
           </label>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <input
               type="file"
               accept=".csv"
@@ -155,15 +155,15 @@ const DataImport: React.FC = () => {
             </button>
           </div>
           {file && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+              Selected: {file.name} ({Number((file.size / 1024) || 0).toFixed(2)} KB)
             </p>
           )}
         </div>
       </div>
 
       {result && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
           <div className="flex items-center gap-3 mb-4">
             {result.success ? (
               <CheckCircle className="text-green-600 dark:text-green-400" size={24} />
@@ -175,17 +175,17 @@ const DataImport: React.FC = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Rows</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Rows</p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{result.total_rows}</p>
             </div>
             <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Successful</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Successful</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">{result.successful}</p>
             </div>
             <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Failed</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Failed</p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">{result.failed}</p>
             </div>
           </div>
@@ -200,13 +200,13 @@ const DataImport: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Row
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Field
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         Error Message
                       </th>
                     </tr>

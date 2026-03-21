@@ -283,16 +283,15 @@ try:
 except Exception as e:
     print(f"⚠️ Banking API not loaded: {e}")
 
+
 try:
     from app.api.hr_payroll_pg import (
-        employees_router,
         payroll_runs_router,
         leave_requests_router
     )
-    app.include_router(employees_router)
     app.include_router(payroll_runs_router)
     app.include_router(leave_requests_router)
-    print("✅ HR & Payroll API loaded (PostgreSQL): Employees, Payroll Runs, Leave Requests with full CRUD")
+    print("✅ HR & Payroll API loaded (PostgreSQL): Payroll Runs, Leave Requests with full CRUD")
 except Exception as e:
     print(f"⚠️ HR & Payroll API not loaded: {e}")
 

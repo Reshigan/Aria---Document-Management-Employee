@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Award, RefreshCw, Download, TrendingUp } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface ScorecardElement {
   name: string;
   max_points: number;
@@ -26,7 +29,7 @@ export default function BbbeeComplianceReportPage() {
   const fetchBbbeeData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/reports/bbbee/current');
+      const response = await fetch(`${API_BASE}/reports/bbbee/current`);
       if (!response.ok) throw new Error('Failed to fetch');
       const result = await response.json();
       setData(result);
@@ -59,7 +62,7 @@ export default function BbbeeComplianceReportPage() {
 
   const handleExport = async () => {
     try {
-      const response = await fetch('/api/reports/bbbee/export?format=pdf');
+      const response = await fetch(`${API_BASE}/reports/bbbee/export?format=pdf`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -80,18 +83,25 @@ export default function BbbeeComplianceReportPage() {
     return 'text-red-600 dark:text-red-400';
   };
 
+  const scorecardElementsWithValues = (data?.scorecard_elements || []).map(element => ({
+    ...element,
+    percentValue: Math.round(Number(element.percentage) || 0)
+  }));
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Award className="h-8 w-8 text-indigo-600" />
             BBBEE Compliance Report
           </h1>
           <div className="flex gap-3 items-center">
             <button
               onClick={fetchBbbeeData}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              aria-label="Refresh BBBEE data"
+              title="Refresh BBBEE data"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -112,33 +122,33 @@ export default function BbbeeComplianceReportPage() {
         ) : data ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Level</div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Current Level</div>
                 <div className={`text-4xl font-bold mt-2 ${getLevelColor(data.current_level)}`}>Level {data.current_level}</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Score</div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Score</div>
                 <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">{data.total_score}</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Procurement Recognition</div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Procurement Recognition</div>
                 <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mt-2">{data.procurement_recognition}%</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">Certificate Expiry</div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{new Date(data.certificate_expiry).toLocaleDateString()}</div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Certificate Expiry</div>
+                <div className="text-xl font-bold text-gray-900 dark:text-white mt-2">{(data.certificate_expiry ? new Date(data.certificate_expiry).toLocaleDateString() : "-")}</div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Scorecard Elements</h3>
-              <div className="space-y-6">
-                {data.scorecard_elements.map((element) => (
+              <div className="space-y-3">
+                {scorecardElementsWithValues.map((element) => (
                   <div key={element.name}>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="font-medium text-gray-700 dark:text-gray-300">{element.name}</span>
-                      <div className="flex items-center gap-4">
-                        <span className="text-gray-600 dark:text-gray-400">{element.achieved_points} / {element.max_points} points</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-600 dark:text-gray-300">{element.achieved_points} / {element.max_points} points</span>
                         <span className={`font-bold ${
                           element.percentage >= 80 ? 'text-green-600 dark:text-green-400' :
                           element.percentage >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
@@ -147,13 +157,19 @@ export default function BbbeeComplianceReportPage() {
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                      {/* eslint-disable-next-line react/forbid-component-props */}
                       <div 
-                        className={`h-3 rounded-full ${
+                        className={`h-3 rounded-full transition-all duration-300 ${
                           element.percentage >= 80 ? 'bg-gradient-to-r from-green-500 to-green-600' :
                           element.percentage >= 60 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
                           'bg-gradient-to-r from-red-500 to-red-600'
                         }`}
-                        style={{ width: `${element.percentage}%` }}
+                        style={{ width: `${Math.min(element.percentage, 100)}%` }}
+                        role="progressbar"
+                        aria-valuenow={element.percentValue}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`${element.name}: ${element.percentage} percent achieved`}
                       ></div>
                     </div>
                   </div>
@@ -161,15 +177,15 @@ export default function BbbeeComplianceReportPage() {
               </div>
             </div>
 
-            <div className="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Verification Details</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Verification Agency</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Verification Agency</p>
                   <p className="font-medium text-gray-900 dark:text-white">{data.verification_agency}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Assessment Year</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Assessment Year</p>
                   <p className="font-medium text-gray-900 dark:text-white">{data.year}</p>
                 </div>
               </div>
@@ -177,7 +193,7 @@ export default function BbbeeComplianceReportPage() {
           </>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No BBBEE data available</p>
+            <p className="text-gray-600 dark:text-gray-300">No BBBEE data available</p>
           </div>
         )}
       </div>

@@ -114,7 +114,8 @@ const CRMDashboard: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/crm/leads');
-      setLeads(response.data || []);
+      const d = response.data;
+      setLeads(Array.isArray(d) ? d : d.leads || d.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load leads');
     } finally {
@@ -192,7 +193,8 @@ const CRMDashboard: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/crm/opportunities');
-      setOpportunities(response.data || []);
+      const d = response.data;
+      setOpportunities(Array.isArray(d) ? d : d.opportunities || d.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load opportunities');
     } finally {
@@ -272,7 +274,8 @@ const CRMDashboard: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/crm/customers');
-      setCustomers(response.data || []);
+      const d = response.data;
+      setCustomers(Array.isArray(d) ? d : d.customers || d.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load customers');
     } finally {
@@ -340,20 +343,20 @@ const CRMDashboard: React.FC = () => {
   };
 
   const filteredLeads = leads.filter(l =>
-    l.company_name.toLowerCase().includes(leadsSearch.toLowerCase()) ||
-    l.contact_person.toLowerCase().includes(leadsSearch.toLowerCase()) ||
-    l.email.toLowerCase().includes(leadsSearch.toLowerCase())
+    (l.company_name || '').toLowerCase().includes(leadsSearch.toLowerCase()) ||
+    (l.contact_person || '').toLowerCase().includes(leadsSearch.toLowerCase()) ||
+    (l.email || '').toLowerCase().includes(leadsSearch.toLowerCase())
   );
 
   const filteredOpportunities = opportunities.filter(o =>
-    o.title.toLowerCase().includes(oppsSearch.toLowerCase()) ||
-    o.customer_name?.toLowerCase().includes(oppsSearch.toLowerCase())
+    (o.title || '').toLowerCase().includes(oppsSearch.toLowerCase()) ||
+    (o.customer_name || '').toLowerCase().includes(oppsSearch.toLowerCase())
   );
 
   const filteredCustomers = customers.filter(c =>
-    c.customer_name.toLowerCase().includes(customersSearch.toLowerCase()) ||
-    c.customer_code.toLowerCase().includes(customersSearch.toLowerCase()) ||
-    c.email.toLowerCase().includes(customersSearch.toLowerCase())
+    (c.customer_name || '').toLowerCase().includes(customersSearch.toLowerCase()) ||
+    (c.customer_code || '').toLowerCase().includes(customersSearch.toLowerCase()) ||
+    (c.email || '').toLowerCase().includes(customersSearch.toLowerCase())
   );
 
   const getLeadScoreBadge = (score: number) => {
@@ -379,28 +382,26 @@ const CRMDashboard: React.FC = () => {
       CLOSED_WON: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
       CLOSED_LOST: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
     };
-    return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${styles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{status.replace('_', ' ')}</span>;
+    return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${styles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{(status || '').replace('_', ' ')}</span>;
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(Number(amount ?? 0));
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
-          <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
+          <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl ">
             <Users className="h-7 w-7 text-white" />
           </div>
           CRM
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 ml-14">Manage leads, opportunities, and customer relationships</p>
+        <p className="text-gray-500 dark:text-gray-300 ml-14">Manage leads, opportunities, and customer relationships</p>
       </div>
 
       {/* Error Display */}
@@ -415,19 +416,19 @@ const CRMDashboard: React.FC = () => {
         <div className="flex gap-1">
           <button
             onClick={() => setActiveTab('leads')}
-            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'leads' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'leads' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Target className="h-4 w-4" />Leads ({leads.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('opportunities')}
-            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'opportunities' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'opportunities' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />Opportunities ({opportunities.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('customers')}
-            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'customers' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-4 py-3 text-sm font-semibold rounded-t-lg transition-colors ${activeTab === 'customers' ? 'bg-white dark:bg-gray-800 text-rose-600 dark:text-rose-400 border-b-2 border-rose-500' : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
             <span className="flex items-center gap-2"><Building2 className="h-4 w-4" />Customers ({customers.length})</span>
           </button>
@@ -438,9 +439,9 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'leads' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search leads..."
@@ -451,7 +452,7 @@ const CRMDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateLead}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
               <Plus className="h-5 w-5" />
               New Lead
@@ -459,26 +460,26 @@ const CRMDashboard: React.FC = () => {
           </div>
 
           {/* Leads Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Company</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Score</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {leadsLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading leads...</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading leads...</td>
                   </tr>
                 ) : filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No leads found</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No leads found</td>
                   </tr>
                 ) : (
                   filteredLeads.map((lead) => (
@@ -510,9 +511,9 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'opportunities' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search opportunities..."
@@ -523,7 +524,7 @@ const CRMDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateOpportunity}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
               <Plus className="h-5 w-5" />
               New Opportunity
@@ -531,64 +532,64 @@ const CRMDashboard: React.FC = () => {
           </div>
 
           {/* Pipeline Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30">
-                  <DollarSign className="h-6 w-6 text-white" />
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl ">
+                  <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + o.amount, 0))}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Pipeline</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + Number(o.amount ?? 0), 0))}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Pipeline</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-                  <TrendingUp className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+                  <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (o.amount * o.probability / 100), 0))}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Weighted Value</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(opportunities.reduce((sum, o) => sum + (Number(o.amount ?? 0) * Number(o.probability ?? 0) / 100), 0))}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Weighted Value</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl shadow-lg shadow-emerald-500/30">
-                  <Target className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl ">
+                  <Target className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{opportunities.filter(o => o.status === 'OPEN').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Open Opportunities</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{opportunities.filter(o => o.status === 'OPEN').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Open Opportunities</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Opportunities Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stage</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Probability</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Close Date</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stage</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Probability</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Close Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {oppsLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading opportunities...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading opportunities...</td>
                   </tr>
                 ) : filteredOpportunities.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No opportunities found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No opportunities found</td>
                   </tr>
                 ) : (
                   filteredOpportunities.map((opp) => (
@@ -621,9 +622,9 @@ const CRMDashboard: React.FC = () => {
       {activeTab === 'customers' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search customers..."
@@ -634,7 +635,7 @@ const CRMDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateCustomer}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
             >
               <Plus className="h-5 w-5" />
               New Customer
@@ -642,27 +643,27 @@ const CRMDashboard: React.FC = () => {
           </div>
 
           {/* Customers Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">BBBEE</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit Limit</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Code</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">BBBEE</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Credit Limit</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {customersLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading customers...</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">Loading customers...</td>
                   </tr>
                 ) : filteredCustomers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No customers found</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">No customers found</td>
                   </tr>
                 ) : (
                   filteredCustomers.map((customer) => (
@@ -692,13 +693,13 @@ const CRMDashboard: React.FC = () => {
       {showLeadModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <Target className="h-6 w-6" />
                 {editingLead ? 'Edit Lead' : 'New Lead'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Name *</label>
                 <input
@@ -717,7 +718,7 @@ const CRMDashboard: React.FC = () => {
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
                   <input
@@ -737,7 +738,7 @@ const CRMDashboard: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Company Size</label>
                   <select
@@ -765,7 +766,7 @@ const CRMDashboard: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Budget Range</label>
                   <select
@@ -794,16 +795,16 @@ const CRMDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowLeadModal(false)}
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveLead}
-                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingLead ? 'Update' : 'Create'}
               </button>
@@ -816,13 +817,13 @@ const CRMDashboard: React.FC = () => {
       {showOppModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <DollarSign className="h-6 w-6" />
                 {editingOpp ? 'Edit Opportunity' : 'New Opportunity'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                 <input
@@ -832,7 +833,7 @@ const CRMDashboard: React.FC = () => {
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer ID *</label>
                   <input
@@ -853,7 +854,7 @@ const CRMDashboard: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Stage</label>
                   <select
@@ -891,16 +892,16 @@ const CRMDashboard: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowOppModal(false)}
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveOpportunity}
-                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingOpp ? 'Update' : 'Create'}
               </button>
@@ -913,13 +914,13 @@ const CRMDashboard: React.FC = () => {
       {showCustomerModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-rose-500 to-pink-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <Building2 className="h-6 w-6" />
                 {editingCustomer ? 'Edit Customer' : 'New Customer'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
                 <input
@@ -938,7 +939,7 @@ const CRMDashboard: React.FC = () => {
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email *</label>
                   <input
@@ -958,7 +959,7 @@ const CRMDashboard: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">BBBEE Level</label>
                   <input
@@ -993,16 +994,16 @@ const CRMDashboard: React.FC = () => {
                 </label>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800 rounded-b-2xl">
               <button
                 onClick={() => setShowCustomerModal(false)}
-                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveCustomer}
-                className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold  hover:shadow-xl hover:shadow-rose-500/40 transition-all"
               >
                 {editingCustomer ? 'Update' : 'Create'}
               </button>
@@ -1021,7 +1022,7 @@ const CRMDashboard: React.FC = () => {
           else if (deleteConfirm.type === 'opportunity') handleDeleteOpportunity(deleteConfirm.id);
           else if (deleteConfirm.type === 'customer') handleDeleteCustomer(deleteConfirm.id);
         }}
-        onCancel={() => setDeleteConfirm({ show: false, type: 'lead', id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, type: 'lead', id: 0, name: '' })}
       />
     </div>
   );

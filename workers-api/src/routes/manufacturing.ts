@@ -6,8 +6,7 @@
  */
 
 import { Hono } from 'hono';
-import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
-import { jwtVerify } from 'jose';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
@@ -16,31 +15,12 @@ interface Env {
 
 const manufacturing = new Hono<{ Bindings: Env }>();
 
-// Helper to verify JWT and get company_id
-async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return c.req.query('company_id') || c.req.header('X-Company-ID') || null;
-  }
-  
-  try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
-    const token = authHeader.substring(7);
-    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return (payload as any).company_id || c.req.query('company_id') || null;
-  } catch {
-    return c.req.query('company_id') || c.req.header('X-Company-ID') || null;
-  }
-}
-
 // ==================== WORK ORDERS ====================
 
 // Get all work orders
 manufacturing.get('/work-orders', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     if (!companyId) {
       return c.json({ error: 'Company ID required' }, 400);
     }
@@ -90,7 +70,7 @@ manufacturing.get('/work-orders', async (c) => {
 // Get single work order
 manufacturing.get('/work-orders/:id', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     const id = c.req.param('id');
     
     const wo = await c.env.DB.prepare(`
@@ -122,7 +102,7 @@ manufacturing.get('/work-orders/:id', async (c) => {
 // Create work order
 manufacturing.post('/work-orders', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     if (!companyId) {
       return c.json({ error: 'Company ID required' }, 400);
     }
@@ -146,7 +126,7 @@ manufacturing.post('/work-orders', async (c) => {
 // Release work order
 manufacturing.post('/work-orders/:id/release', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     const id = c.req.param('id');
     await c.env.DB.prepare('UPDATE work_orders SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?')
       .bind('released', new Date().toISOString(), id, companyId).run();
@@ -159,7 +139,7 @@ manufacturing.post('/work-orders/:id/release', async (c) => {
 // Start work order
 manufacturing.post('/work-orders/:id/start', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     const id = c.req.param('id');
     const now = new Date().toISOString();
     await c.env.DB.prepare('UPDATE work_orders SET status = ?, actual_start_date = ?, updated_at = ? WHERE id = ? AND company_id = ?')
@@ -173,7 +153,7 @@ manufacturing.post('/work-orders/:id/start', async (c) => {
 // Complete work order
 manufacturing.post('/work-orders/:id/complete', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     const id = c.req.param('id');
     const now = new Date().toISOString();
     await c.env.DB.prepare('UPDATE work_orders SET status = ?, actual_end_date = ?, updated_at = ? WHERE id = ? AND company_id = ?')
@@ -188,7 +168,7 @@ manufacturing.post('/work-orders/:id/complete', async (c) => {
 
 manufacturing.get('/boms', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     if (!companyId) {
       return c.json({ error: 'Company ID required' }, 400);
     }
@@ -211,7 +191,7 @@ manufacturing.get('/boms', async (c) => {
 
 manufacturing.get('/production', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     if (!companyId) {
       return c.json({ error: 'Company ID required' }, 400);
     }
@@ -234,7 +214,7 @@ manufacturing.get('/production', async (c) => {
 
 manufacturing.get('/quality', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     if (!companyId) {
       return c.json({ error: 'Company ID required' }, 400);
     }
@@ -257,7 +237,7 @@ manufacturing.get('/quality', async (c) => {
 
 manufacturing.get('/machines', async (c) => {
   try {
-    const companyId = await getAuthenticatedCompanyId(c);
+    const companyId = await getSecureCompanyId(c);
     if (!companyId) {
       return c.json({ error: 'Company ID required' }, 400);
     }

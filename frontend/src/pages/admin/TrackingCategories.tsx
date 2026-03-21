@@ -76,24 +76,24 @@ export default function TrackingCategories() {
     setExpandedCategories(n);
   };
 
-  const totalOptions = categories.reduce((sum, c) => sum + c.options.length, 0);
+  const totalOptions = categories.reduce((sum, c) => sum + (c.options?.length || 0), 0);
   const activeOptions = categories.reduce((sum, c) => sum + c.options.filter(o => o.is_active).length, 0);
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Tracking Categories</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Tracking Categories</h1>
           <p className="text-gray-500 mt-1">Define dimensions for reporting and analysis</p>
         </div>
         <button onClick={() => { setEditingCategory(null); setFormData({ name: '', description: '', is_active: true, options: '' }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-lg font-medium"><Plus className="h-4 w-4" />Add Category</button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-rose-100 dark:bg-rose-900/50 rounded-lg"><Layers className="h-5 w-5 text-rose-600" /></div><div><p className="text-2xl font-bold">{categories.length}</p><p className="text-sm text-gray-500">Categories</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-pink-100 dark:bg-pink-900/50 rounded-lg"><Tag className="h-5 w-5 text-pink-600" /></div><div><p className="text-2xl font-bold">{totalOptions}</p><p className="text-sm text-gray-500">Total Options</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><FolderTree className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{activeOptions}</p><p className="text-sm text-gray-500">Active Options</p></div></div></div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><Settings className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{categories.filter(c => c.is_active).length}</p><p className="text-sm text-gray-500">Active Categories</p></div></div></div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-rose-100 dark:bg-rose-900/50 rounded-lg"><Layers className="h-5 w-5 text-rose-600" /></div><div><p className="text-2xl font-bold">{categories.length}</p><p className="text-xs text-gray-500">Categories</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-pink-100 dark:bg-pink-900/50 rounded-lg"><Tag className="h-5 w-5 text-pink-600" /></div><div><p className="text-2xl font-bold">{totalOptions}</p><p className="text-xs text-gray-500">Total Options</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg"><FolderTree className="h-5 w-5 text-green-600" /></div><div><p className="text-2xl font-bold">{activeOptions}</p><p className="text-xs text-gray-500">Active Options</p></div></div></div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4"><div className="flex items-center gap-3"><div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg"><Settings className="h-5 w-5 text-purple-600" /></div><div><p className="text-2xl font-bold">{categories.filter(c => c.is_active).length}</p><p className="text-xs text-gray-500">Active Categories</p></div></div></div>
       </div>
 
       {loading ? (
@@ -103,17 +103,17 @@ export default function TrackingCategories() {
           {categories.map(category => {
             const isExpanded = expandedCategories.has(category.id);
             return (
-              <div key={category.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+              <div key={category.id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
                 <div className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => toggleExpand(category.id)}>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded">{isExpanded ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}</button>
                     <div className="p-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-lg text-white"><Layers className="h-5 w-5" /></div>
                     <div>
                       <h3 className="font-semibold text-lg flex items-center gap-2">{category.name}<span className={`px-2 py-0.5 rounded-full text-xs ${category.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{category.is_active ? 'Active' : 'Inactive'}</span></h3>
-                      <p className="text-sm text-gray-500">{category.description}</p>
+                      <p className="text-xs text-gray-500">{category.description}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <span className="px-3 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 rounded-full text-sm font-medium">{category.options.length} options</span>
                     <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                       <button onClick={() => openEdit(category)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"><Edit2 className="h-4 w-4" /></button>
@@ -148,7 +148,7 @@ export default function TrackingCategories() {
               <h2 className="text-xl font-semibold">{editingCategory ? 'Edit Tracking Category' : 'New Tracking Category'}</h2>
               <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"><X className="h-5 w-5" /></button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div><label className="block text-sm font-medium mb-1">Category Name</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" placeholder="e.g., Department, Project, Region" /></div>
               <div><label className="block text-sm font-medium mb-1">Description</label><input type="text" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700" placeholder="Brief description of this category" /></div>
               <div>

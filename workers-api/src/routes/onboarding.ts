@@ -5,8 +5,7 @@
  */
 
 import { Hono } from 'hono';
-import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
-import { jwtVerify } from 'jose';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
@@ -14,30 +13,6 @@ interface Env {
 }
 
 const app = new Hono<{ Bindings: Env }>();
-
-// Helper to verify JWT and get company_id
-async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
-    const token = authHeader.substring(7);
-    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return (payload as any).company_id || null;
-  } catch {
-    return null;
-  }
-}
-
-// Generate UUID
-function generateUUID(): string {
-  return crypto.randomUUID();
-}
 
 // Onboarding steps definition
 const ONBOARDING_STEPS = [
@@ -59,7 +34,7 @@ const ONBOARDING_STEPS = [
 
 // Get onboarding status
 app.get('/status', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
@@ -72,7 +47,7 @@ app.get('/status', async (c) => {
     
     if (!onboarding) {
       // Create new onboarding record
-      const id = generateUUID();
+      const id = crypto.randomUUID();
       const now = new Date().toISOString();
       
       await c.env.DB.prepare(`
@@ -118,14 +93,12 @@ app.get('/status', async (c) => {
 
 // Complete a step
 app.post('/steps/:stepId/complete', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const stepId = c.req.param('stepId');
     const body = await c.req.json().catch(() => ({}));
     
@@ -189,7 +162,7 @@ app.post('/steps/:stepId/complete', async (c) => {
 
 // Execute step-specific actions (idempotent)
 async function executeStepAction(c: any, stepId: string, data: any): Promise<void> {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) return;
   
   const now = new Date().toISOString();
@@ -220,7 +193,7 @@ async function executeStepAction(c: any, stepId: string, data: any): Promise<voi
           await c.env.DB.prepare(`
             INSERT INTO warehouses (id, company_id, warehouse_code, name, is_default, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-          `).bind(generateUUID(), companyId, 'MAIN', 'Main Warehouse', 1, now, now).run();
+          `).bind(crypto.randomUUID(), companyId, 'MAIN', 'Main Warehouse', 1, now, now).run();
         }
       }
       break;
@@ -300,7 +273,7 @@ async function applyChartOfAccountsTemplate(c: any, companyId: string): Promise<
     await c.env.DB.prepare(`
       INSERT OR IGNORE INTO gl_accounts (id, company_id, account_code, account_name, account_type, account_category, is_active, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(generateUUID(), companyId, account.code, account.name, account.type, account.category, 1, now, now).run();
+    `).bind(crypto.randomUUID(), companyId, account.code, account.name, account.type, account.category, 1, now, now).run();
   }
 }
 
@@ -324,7 +297,7 @@ async function createDefaultTaxRates(c: any, companyId: string): Promise<void> {
     await c.env.DB.prepare(`
       INSERT OR IGNORE INTO tax_rates (id, company_id, code, name, rate, is_default, is_active, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(generateUUID(), companyId, rate.code, rate.name, rate.rate, rate.is_default, 1, now, now).run();
+    `).bind(crypto.randomUUID(), companyId, rate.code, rate.name, rate.rate, rate.is_default, 1, now, now).run();
   }
 }
 
@@ -354,7 +327,7 @@ async function createDefaultNumberingSequences(c: any, companyId: string): Promi
     await c.env.DB.prepare(`
       INSERT OR IGNORE INTO numbering_sequences (id, company_id, document_type, prefix, next_number, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(generateUUID(), companyId, seq.type, seq.prefix, seq.next_number, now, now).run();
+    `).bind(crypto.randomUUID(), companyId, seq.type, seq.prefix, seq.next_number, now, now).run();
   }
 }
 
@@ -380,7 +353,7 @@ async function createDefaultPaymentTerms(c: any, companyId: string): Promise<voi
     await c.env.DB.prepare(`
       INSERT OR IGNORE INTO payment_terms (id, company_id, code, name, days, is_default, is_active, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(generateUUID(), companyId, term.code, term.name, term.days, term.is_default, 1, now, now).run();
+    `).bind(crypto.randomUUID(), companyId, term.code, term.name, term.days, term.is_default, 1, now, now).run();
   }
 }
 
@@ -406,7 +379,7 @@ async function loadDemoData(c: any, companyId: string): Promise<void> {
     await c.env.DB.prepare(`
       INSERT OR IGNORE INTO customers (id, company_id, customer_code, name, email, phone, is_active, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(generateUUID(), companyId, cust.code, cust.name, cust.email, cust.phone, 1, now, now).run();
+    `).bind(crypto.randomUUID(), companyId, cust.code, cust.name, cust.email, cust.phone, 1, now, now).run();
   }
   
   // Create demo suppliers
@@ -420,7 +393,7 @@ async function loadDemoData(c: any, companyId: string): Promise<void> {
     await c.env.DB.prepare(`
       INSERT OR IGNORE INTO suppliers (id, company_id, supplier_code, name, email, phone, is_active, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(generateUUID(), companyId, sup.code, sup.name, sup.email, sup.phone, 1, now, now).run();
+    `).bind(crypto.randomUUID(), companyId, sup.code, sup.name, sup.email, sup.phone, 1, now, now).run();
   }
   
   // Create demo products
@@ -434,7 +407,7 @@ async function loadDemoData(c: any, companyId: string): Promise<void> {
     await c.env.DB.prepare(`
       INSERT OR IGNORE INTO products (id, company_id, product_code, name, description, unit_price, cost_price, is_active, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(generateUUID(), companyId, prod.code, prod.name, prod.description, prod.unit_price, prod.cost_price, 1, now, now).run();
+    `).bind(crypto.randomUUID(), companyId, prod.code, prod.name, prod.description, prod.unit_price, prod.cost_price, 1, now, now).run();
   }
 }
 
@@ -442,14 +415,12 @@ async function loadDemoData(c: any, companyId: string): Promise<void> {
 
 // Skip a step
 app.post('/steps/:stepId/skip', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const stepId = c.req.param('stepId');
     
     // Validate step exists
@@ -500,14 +471,12 @@ app.post('/steps/:stepId/skip', async (c) => {
 
 // Reset onboarding (for testing)
 app.post('/reset', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
+  const companyId = await getSecureCompanyId(c);
   if (!companyId) {
     return c.json({ error: 'Authentication required' }, 401);
   }
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const now = new Date().toISOString();
     
     await c.env.DB.prepare(`

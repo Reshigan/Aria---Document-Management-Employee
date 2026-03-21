@@ -139,11 +139,11 @@ export async function createFixedAsset(
   
   await db.prepare(`
     INSERT INTO fixed_assets (
-      id, company_id, category_id, asset_number, name, description, serial_number,
-      location, custodian, purchase_date, in_service_date, purchase_cost, salvage_value,
-      useful_life_months, depreciation_method, current_value, accumulated_depreciation,
-      status, warranty_expiry, insurance_policy, notes, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?, ?, ?, ?)
+      id, company_id, asset_category, asset_code, asset_name, description, serial_number,
+      location, assigned_to, purchase_date, purchase_price, salvage_value,
+      useful_life_years, depreciation_method, current_book_value, accumulated_depreciation,
+      status, warranty_expiry, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'active', ?, ?, ?)
   `).bind(
     id,
     input.company_id,
@@ -155,15 +155,12 @@ export async function createFixedAsset(
     input.location || null,
     input.custodian || null,
     input.purchase_date,
-    input.in_service_date || input.purchase_date,
     input.purchase_cost,
     input.salvage_value,
-    usefulLifeMonths,
+    Math.round((usefulLifeMonths || 60) / 12),
     depreciationMethod,
-    input.purchase_cost, // Initial current value = purchase cost
+    input.purchase_cost,
     input.warranty_expiry || null,
-    input.insurance_policy || null,
-    input.notes || null,
     now,
     now
   ).run();
@@ -205,11 +202,11 @@ export async function listFixedAssets(
   }
   
   if (options.categoryId) {
-    query += ' AND category_id = ?';
+    query += ' AND asset_category = ?';
     params.push(options.categoryId);
   }
   
-  query += ' ORDER BY asset_number';
+  query += ' ORDER BY asset_code';
   
   if (options.limit) {
     query += ' LIMIT ?';
@@ -365,7 +362,7 @@ export async function runDepreciation(
     periodStart.setDate(periodStart.getDate() + 1);
     
     const newAccumulated = asset.accumulated_depreciation + depreciation;
-    const newBookValue = asset.purchase_cost - newAccumulated;
+    const newBookValue = (asset.purchase_cost || 0) - newAccumulated;
     
     // Create depreciation schedule entry
     await db.prepare(`
@@ -390,7 +387,7 @@ export async function runDepreciation(
     
     await db.prepare(`
       UPDATE fixed_assets 
-      SET accumulated_depreciation = ?, current_value = ?, status = ?, updated_at = ?
+      SET accumulated_depreciation = ?, current_book_value = ?, status = ?, updated_at = ?
       WHERE id = ?
     `).bind(newAccumulated, newBookValue, newStatus, now, asset.id).run();
     
@@ -461,7 +458,7 @@ export async function disposeAsset(
   await db.prepare(`
     UPDATE fixed_assets 
     SET status = 'disposed', disposal_date = ?, disposal_amount = ?, 
-        disposal_method = ?, notes = ?, updated_at = ?
+        disposal_reason = ?, updated_at = ?
     WHERE id = ?
   `).bind(
     input.disposal_date,
@@ -494,10 +491,10 @@ export async function getAssetSummary(
   const summary = await db.prepare(`
     SELECT 
       COUNT(*) as total_assets,
-      COALESCE(SUM(purchase_cost), 0) as total_cost,
+      COALESCE(SUM(purchase_price), 0) as total_cost,
       COALESCE(SUM(accumulated_depreciation), 0) as total_accumulated_depreciation,
-      COALESCE(SUM(current_value), 0) as total_book_value
-    FROM fixed_assets 
+      COALESCE(SUM(current_book_value), 0) as total_book_value
+    FROM fixed_assets
     WHERE company_id = ? AND status != 'disposed'
   `).bind(companyId).first();
   
@@ -505,8 +502,8 @@ export async function getAssetSummary(
     SELECT 
       c.name as category_name,
       COUNT(*) as count,
-      COALESCE(SUM(a.purchase_cost), 0) as cost,
-      COALESCE(SUM(a.current_value), 0) as book_value
+      COALESCE(SUM(a.purchase_price), 0) as cost,
+      COALESCE(SUM(a.current_book_value), 0) as book_value
     FROM fixed_assets a
     JOIN asset_categories c ON a.category_id = c.id
     WHERE a.company_id = ? AND a.status != 'disposed'
@@ -545,18 +542,17 @@ export async function generateAssetRegister(
 }>> {
   const results = await db.prepare(`
     SELECT 
-      a.asset_number,
-      a.name,
-      c.name as category,
+      a.asset_code as asset_number,
+      a.asset_name as name,
+      COALESCE(a.asset_category, '') as category,
       a.purchase_date,
-      a.purchase_cost,
-      a.accumulated_depreciation,
-      a.current_value as book_value,
+      COALESCE(a.purchase_price, 0) as purchase_cost,
+      COALESCE(a.accumulated_depreciation, 0) as accumulated_depreciation,
+      COALESCE(a.current_book_value, 0) as book_value,
       a.status
     FROM fixed_assets a
-    JOIN asset_categories c ON a.category_id = c.id
     WHERE a.company_id = ?
-    ORDER BY c.name, a.asset_number
+    ORDER BY a.asset_category, a.asset_code
   `).bind(companyId).all();
   
   return (results.results || []) as Array<{

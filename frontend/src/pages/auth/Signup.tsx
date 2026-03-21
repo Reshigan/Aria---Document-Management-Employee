@@ -33,16 +33,16 @@ export const Signup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <Agent className="w-7 h-7 text-white" />
+              <Bot className="w-7 h-7 text-white" />
             </div>
-            <span className="text-3xl font-bold text-white">Aria</span>
+            <span className="text-2xl font-bold text-white">Aria</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Get Started</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Get Started</h1>
           <p className="text-gray-300">Create your AI orchestrator account</p>
         </div>
 
@@ -57,13 +57,13 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="text"
                   value={formData.full_name}
                   onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="John Doe"
                 />
               </div>
@@ -72,13 +72,13 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="you@company.com"
                 />
               </div>
@@ -87,13 +87,13 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Organization Name</label>
               <div className="relative">
-                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="text"
                   value={formData.organization_name}
                   onChange={(e) => setFormData({...formData, organization_name: e.target.value})}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Acme Corp"
                 />
               </div>
@@ -102,18 +102,18 @@ export const Signup: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <input
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                   required
                   minLength={8}
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/10 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/5 border border-white/20 rounded-lg text-white placeholder-gray-400 dark:placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="••••••••"
                 />
               </div>
-              <p className="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
+              <p className="text-xs text-gray-300 mt-1">Minimum 8 characters</p>
             </div>
 
             <button

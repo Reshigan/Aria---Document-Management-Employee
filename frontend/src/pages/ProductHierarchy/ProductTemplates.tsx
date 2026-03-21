@@ -168,44 +168,44 @@ export default function ProductTemplates() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Package size={28} className="text-purple-500" />
           Product Templates
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage product templates with configurable attributes and variants</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Manage product templates with configurable attributes and variants</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Templates</div>
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Templates</div>
           <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{templates.length}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Physical Products</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Physical Products</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {templates.filter(t => t.product_type === 'physical').length}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Services</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Services</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {templates.filter(t => t.product_type === 'service').length}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Variants</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Variants</div>
           <div className="text-2xl font-bold text-orange-600">
             {templates.reduce((sum, t) => sum + (t.variant_count || 0), 0)}
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-        <div className="p-4 border-b flex gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="p-4 border-b flex gap-3">
           <div className="flex-1 relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search templates..."
@@ -227,14 +227,14 @@ export default function ProductTemplates() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Template</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">List Price</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cost</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Variants</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Template</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Type</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">List Price</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Cost</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Variants</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -243,10 +243,10 @@ export default function ProductTemplates() {
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">{template.name}</div>
                     {template.sku_prefix && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400">SKU: {template.sku_prefix}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300">SKU: {template.sku_prefix}</div>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {template.category_name || '-'}
                   </td>
                   <td className="px-6 py-4">
@@ -260,10 +260,10 @@ export default function ProductTemplates() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right text-sm">
-                    R {template.list_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    R {Number(template.list_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
-                  <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-400">
-                    R {template.cost_price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                  <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-300">
+                    R {Number(template.cost_price ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">
@@ -303,7 +303,7 @@ export default function ProductTemplates() {
             </tbody>
           </table>
           {filteredTemplates.length === 0 && (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               {searchTerm ? 'No templates found matching your search' : 'No templates yet. Create your first one!'}
             </div>
           )}
@@ -312,12 +312,12 @@ export default function ProductTemplates() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4">
             <h2 className="text-xl font-bold mb-4">
               {editingTemplate ? 'Edit Template' : 'Add Template'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
                   <input
@@ -403,7 +403,7 @@ export default function ProductTemplates() {
                   />
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-3">
                 <label className="flex items-center">
                   <input
                     type="checkbox"

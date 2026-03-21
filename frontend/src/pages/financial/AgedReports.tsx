@@ -85,10 +85,10 @@ export default function AgedReportsPage() {
   const creditors = data?.creditors.map(c => ({ supplier: c.name, ...c })) || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Calendar className="h-8 w-8 text-indigo-600" />
             Aged Reports
           </h1>
@@ -101,7 +101,7 @@ export default function AgedReportsPage() {
             />
             <button
               onClick={fetchAgedReports}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -129,16 +129,16 @@ export default function AgedReportsPage() {
 
         {/* Summary Cards */}
         {data && (
-          <div className="grid grid-cols-5 gap-4 mb-6">
+          <div className="grid grid-cols-5 gap-3 mb-6">
             {['Current', '30 Days', '60 Days', '90+ Days', 'Total'].map((label, idx) => {
               const totals = reportType === 'debtors' ? data.debtors_totals : data.creditors_totals;
               const keys = ['current', 'days30', 'days60', 'days90', 'total'] as const;
               const value = totals[keys[idx]];
               return (
-                <div key={label} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
+                <div key={label} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{label}</p>
                   <p className={`text-xl font-bold ${idx === 4 ? 'text-indigo-600 dark:text-indigo-400' : idx >= 2 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
-                    R {value.toLocaleString()}
+                    R {Number(value ?? 0).toLocaleString()}
                   </p>
                 </div>
               );
@@ -153,16 +153,16 @@ export default function AgedReportsPage() {
         ) : (
           <>
             {reportType === 'debtors' && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <DataTable
                   data={debtors}
                   columns={[
                     { key: 'customer', label: 'Customer' },
-                    { key: 'current', label: 'Current', render: (r: any) => `R ${r.current.toLocaleString()}` },
-                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {r.days30.toLocaleString()}</span> },
-                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {r.days60.toLocaleString()}</span> },
-                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {r.days90.toLocaleString()}</span> },
-                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {r.total.toLocaleString()}</strong> }
+                    { key: 'current', label: 'Current', render: (r: any) => `R ${Number(r.current ?? 0).toLocaleString()}` },
+                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {Number(r.days30 ?? 0).toLocaleString()}</span> },
+                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {Number(r.days60 ?? 0).toLocaleString()}</span> },
+                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {Number(r.days90 ?? 0).toLocaleString()}</span> },
+                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {Number(r.total ?? 0).toLocaleString()}</strong> }
                   ]}
                   searchable={true}
                   exportable={true}
@@ -172,16 +172,16 @@ export default function AgedReportsPage() {
             )}
 
             {reportType === 'creditors' && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <DataTable
                   data={creditors}
                   columns={[
                     { key: 'supplier', label: 'Supplier' },
-                    { key: 'current', label: 'Current', render: (r: any) => `R ${r.current.toLocaleString()}` },
-                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {r.days30.toLocaleString()}</span> },
-                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {r.days60.toLocaleString()}</span> },
-                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {r.days90.toLocaleString()}</span> },
-                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {r.total.toLocaleString()}</strong> }
+                    { key: 'current', label: 'Current', render: (r: any) => `R ${Number(r.current ?? 0).toLocaleString()}` },
+                    { key: 'days30', label: '30 Days', render: (r: any) => <span className={r.days30 > 0 ? 'text-yellow-600' : ''}>R {Number(r.days30 ?? 0).toLocaleString()}</span> },
+                    { key: 'days60', label: '60 Days', render: (r: any) => <span className={r.days60 > 0 ? 'text-orange-600' : ''}>R {Number(r.days60 ?? 0).toLocaleString()}</span> },
+                    { key: 'days90', label: '90+ Days', render: (r: any) => <span className={r.days90 > 0 ? 'text-red-600 font-medium' : ''}>R {Number(r.days90 ?? 0).toLocaleString()}</span> },
+                    { key: 'total', label: 'Total', render: (r: any) => <strong className="text-indigo-600">R {Number(r.total ?? 0).toLocaleString()}</strong> }
                   ]}
                   searchable={true}
                   exportable={true}

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey, JSON, Enum, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from models.base import Base
+from app.models.base import Base
 import enum
 
 class ComplianceFramework(enum.Enum):

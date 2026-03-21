@@ -4,7 +4,7 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Warehouse as WarehouseIcon, Plus, Building2, Package, DollarSign, Edit2, Trash2 } from 'lucide-react';
 
 interface Warehouse {
-  id: number;
+  id: string;
   warehouse_code: string;
   warehouse_name: string;
   location: string;
@@ -42,7 +42,17 @@ const Warehouses: React.FC = () => {
     setError('');
     try {
       const response = await api.get('/inventory/warehouses');
-      setWarehouses(response.data.warehouses || []);
+      // Map backend fields to frontend expected fields
+      const mapped = (response.data.warehouses || []).map((w: any) => ({
+        id: w.id,
+        warehouse_code: w.code,
+        warehouse_name: w.name,
+        location: w.location,
+        capacity: w.capacity,
+        current_stock_value: w.current_stock || 0,
+        is_active: w.status === 'active',
+      }));
+      setWarehouses(mapped);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load warehouses');
     } finally {
@@ -69,8 +79,8 @@ const Warehouses: React.FC = () => {
       warehouse_code: warehouse.warehouse_code,
       warehouse_name: warehouse.warehouse_name,
       location: warehouse.location,
-      capacity: warehouse.capacity.toString(),
-      current_stock_value: warehouse.current_stock_value.toString(),
+            capacity: (warehouse.capacity ?? 0).toString(),
+            current_stock_value: (warehouse.current_stock_value ?? 0).toString(),
       is_active: warehouse.is_active
     });
     setShowModal(true);
@@ -112,20 +122,20 @@ const Warehouses: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="inventory-warehouses">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="inventory-warehouses">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30">
+          <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl ">
             <WarehouseIcon className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Warehouses</h1>
-            <p className="text-gray-600 dark:text-gray-400">Manage warehouse locations and inventory</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Warehouses</h1>
+            <p className="text-gray-600 dark:text-gray-300">Manage warehouse locations and inventory</p>
           </div>
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -139,47 +149,47 @@ const Warehouses: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <Building2 className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <Building2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{warehouses.filter(w => w.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Warehouses</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{warehouses.filter(w => w.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Warehouses</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Package className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Package className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {warehouses.reduce((sum, w) => sum + w.capacity, 0).toLocaleString()}
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
+                {warehouses.reduce((sum, w) => sum + (Number(w.capacity) || 0), 0).toLocaleString()}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Capacity</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Capacity</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(warehouses.reduce((sum, w) => sum + w.current_stock_value, 0))}
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
+                {formatCurrency(warehouses.reduce((sum, w) => sum + (Number(w.current_stock_value) || 0), 0))}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Stock Value</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Stock Value</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="w-full" data-testid="warehouses-table">
           <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
             <tr>
@@ -194,17 +204,17 @@ const Warehouses: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
             ) : warehouses.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No warehouses found</td></tr>
+              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No warehouses found</td></tr>
             ) : (
               warehouses.map((warehouse) => (
                 <tr key={warehouse.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                   <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{warehouse.warehouse_code}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.warehouse_name}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.location}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{warehouse.capacity.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatCurrency(warehouse.current_stock_value)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{Number(warehouse.capacity ?? 0).toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{formatCurrency(Number(warehouse.current_stock_value) || 0)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                       warehouse.is_active 
@@ -218,12 +228,16 @@ const Warehouses: React.FC = () => {
                     <button
                       onClick={() => handleEdit(warehouse)}
                       className="p-2 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/30 rounded-lg transition-colors mr-2"
+                      title="Edit warehouse"
+                      aria-label="Edit warehouse"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setDeleteConfirm({ show: true, id: warehouse.id, code: warehouse.warehouse_code })}
                       className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                      title="Delete warehouse"
+                      aria-label="Delete warehouse"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -237,61 +251,71 @@ const Warehouses: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
             <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <WarehouseIcon className="h-5 w-5" />
                 {editingWarehouse ? 'Edit Warehouse' : 'New Warehouse'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse Code *</label>
                   <input
                     type="text"
                     value={form.warehouse_code}
                     onChange={(e) => setForm({ ...form, warehouse_code: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Warehouse code"
+                    placeholder="Enter warehouse code"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse Name *</label>
                   <input
                     type="text"
                     value={form.warehouse_name}
                     onChange={(e) => setForm({ ...form, warehouse_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Warehouse name"
+                    placeholder="Enter warehouse name"
                   />
                 </div>
               </div>
               <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location *</label>
                 <input
                   type="text"
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  title="Warehouse location"
+                  placeholder="Enter location"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Capacity *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacity *</label>
                   <input
                     type="number"
                     value={form.capacity}
                     onChange={(e) => setForm({ ...form, capacity: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Warehouse capacity"
+                    placeholder="Enter capacity"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Stock Value *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Stock Value *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.current_stock_value}
                     onChange={(e) => setForm({ ...form, current_stock_value: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    title="Current stock value"
+                    placeholder="Enter stock value"
                   />
                 </div>
               </div>
@@ -309,13 +333,13 @@ const Warehouses: React.FC = () => {
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   Save
                 </button>
@@ -330,7 +354,7 @@ const Warehouses: React.FC = () => {
         title="Delete Warehouse"
         message={`Are you sure you want to delete warehouse ${deleteConfirm.code}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, code: '' })}
       />
     </div>
   );

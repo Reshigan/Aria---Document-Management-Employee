@@ -11,6 +11,7 @@
 
 ARIA ERP is a **production-grade AI-native Enterprise Resource Planning system** that surpasses Xero, Odoo, and SAP Business One. Specifically designed for **South African businesses** with full **SARS compliance**, **BBBEE automation**, and powered by **67 intelligent automation bots** with **SAP ECC and S/4HANA integration**.
 
+
 ### 🎯 What's Been Built
 
 ✅ **11 Complete ERP Modules** - GL, AP, AR, Banking, Payroll, CRM, Inventory, Master Data, Order-to-Cash, SAP Integration, Manufacturing  

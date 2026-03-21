@@ -144,70 +144,70 @@ export default function MigrationJobs() {
   const errorRecords = jobs.reduce((sum, j) => sum + (j.error_records || 0), 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg shadow-purple-500/30">
+          <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl ">
             <Database className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Data Migration</h1>
-            <p className="text-gray-600 dark:text-gray-400">Import data from external systems into ARIA ERP</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Data Migration</h1>
+            <p className="text-gray-600 dark:text-gray-300">Import data from external systems into ARIA ERP</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg shadow-purple-500/30">
-              <Database className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl ">
+              <Database className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{jobs.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Jobs</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{jobs.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Jobs</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <FileSpreadsheet className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl ">
+              <FileSpreadsheet className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalRecords.toLocaleString()}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Records</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(totalRecords ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Records</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <CheckCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <CheckCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{successRecords.toLocaleString()}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Successful</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(successRecords ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Successful</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <AlertCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{errorRecords.toLocaleString()}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Errors</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{Number(errorRecords ?? 0).toLocaleString()}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Errors</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search jobs..."
@@ -231,7 +231,7 @@ export default function MigrationJobs() {
           </select>
           <button
             onClick={() => { resetForm(); setShowForm(true); }}
-            className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg shadow-purple-500/30 flex items-center gap-2 font-medium"
+            className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all  flex items-center gap-2 font-medium"
           >
             <Plus className="h-5 w-5" />
             New Migration
@@ -256,12 +256,12 @@ export default function MigrationJobs() {
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">{job.name}</div>
                     {job.description && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{job.description}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300 truncate max-w-xs">{job.description}</div>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">{job.source_system}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{job.source_type.toUpperCase()}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">{job.source_type.toUpperCase()}</div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {job.target_module}
@@ -274,9 +274,9 @@ export default function MigrationJobs() {
                           style={{ width: `${getProgress(job)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-gray-600 dark:text-gray-400">{getProgress(job)}%</span>
+                      <span className="text-xs text-gray-600 dark:text-gray-300">{getProgress(job)}%</span>
                     </div>
-                    <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
+                    <div className="text-xs text-center text-gray-500 dark:text-gray-300 mt-1">
                       {job.processed_records || 0} / {job.total_records || 0}
                     </div>
                   </td>
@@ -335,7 +335,7 @@ export default function MigrationJobs() {
           {filteredJobs.length === 0 && (
             <div className="p-12 text-center">
               <Database className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-gray-500 dark:text-gray-300">
                 {searchTerm || filterStatus 
                   ? 'No migration jobs found matching your criteria' 
                   : 'No migration jobs yet. Create your first one!'}
@@ -347,14 +347,14 @@ export default function MigrationJobs() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
             <div className="bg-gradient-to-r from-purple-500 to-indigo-500 px-6 py-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Upload className="h-5 w-5" />
                 New Migration Job
               </h2>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="p-4 space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Job Name *</label>
                 <input
@@ -375,7 +375,7 @@ export default function MigrationJobs() {
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Source System</label>
                   <select
@@ -435,7 +435,7 @@ export default function MigrationJobs() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg shadow-purple-500/30 font-medium"
+                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all  font-medium"
                 >
                   Create Job
                 </button>

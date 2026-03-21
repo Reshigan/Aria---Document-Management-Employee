@@ -64,24 +64,17 @@ export function TransactionLayout({
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div style={{
-        background: 'white',
-        borderBottom: '1px solid #e5e7eb',
-        padding: '1rem 2rem',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-[100] px-4 py-3 md:px-8 md:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             {backUrl && (
               <button
                 onClick={() => navigate(backUrl)}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 style={{
                   padding: '0.5rem',
                   background: 'transparent',
                   border: 'none',
-                  color: '#6b7280',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center'
@@ -91,11 +84,11 @@ export function TransactionLayout({
               </button>
             )}
             <div>
-              <h1 style={{ fontSize: '1.5rem', fontWeight: '600', margin: 0 }}>
+              <h1 className="text-gray-900 dark:text-white" style={{ fontSize: '1.5rem', fontWeight: '600', margin: 0 }}>
                 {title}
               </h1>
               {documentNumber && (
-                <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
+                <p className="text-gray-500 dark:text-gray-400" style={{ fontSize: '0.875rem', margin: '0.25rem 0 0 0' }}>
                   {documentNumber}
                 </p>
               )}
@@ -116,25 +109,13 @@ export function TransactionLayout({
           </div>
 
           {showActions && (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="flex flex-wrap gap-2">
               {onPrint && (
                 <button
                   onClick={onPrint}
                   disabled={loading}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    background: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    color: '#374151',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    opacity: loading ? 0.5 : 1
-                  }}
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium flex items-center gap-2 px-3 py-2"
+                  style={{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
                 >
                   <Printer size={16} />
                   Print
@@ -144,20 +125,8 @@ export function TransactionLayout({
                 <button
                   onClick={onEmail}
                   disabled={loading}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    background: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    color: '#374151',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    opacity: loading ? 0.5 : 1
-                  }}
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium flex items-center gap-2 px-3 py-2"
+                  style={{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
                 >
                   <Mail size={16} />
                   Email
@@ -167,20 +136,8 @@ export function TransactionLayout({
                 <button
                   onClick={onCancel}
                   disabled={loading}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    background: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    color: '#ef4444',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    opacity: loading ? 0.5 : 1
-                  }}
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-red-500 rounded-md text-sm font-medium flex items-center gap-2 px-3 py-2"
+                  style={{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
                 >
                   <X size={16} />
                   Cancel
@@ -261,7 +218,7 @@ export function TransactionLayout({
       </div>
 
       {/* Content */}
-      <div style={{ padding: '2rem' }}>
+      <div className="p-4 md:p-8">
         {children}
       </div>
     </div>
@@ -276,20 +233,9 @@ interface TransactionCardProps {
 
 export function TransactionCard({ title, children, actions }: TransactionCardProps) {
   return (
-    <div style={{
-      background: 'white',
-      borderRadius: '0.5rem',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      marginBottom: '1.5rem'
-    }}>
-      <div style={{
-        padding: '1rem 1.5rem',
-        borderBottom: '1px solid #e5e7eb',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <h2 style={{ fontSize: '1.125rem', fontWeight: '600', margin: 0 }}>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-6">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white" style={{ margin: 0 }}>
           {title}
         </h2>
         {actions && <div>{actions}</div>}
@@ -324,25 +270,11 @@ export function TransactionField({
   placeholder,
   rows = 3
 }: TransactionFieldProps) {
-  const inputStyle = {
-    width: '100%',
-    padding: '0.5rem',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.375rem',
-    fontSize: '0.875rem',
-    background: disabled ? '#f9fafb' : 'white',
-    color: disabled ? '#6b7280' : '#111827'
-  };
+  const inputClassName = `w-full px-2 py-1.5 border rounded-md text-sm ${disabled ? 'bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700' : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600'}`;
 
   return (
     <div>
-      <label style={{
-        display: 'block',
-        fontSize: '0.875rem',
-        fontWeight: '500',
-        marginBottom: '0.5rem',
-        color: '#374151'
-      }}>
+      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
         {label} {required && <span style={{ color: '#ef4444' }}>*</span>}
       </label>
       {type === 'textarea' ? (
@@ -352,14 +284,15 @@ export function TransactionField({
           disabled={disabled}
           placeholder={placeholder}
           rows={rows}
-          style={{ ...inputStyle, resize: 'vertical' }}
+          className={inputClassName}
+          style={{ resize: 'vertical' }}
         />
       ) : type === 'select' ? (
         <select
           value={value || ''}
           onChange={(e) => onChange?.(e.target.value)}
           disabled={disabled}
-          style={inputStyle}
+          className={inputClassName}
         >
           <option value="">Select...</option>
           {options?.map((opt) => (
@@ -376,7 +309,7 @@ export function TransactionField({
           disabled={disabled}
           required={required}
           placeholder={placeholder}
-          style={inputStyle}
+          className={inputClassName}
         />
       )}
     </div>

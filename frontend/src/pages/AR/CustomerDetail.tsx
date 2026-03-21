@@ -139,7 +139,7 @@ export default function CustomerDetail() {
         totalRevenue,
         outstandingBalance: allTransactions
           .filter(t => t.type === 'invoice' && t.status !== 'paid')
-          .reduce((sum, t) => sum + t.total, 0),
+          .reduce((sum, t) => sum + (t.total || 0), 0),
         avgOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0
       });
     } catch (error) {
@@ -151,9 +151,7 @@ export default function CustomerDetail() {
     return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   const getStatusBadge = (status: string, type: string) => {
     const statusColors: Record<string, string> = {
@@ -181,10 +179,10 @@ export default function CustomerDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center">
         <div className="text-center">
           <Users className="h-12 w-12 text-indigo-500 mx-auto mb-3 animate-pulse" />
-          <p className="text-gray-500 dark:text-gray-400">Loading customer...</p>
+          <p className="text-gray-500 dark:text-gray-300">Loading customer...</p>
         </div>
       </div>
     );
@@ -192,11 +190,11 @@ export default function CustomerDetail() {
 
   if (!customer) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Customer Not Found</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">The customer you're looking for doesn't exist.</p>
+          <p className="text-gray-500 dark:text-gray-300 mb-4">The customer you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate('/ar/customers')}
             className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
@@ -209,24 +207,24 @@ export default function CustomerDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       {/* Header */}
       <div className="mb-8">
         <button
           onClick={() => navigate('/ar/customers')}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Customers
         </button>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl shadow-lg shadow-indigo-500/30">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl ">
               <Building2 className="h-10 w-10 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{customer.name}</h1>
-              <p className="text-gray-600 dark:text-gray-400">Customer Code: {customer.code}</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">{customer.name}</h1>
+              <p className="text-gray-600 dark:text-gray-300">Customer Code: {customer.code}</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -235,7 +233,7 @@ export default function CustomerDetail() {
             </span>
             <button
               onClick={() => navigate(`/ar/customers?edit=${customer.id}`)}
-              className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 flex items-center gap-2 font-medium"
+              className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
             >
               <Edit className="h-4 w-4" />
               Edit
@@ -246,47 +244,47 @@ export default function CustomerDetail() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <ShoppingCart className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl ">
+              <ShoppingCart className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalOrders}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalOrders}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Orders</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <TrendingUp className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalRevenue)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Revenue</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.totalRevenue)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Revenue</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.outstandingBalance)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.outstandingBalance)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Outstanding</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg shadow-purple-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.avgOrderValue)}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Avg Order Value</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.avgOrderValue)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Avg Order Value</p>
             </div>
           </div>
         </div>
@@ -300,8 +298,8 @@ export default function CustomerDetail() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
               activeTab === tab
-                ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
-                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ? 'bg-indigo-500 text-white '
+                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -313,7 +311,7 @@ export default function CustomerDetail() {
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Contact Information */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Users className="h-5 w-5 text-indigo-500" />
               Contact Information
@@ -321,27 +319,27 @@ export default function CustomerDetail() {
             <div className="space-y-4">
               {customer.email && (
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-gray-300" />
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Email</p>
                     <p className="text-gray-900 dark:text-white">{customer.email}</p>
                   </div>
                 </div>
               )}
               {customer.phone && (
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-gray-400" />
+                  <Phone className="h-5 w-5 text-gray-300" />
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Phone</p>
                     <p className="text-gray-900 dark:text-white">{customer.phone}</p>
                   </div>
                 </div>
               )}
               {(customer.address_line1 || customer.city || customer.country) && (
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-gray-400" />
+                  <MapPin className="h-5 w-5 text-gray-300" />
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Address</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">Address</p>
                     <p className="text-gray-900 dark:text-white">
                       {[customer.address_line1, customer.city, customer.country].filter(Boolean).join(', ')}
                     </p>
@@ -352,28 +350,28 @@ export default function CustomerDetail() {
           </div>
 
           {/* Financial Information */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-green-500" />
               Financial Information
             </h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-gray-500 dark:text-gray-400">Credit Limit</span>
+                <span className="text-gray-500 dark:text-gray-300">Credit Limit</span>
                 <span className="font-semibold text-gray-900 dark:text-white">{formatCurrency(customer.credit_limit || 0)}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-gray-500 dark:text-gray-400">Payment Terms</span>
+                <span className="text-gray-500 dark:text-gray-300">Payment Terms</span>
                 <span className="font-semibold text-gray-900 dark:text-white">{customer.payment_terms || 'Net 30'}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-gray-500 dark:text-gray-400">Available Credit</span>
+                <span className="text-gray-500 dark:text-gray-300">Available Credit</span>
                 <span className="font-semibold text-green-600 dark:text-green-400">
                   {formatCurrency((customer.credit_limit || 0) - stats.outstandingBalance)}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2">
-                <span className="text-gray-500 dark:text-gray-400">Customer Since</span>
+                <span className="text-gray-500 dark:text-gray-300">Customer Since</span>
                 <span className="font-semibold text-gray-900 dark:text-white">{formatDate(customer.created_at)}</span>
               </div>
             </div>
@@ -382,12 +380,12 @@ export default function CustomerDetail() {
       )}
 
       {activeTab === 'transactions' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           {transactions.length === 0 ? (
             <div className="p-12 text-center">
               <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No transactions yet</h3>
-              <p className="text-gray-500 dark:text-gray-400">This customer doesn't have any transactions.</p>
+              <p className="text-gray-500 dark:text-gray-300">This customer doesn't have any transactions.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">

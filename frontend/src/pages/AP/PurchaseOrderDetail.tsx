@@ -66,8 +66,10 @@ export default function PurchaseOrderDetail() {
         api.get('/erp/master-data/suppliers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setSuppliers(suppliersRes.data);
-      setProducts(productsRes.data);
+      const sData = suppliersRes.data?.data || suppliersRes.data?.suppliers || suppliersRes.data;
+      setSuppliers(Array.isArray(sData) ? sData : []);
+      const pData = productsRes.data?.data || productsRes.data?.products || productsRes.data;
+      setProducts(Array.isArray(pData) ? pData : []);
     } catch (err) {
       console.error('Error loading master data:', err);
     }
@@ -217,7 +219,7 @@ export default function PurchaseOrderDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TransactionCard title="Purchase Order Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Supplier"
                 type="select"
@@ -249,7 +251,7 @@ export default function PurchaseOrderDetail() {
                 type="textarea"
                 value={notes}
                 onChange={setNotes}
-                rows={3}
+                rows={2}
                 disabled={purchaseOrder?.status !== 'draft' && !isNew}
               />
             </div>
@@ -269,16 +271,16 @@ export default function PurchaseOrderDetail() {
           <TransactionCard title="Totals">
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.subtotal.toFixed(2)}</span>
+                <span className="text-gray-500 dark:text-gray-300">Subtotal:</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.taxAmount.toFixed(2)}</span>
+                <span className="text-gray-500 dark:text-gray-300">Tax (VAT):</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Total:</span>
-                <span className="text-gray-900 dark:text-white">R {totals.total.toFixed(2)}</span>
+                <span className="text-gray-900 dark:text-white">R {Number(totals.total ?? 0).toFixed(2)}</span>
               </div>
             </div>
           </TransactionCard>
@@ -288,7 +290,7 @@ export default function PurchaseOrderDetail() {
               <button
                 onClick={handleCreateReceipt}
                 disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700  transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <ShoppingCart size={16} />
                 Create Receipt
@@ -300,14 +302,14 @@ export default function PurchaseOrderDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(purchaseOrder.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{purchaseOrder.created_at ? new Date(purchaseOrder.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(purchaseOrder.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{purchaseOrder.updated_at ? new Date(purchaseOrder.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>

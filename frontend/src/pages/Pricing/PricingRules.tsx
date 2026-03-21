@@ -196,44 +196,44 @@ export default function PricingRules() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Calculator size={28} className="text-green-500" />
           Pricing Rules
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Define pricing rules with conditions, discounts, and formulas</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Define pricing rules with conditions, discounts, and formulas</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Rules</div>
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Rules</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">{rules.length}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Fixed Price Rules</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Fixed Price Rules</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {rules.filter(r => r.compute_price === 'fixed').length}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Discount Rules</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Discount Rules</div>
           <div className="text-2xl font-bold text-orange-600">
             {rules.filter(r => r.compute_price === 'percentage').length}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Active Rules</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Active Rules</div>
           <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
             {rules.filter(r => r.is_active).length}
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-        <div className="p-4 border-b flex gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="p-4 border-b flex gap-3">
           <div className="flex-1 relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search rules..."
@@ -265,14 +265,14 @@ export default function PricingRules() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Rule</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pricelist</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Applied On</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pricing</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Min Qty</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sequence</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rule</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Pricelist</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Applied On</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Pricing</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Min Qty</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Sequence</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -281,21 +281,21 @@ export default function PricingRules() {
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">{rule.name}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {rule.pricelist_name || '-'}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <Package size={14} className="text-gray-400" />
+                      <Package size={14} className="text-gray-300" />
                       <div>
                         <div className="text-sm text-gray-900 dark:text-white">
                           {appliedOnLabels[rule.applied_on] || rule.applied_on}
                         </div>
                         {rule.category_name && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{rule.category_name}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-300">{rule.category_name}</div>
                         )}
                         {rule.product_name && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{rule.product_name}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-300">{rule.product_name}</div>
                         )}
                       </div>
                     </div>
@@ -306,7 +306,7 @@ export default function PricingRules() {
                         <>
                           <DollarSign size={14} className="text-green-500" />
                           <span className="text-sm font-medium">
-                            R {(rule.fixed_price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                            R {(rule.fixed_price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                         </>
                       ) : rule.compute_price === 'percentage' ? (
@@ -317,14 +317,14 @@ export default function PricingRules() {
                           </span>
                         </>
                       ) : (
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Formula</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">Formula</span>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-right text-sm text-gray-600 dark:text-gray-300">
                     {rule.min_quantity}
                   </td>
-                  <td className="px-6 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-center text-sm text-gray-600 dark:text-gray-300">
                     {rule.sequence}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -353,7 +353,7 @@ export default function PricingRules() {
             </tbody>
           </table>
           {filteredRules.length === 0 && (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               {searchTerm || selectedPricelist 
                 ? 'No rules found matching your criteria' 
                 : 'No pricing rules yet. Create your first one!'}
@@ -364,12 +364,12 @@ export default function PricingRules() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4">
             <h2 className="text-xl font-bold mb-4">
               {editingRule ? 'Edit Pricing Rule' : 'Add Pricing Rule'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rule Name *</label>
                   <input

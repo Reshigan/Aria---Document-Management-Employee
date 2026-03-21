@@ -283,10 +283,10 @@ const BotShowcase: React.FC = () => {
     : bots.filter(agent => agent.category === selectedCategory);
   
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-800">
+    <div className="bg-white dark:bg-gray-800">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
                         <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center">
                           <Bot className="w-5 h-5 text-white" />
@@ -298,7 +298,7 @@ const BotShowcase: React.FC = () => {
             <Link to="/agents" className="text-sm font-medium text-gray-900 dark:text-white">
               Platform
             </Link>
-            <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition">
+            <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white transition">
               Sign In
             </Link>
             <Link 
@@ -313,7 +313,7 @@ const BotShowcase: React.FC = () => {
 
       {/* Hero */}
       <section className="pt-40 pb-20 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -330,22 +330,22 @@ const BotShowcase: React.FC = () => {
               just works
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto font-light">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto font-light">
               Production-ready AI agents for financial ops, compliance, sales, and HR. From invoice reconciliation to BBBEE compliance, deploy in 24 hours.
             </p>
             
                         <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
                           <div>
                             <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">{stats.functional}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">Functional Agents</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">Functional Agents</div>
                           </div>
                           <div>
                             <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">{stats.total}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">Total Agents</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">Total Agents</div>
                           </div>
                           <div>
                             <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">24hrs</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">To Deployment</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">To Deployment</div>
                           </div>
                         </div>
           </motion.div>
@@ -354,13 +354,13 @@ const BotShowcase: React.FC = () => {
 
       {/* Category Filter */}
       <section className="pb-12 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="flex items-center justify-center space-x-2 flex-wrap gap-2">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-3 rounded-lg font-medium text-sm transition-all ${
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                   selectedCategory === cat
                     ? 'bg-black text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -375,8 +375,8 @@ const BotShowcase: React.FC = () => {
 
       {/* Agents Grid */}
       <section className="pb-24 px-6 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBots.map((agent, index) => (
               <motion.div
                 key={agent.id}
@@ -393,7 +393,7 @@ const BotShowcase: React.FC = () => {
                       <span>LIVE</span>
                     </span>
                   ) : (
-                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-semibold rounded-full">
+                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
                       COMING SOON
                     </span>
                   )}
@@ -404,7 +404,7 @@ const BotShowcase: React.FC = () => {
                 </div>
                 
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wide">
                     {agent.category}
                   </span>
                   {agent.roi && (
@@ -418,13 +418,13 @@ const BotShowcase: React.FC = () => {
                   {agent.name}
                 </h3>
                 
-                <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                   {agent.description}
                 </p>
                 
                 <div className="space-y-2 mb-6">
                   {agent.features.slice(0, 3).map((feature, i) => (
-                    <div key={i} className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                    <div key={i} className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                       <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                       <span>{feature}</span>
                     </div>
@@ -447,7 +447,7 @@ const BotShowcase: React.FC = () => {
           <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
             Ready to get started?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-10">
             Start your 14-day free trial. No credit card required.
           </p>
           <Link
@@ -462,8 +462,8 @@ const BotShowcase: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-16 px-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
+        <div className="mx-auto text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-300">&copy; 2025 Vanta X Pty Ltd. All rights reserved.</p>
         </div>
       </footer>
     </div>

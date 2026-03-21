@@ -250,7 +250,9 @@ const AskAriaChat: React.FC = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 1) {
+      scrollToBottom();
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -415,7 +417,7 @@ const AskAriaChat: React.FC = () => {
 
       const classifyResponse = await api.post(`/ask-aria/classify/${documentId}`);
 
-      const message = `I've uploaded and classified your document "${file.name}" as a ${classifyResponse.data.document_class} with ${(classifyResponse.data.confidence * 100).toFixed(0)}% confidence. How would you like to proceed?`;
+      const message = `I've uploaded and classified your document "${file.name}" as a ${classifyResponse.data.document_class} with ${((classifyResponse.data.confidence || 0) * 100).toFixed(0)}% confidence. How would you like to proceed?`;
 
       const assistantMessage: Message = {
         id: Date.now().toString(),
@@ -451,7 +453,7 @@ const AskAriaChat: React.FC = () => {
 
   if (initializing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="relative">
             <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse mx-auto mb-4 flex items-center justify-center">
@@ -467,13 +469,13 @@ const AskAriaChat: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col" style={{ height: 'calc(100vh - 7.5rem)' }}>
       {/* Modern Header */}
-      <div className="bg-black/20 backdrop-blur-xl border-b border-white/10 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="bg-black/20 backdrop-blur-xl border-b border-white/20 px-6 py-3">
+        <div className="mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center ">
                 <Bot className="w-7 h-7 text-white" />
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse" />
@@ -489,21 +491,21 @@ const AskAriaChat: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowBotPanel(!showBotPanel)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 border ${showBotPanel ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 hover:bg-white/10 border-white/10 text-white'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 border ${showBotPanel ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 hover:bg-white/10 border-white/20 text-white'}`}
             >
               <Zap className="w-4 h-4" />
               Bots
             </button>
             <button
               onClick={() => setShowHelp(!showHelp)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 border ${showHelp ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 hover:bg-white/10 border-white/10 text-white'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 border ${showHelp ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 hover:bg-white/10 border-white/20 text-white'}`}
             >
               <HelpCircle className="w-4 h-4" />
               Help
             </button>
             <button
               onClick={startNewSession}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all duration-200 border border-white/10"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all duration-200 border border-white/20"
             >
               <RefreshCw className="w-4 h-4" />
               New Chat
@@ -516,7 +518,7 @@ const AskAriaChat: React.FC = () => {
       <div className="flex-1 flex overflow-hidden">
         {/* Bot Categories Panel */}
         {showBotPanel && (
-          <div className="w-80 bg-black/30 backdrop-blur-xl border-r border-white/10 overflow-y-auto">
+          <div className="w-80 bg-black/30 backdrop-blur-xl border-r border-white/20 overflow-y-auto">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-white font-semibold flex items-center gap-2">
@@ -524,7 +526,7 @@ const AskAriaChat: React.FC = () => {
                   Bot Categories
                 </h2>
                 <button onClick={() => setShowBotPanel(false)} className="text-purple-300 hover:text-white">
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" title="Close bot panel" aria-label="Close bot panel" />
                 </button>
               </div>
               <div className="space-y-2">
@@ -555,7 +557,7 @@ const AskAriaChat: React.FC = () => {
                             {prompt}
                           </button>
                         ))}
-                        <div className="border-t border-white/10 pt-2 mt-2">
+                        <div className="border-t border-white/20 pt-2 mt-2">
                           <p className="text-purple-400 text-xs">Available bots:</p>
                           <p className="text-white/60 text-xs mt-1">{category.bots.join(', ')}</p>
                         </div>
@@ -570,7 +572,7 @@ const AskAriaChat: React.FC = () => {
 
         {/* Help Panel */}
         {showHelp && (
-          <div className="w-80 bg-black/30 backdrop-blur-xl border-r border-white/10 overflow-y-auto">
+          <div className="w-80 bg-black/30 backdrop-blur-xl border-r border-white/20 overflow-y-auto">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-white font-semibold flex items-center gap-2">
@@ -578,7 +580,7 @@ const AskAriaChat: React.FC = () => {
                   How to Use Aria
                 </h2>
                 <button onClick={() => setShowHelp(false)} className="text-purple-300 hover:text-white">
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" title="Close help panel" aria-label="Close help panel" />
                 </button>
               </div>
               <div className="space-y-4">
@@ -624,7 +626,7 @@ const AskAriaChat: React.FC = () => {
 
         {/* Messages Area */}
         <div className="flex-1 overflow-auto px-6 py-8">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-3">
             {/* Quick Actions - Show only at start */}
             {messages.length === 1 && !loading && (
               <div className="mb-8">
@@ -634,7 +636,7 @@ const AskAriaChat: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => handleQuickAction(action.prompt)}
-                      className="group relative overflow-hidden rounded-2xl p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 text-left hover:scale-[1.02] hover:shadow-xl"
+                      className="group relative overflow-hidden rounded-xl p-3 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/20 transition-all duration-300 text-left hover:scale-[1.02] hover:shadow-xl"
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                       <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -652,7 +654,7 @@ const AskAriaChat: React.FC = () => {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap-4 ${message.role === 'user' ? 'flex-row-reverse' : ''} animate-fadeIn`}
+                className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''} animate-fadeIn`}
               >
                 <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
                   message.role === 'user'
@@ -666,10 +668,10 @@ const AskAriaChat: React.FC = () => {
                   )}
                 </div>
                 <div className={`flex-1 max-w-[80%] ${message.role === 'user' ? 'text-right' : ''}`}>
-                                    <div className={`inline-block rounded-2xl px-5 py-3 shadow-lg ${
+                                    <div className={`inline-block rounded-2xl px-4 py-2 shadow-lg ${
                                       message.role === 'user'
                                         ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white'
-                                        : 'bg-white/10 backdrop-blur-sm text-white border border-white/10'
+                                        : 'bg-white/10 backdrop-blur-sm text-white border border-white/20'
                                     }`}>
                                       {message.role === 'assistant' ? (
                                         <div className="leading-relaxed">{renderMarkdown(message.content)}</div>
@@ -678,7 +680,7 @@ const AskAriaChat: React.FC = () => {
                                       )}
                                     </div>
                   <p className="text-purple-400/60 text-xs mt-2 px-2">
-                    {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
                   </p>
                 </div>
               </div>
@@ -686,11 +688,11 @@ const AskAriaChat: React.FC = () => {
 
             {/* Typing indicator */}
             {loading && messages[messages.length - 1]?.content === '' && (
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
                   <Bot className="w-5 h-5 text-white" />
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/10">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/20">
                   <div className="flex gap-1.5">
                     <div className="w-2.5 h-2.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                     <div className="w-2.5 h-2.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -706,7 +708,7 @@ const AskAriaChat: React.FC = () => {
       </div>
 
       {/* Modern Input Area with Suggested Prompts */}
-      <div className="bg-black/30 backdrop-blur-xl border-t border-white/10 px-6 py-4">
+      <div className="bg-black/30 backdrop-blur-xl border-t border-white/20 px-6 py-4">
         <div className="max-w-4xl mx-auto">
           {/* Suggested Prompts - Always visible */}
           <div className="flex flex-wrap gap-2 mb-3">
@@ -715,7 +717,9 @@ const AskAriaChat: React.FC = () => {
                 key={index}
                 onClick={() => handleQuickAction(prompt)}
                 disabled={loading}
-                className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-purple-300 hover:text-white border border-white/10 hover:border-purple-500/30 transition-all duration-200 disabled:opacity-50"
+                className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-purple-300 hover:text-white border border-white/20 hover:border-purple-500/30 transition-all duration-200 disabled:opacity-50"
+                title={`Quick prompt: ${prompt}`}
+                aria-label={`Quick prompt: ${prompt}`}
               >
                 {prompt}
               </button>
@@ -729,12 +733,14 @@ const AskAriaChat: React.FC = () => {
               accept="image/*,application/pdf"
               onChange={handleFileUpload}
               className="hidden"
+              title="Upload document"
             />
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={loading}
-              className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-purple-300 hover:text-white transition-all duration-200 disabled:opacity-50 hover:scale-105"
+              className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/5 hover:bg-white/10 border border-white/20 flex items-center justify-center text-purple-300 hover:text-white transition-all duration-200 disabled:opacity-50 hover:scale-105"
               title="Upload document"
+              aria-label="Upload document"
             >
               <Paperclip className="w-5 h-5" />
             </button>
@@ -746,15 +752,16 @@ const AskAriaChat: React.FC = () => {
                 disabled={loading}
                 placeholder="Ask Aria anything... Try 'List available bots' or 'Run reconciliation'"
                 rows={1}
-                className="w-full px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all duration-200 text-base"
+                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/20 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none transition-all duration-200 text-base"
                 style={{ minHeight: '52px', maxHeight: '120px' }}
               />
             </div>
             <button
               onClick={() => sendMessage()}
               disabled={!inputMessage.trim() || loading}
-              className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/30 transition-all duration-200 disabled:opacity-50 disabled:shadow-none hover:scale-105 disabled:hover:scale-100"
+              className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex items-center justify-center text-white  transition-all duration-200 disabled:opacity-50 disabled:shadow-none hover:scale-105 disabled:hover:scale-100"
               title="Send message"
+              aria-label="Send message"
             >
               <Send className="w-5 h-5" />
             </button>

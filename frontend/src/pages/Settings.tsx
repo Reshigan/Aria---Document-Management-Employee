@@ -170,13 +170,14 @@ const Settings: React.FC = () => {
     } catch (err) {
       console.error('Error fetching settings:', err);
       // Use fallback data
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
       setProfile({
-        fullName: 'Demo User',
-        email: 'demo@aria.vantax.co.za',
-        phone: '+27 82 123 4567',
-        jobTitle: 'Financial Manager',
-        department: 'Finance',
-        avatar: '',
+        fullName: storedUser.full_name || storedUser.name || 'User',
+        email: storedUser.email || '',
+        phone: storedUser.phone || '',
+        jobTitle: storedUser.job_title || '',
+        department: storedUser.department || '',
+        avatar: storedUser.avatar || '',
       });
       setCompany({
         name: 'Demo Company Pty Ltd',
@@ -253,10 +254,10 @@ const Settings: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h4" sx={{ mb: 1, fontWeight: 600 }}>
+          <Typography variant="h4" sx={{ mb: 1, fontWeight: 600, color: 'text.primary' }}>
             Settings
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             Manage your account, company, and system preferences
           </Typography>
         </Box>
@@ -709,6 +710,22 @@ const Settings: React.FC = () => {
                 control={<Switch checked={system.compactMode} onChange={(e) => setSystem({ ...system, compactMode: e.target.checked })} />}
                 label="Compact Mode (Reduce spacing and padding)"
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" sx={{ mb: 1 }}>Onboarding Tour</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Replay the guided tour that introduces ARIA's key features, navigation, and capabilities.
+              </Typography>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  try { localStorage.removeItem('aria-onboarding-complete'); } catch {}
+                  window.location.href = '/';
+                }}
+              >
+                Restart Tour
+              </Button>
             </Grid>
             <Grid item xs={12}>
                             <Button variant="contained" startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />} onClick={handleSave} disabled={saving}>

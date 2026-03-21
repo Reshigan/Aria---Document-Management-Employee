@@ -60,11 +60,11 @@ export default function Suppliers() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Suppliers</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your supplier relationships</p>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Suppliers</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Manage your supplier relationships</p>
         </div>
         {!showModal && (
           <button
@@ -78,10 +78,10 @@ export default function Suppliers() {
         )}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="p-4 border-b">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-300" />
             <input
               type="text"
               value={searchTerm}
@@ -96,12 +96,12 @@ export default function Suppliers() {
           <table className="w-full" data-testid="supplier-table">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Code</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Phone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Code</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Name</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Email</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Phone</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -109,8 +109,8 @@ export default function Suppliers() {
                 <tr key={supplier.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{supplier.supplier_code || supplier.supplier_number}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{supplier.supplier_name || supplier.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{supplier.email || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{supplier.phone || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{supplier.email || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{supplier.phone || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       supplier.is_active !== false ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
@@ -122,12 +122,14 @@ export default function Suppliers() {
                     <button
                       onClick={() => { setEditingSupplier(supplier); setShowModal(true) }}
                       className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3"
+                      aria-label={`Edit ${supplier.supplier_name}`}
                     >
                       <Edit className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleDelete(supplier.id)}
                       className="text-red-600 dark:text-red-400 hover:text-red-900"
+                      aria-label={`Delete ${supplier.supplier_name}`}
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
@@ -137,7 +139,7 @@ export default function Suppliers() {
             </tbody>
           </table>
           {filteredSuppliers.length === 0 && (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-12 text-gray-500 dark:text-gray-300">
               {searchTerm ? 'No suppliers found matching your search' : 'No suppliers yet. Create your first one!'}
             </div>
           )}
@@ -193,13 +195,13 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">
             {supplier ? 'Edit Supplier' : 'Add Supplier'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Supplier Code *</label>
                 <input
@@ -208,6 +210,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   required
                   value={formData.supplier_code}
                   onChange={(e) => setFormData({ ...formData, supplier_code: e.target.value })}
+                  aria-label="Supplier code"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   disabled={!!supplier}
                 />
@@ -220,6 +223,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   required
                   value={formData.supplier_name}
                   onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
+                  aria-label="Supplier name"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -230,6 +234,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  aria-label="Email address"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -240,6 +245,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  aria-label="Phone number"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -250,6 +256,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={2}
+                  aria-label="Address"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -260,6 +267,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="tax_number"
                   value={formData.tax_number}
                   onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
+                  aria-label="Tax number"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>
@@ -270,6 +278,7 @@ function SupplierModal({ supplier, onClose, onSave }: { supplier: Supplier | nul
                   name="payment_terms"
                   value={formData.payment_terms}
                   onChange={(e) => setFormData({ ...formData, payment_terms: parseInt(e.target.value) })}
+                  aria-label="Payment terms in days"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
               </div>

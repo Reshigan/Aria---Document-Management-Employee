@@ -124,9 +124,7 @@ const Payments: React.FC = () => {
     return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   const filteredPayments = payments.filter(payment =>
     payment.payment_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -136,7 +134,7 @@ const Payments: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
         </div>
@@ -145,21 +143,21 @@ const Payments: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="ap-payments">
+    <div className="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="ap-payments">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl shadow-lg shadow-purple-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl ">
               <CreditCard className="h-7 w-7 text-white" />
             </div>
             Supplier Payments
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Track and manage supplier payments</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Track and manage supplier payments</p>
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg shadow-purple-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -175,9 +173,9 @@ const Payments: React.FC = () => {
       )}
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search payments..."
@@ -189,52 +187,52 @@ const Payments: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <DollarSign className="h-6 w-6 text-white" />
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(payments.reduce((sum, p) => sum + p.amount, 0))}
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
+                {formatCurrency(payments.reduce((sum, p) => sum + (p.amount || 0), 0))}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Paid</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Paid</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {payments.filter(p => p.status === 'PENDING').length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Pending</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <CheckCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <CheckCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {payments.filter(p => p.status === 'CLEARED').length}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Cleared</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Cleared</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Payments Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="w-full" data-testid="payments-table">
           <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
             <tr>
@@ -253,8 +251,8 @@ const Payments: React.FC = () => {
               <tr>
                 <td colSpan={8} className="px-6 py-12 text-center">
                   <CreditCard className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">No payments found</p>
-                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Create your first payment to get started</p>
+                  <p className="text-gray-500 dark:text-gray-300">No payments found</p>
+                  <p className="text-xs text-gray-300 dark:text-gray-500 mt-1">Create your first payment to get started</p>
                 </td>
               </tr>
             ) : (
@@ -262,10 +260,10 @@ const Payments: React.FC = () => {
                 <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{payment.payment_number}</td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{payment.supplier_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{payment.bill_number}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{payment.bill_number}</td>
                   <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">{formatCurrency(payment.amount)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{payment.payment_method.replace('_', ' ')}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(payment.payment_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{payment.payment_method.replace('_', ' ')}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(payment.payment_date)}</td>
                   <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(payment.status)}`}>
                       {payment.status}
@@ -276,12 +274,14 @@ const Payments: React.FC = () => {
                       <button
                         onClick={() => handleEdit(payment)}
                         className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                        aria-label={`Edit payment ${payment.payment_number}`}
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm({ show: true, id: payment.id, number: payment.payment_number })}
                         className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        aria-label={`Delete payment ${payment.payment_number}`}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -304,7 +304,7 @@ const Payments: React.FC = () => {
                 {editingPayment ? 'Edit Payment' : 'New Payment'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Number *</label>
@@ -312,6 +312,7 @@ const Payments: React.FC = () => {
                     type="text"
                     value={form.payment_number}
                     onChange={(e) => setForm({ ...form, payment_number: e.target.value })}
+                    aria-label="Payment number"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -321,6 +322,7 @@ const Payments: React.FC = () => {
                     type="text"
                     value={form.supplier_name}
                     onChange={(e) => setForm({ ...form, supplier_name: e.target.value })}
+                    aria-label="Supplier name"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -332,6 +334,7 @@ const Payments: React.FC = () => {
                   type="text"
                   value={form.bill_number}
                   onChange={(e) => setForm({ ...form, bill_number: e.target.value })}
+                  aria-label="Bill number"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -344,6 +347,7 @@ const Payments: React.FC = () => {
                     step="0.01"
                     value={form.amount}
                     onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                    aria-label="Payment amount"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -353,6 +357,7 @@ const Payments: React.FC = () => {
                     type="date"
                     value={form.payment_date}
                     onChange={(e) => setForm({ ...form, payment_date: e.target.value })}
+                    aria-label="Payment date"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -364,6 +369,7 @@ const Payments: React.FC = () => {
                   <select
                     value={form.payment_method}
                     onChange={(e) => setForm({ ...form, payment_method: e.target.value as any })}
+                    aria-label="Payment method"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="BANK_TRANSFER">Bank Transfer</option>
@@ -377,6 +383,7 @@ const Payments: React.FC = () => {
                   <select
                     value={form.status}
                     onChange={(e) => setForm({ ...form, status: e.target.value as any })}
+                    aria-label="Payment status"
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="PENDING">Pending</option>
@@ -395,7 +402,7 @@ const Payments: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg shadow-purple-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium hover:from-purple-600 hover:to-indigo-600 transition-all "
                 >
                   Save
                 </button>
@@ -410,7 +417,7 @@ const Payments: React.FC = () => {
         title="Delete Payment"
         message={`Are you sure you want to delete payment ${deleteConfirm.number}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
       />
     </div>
   );

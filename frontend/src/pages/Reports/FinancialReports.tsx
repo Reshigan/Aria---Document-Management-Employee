@@ -165,7 +165,7 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
@@ -178,23 +178,23 @@ export default function FinancialReports() {
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {data.accounts?.map((account: any, idx: number) => (
               <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <td className="p-4 text-gray-500 dark:text-gray-400">{account.account_code}</td>
+                <td className="p-4 text-gray-500 dark:text-gray-300">{account.account_code}</td>
                 <td className="p-4 font-medium text-gray-900 dark:text-white">{account.account_name}</td>
                 <td className="p-4 text-right text-emerald-600 dark:text-emerald-400">
-                  {account.debit > 0 ? `R ${account.debit.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}
+                  {account.debit > 0 ? `R ${Number(account.debit ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}
                 </td>
                 <td className="p-4 text-right text-red-600 dark:text-red-400">
-                  {account.credit > 0 ? `R ${account.credit.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : '-'}
+                  {account.credit > 0 ? `R ${Number(account.credit ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '-'}
                 </td>
               </tr>
             ))}
             <tr className="bg-gray-50 dark:bg-gray-900/50 font-bold">
               <td colSpan={2} className="p-4 text-gray-900 dark:text-white">Total</td>
               <td className="p-4 text-right text-emerald-600 dark:text-emerald-400">
-                R {data.total_debit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {data.total_debit?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
               <td className="p-4 text-right text-red-600 dark:text-red-400">
-                R {data.total_credit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                R {data.total_credit?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
           </tbody>
@@ -208,18 +208,18 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8">
         <div className="mb-8">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Revenue</h3>
           {data.revenue?.map((item: any, idx: number) => (
             <div key={idx} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
               <span className="text-gray-700 dark:text-gray-300">{item.account_name}</span>
-              <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           ))}
           <div className="flex justify-between py-3 font-bold text-lg">
             <span className="text-gray-900 dark:text-white">Total Revenue</span>
-            <span className="text-emerald-600 dark:text-emerald-400">R {data.total_revenue?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+            <span className="text-emerald-600 dark:text-emerald-400">R {data.total_revenue?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
 
@@ -228,12 +228,12 @@ export default function FinancialReports() {
           {data.expenses?.map((item: any, idx: number) => (
             <div key={idx} className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
               <span className="text-gray-700 dark:text-gray-300">{item.account_name}</span>
-              <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           ))}
           <div className="flex justify-between py-3 font-bold text-lg">
             <span className="text-gray-900 dark:text-white">Total Expenses</span>
-            <span className="text-red-600 dark:text-red-400">R {data.total_expenses?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+            <span className="text-red-600 dark:text-red-400">R {data.total_expenses?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
 
@@ -241,7 +241,7 @@ export default function FinancialReports() {
           <div className="flex justify-between text-2xl font-bold">
             <span className="text-gray-900 dark:text-white">Net Profit</span>
             <span className={data.net_profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
-              R {data.net_profit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+              R {data.net_profit?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
         </div>
@@ -255,94 +255,94 @@ export default function FinancialReports() {
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Assets</h3>
           
           <div className="mb-6">
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Current Assets</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Current Assets</h4>
             {data.current_assets?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
-                <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                <span>R {Number(item.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             ))}
             <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Current Assets</span>
-              <span>R {data.total_current_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span>R {data.total_current_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           <div>
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Fixed Assets</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Fixed Assets</h4>
             {data.fixed_assets?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
-                <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                <span>R {Number(item.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             ))}
             <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Fixed Assets</span>
-              <span>R {data.total_fixed_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span>R {data.total_fixed_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           <div className="border-t-2 border-gray-800 dark:border-gray-200 mt-4 pt-4">
             <div className="flex justify-between text-xl font-bold">
               <span className="text-gray-900 dark:text-white">Total Assets</span>
-              <span className="text-emerald-600 dark:text-emerald-400">R {data.total_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span className="text-emerald-600 dark:text-emerald-400">R {data.total_assets?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Liabilities & Equity</h3>
           
           <div className="mb-6">
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Current Liabilities</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Current Liabilities</h4>
             {data.current_liabilities?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
-                <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                <span>R {Number(item.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             ))}
             <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Current Liabilities</span>
-              <span>R {data.total_current_liabilities?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span>R {data.total_current_liabilities?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           <div className="mb-6">
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Long-term Liabilities</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Long-term Liabilities</h4>
             {data.long_term_liabilities?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
-                <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                <span>R {Number(item.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             ))}
             <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Long-term Liabilities</span>
-              <span>R {data.total_long_term_liabilities?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span>R {data.total_long_term_liabilities?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           <div>
-            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-2">Equity</h4>
+            <h4 className="text-base font-semibold text-gray-500 dark:text-gray-300 mb-2">Equity</h4>
             {data.equity?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between py-2 text-gray-700 dark:text-gray-300">
                 <span>{item.account_name}</span>
-                <span>R {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                <span>R {Number(item.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             ))}
             <div className="flex justify-between py-2 font-bold border-t border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <span>Total Equity</span>
-              <span>R {data.total_equity?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span>R {data.total_equity?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           <div className="border-t-2 border-gray-800 dark:border-gray-200 mt-4 pt-4">
             <div className="flex justify-between text-xl font-bold">
               <span className="text-gray-900 dark:text-white">Total Liabilities & Equity</span>
-              <span className="text-red-600 dark:text-red-400">R {data.total_liabilities_equity?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+              <span className="text-red-600 dark:text-red-400">R {data.total_liabilities_equity?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>
@@ -355,7 +355,7 @@ export default function FinancialReports() {
     if (!data) return null;
 
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
@@ -374,22 +374,22 @@ export default function FinancialReports() {
             {data.items?.map((item: any, idx: number) => (
               <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                 <td className="p-4 font-medium text-gray-900 dark:text-white">{item.name}</td>
-                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.current.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.days_1_30.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.days_31_60.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {item.days_61_90.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td className="p-4 text-right text-red-600 dark:text-red-400">R {item.days_90_plus.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-                <td className="p-4 text-right font-bold text-gray-900 dark:text-white">R {item.total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {Number(item.current ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {Number(item.days_1_30 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {Number(item.days_31_60 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-gray-700 dark:text-gray-300">R {Number(item.days_61_90 ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right text-red-600 dark:text-red-400">R {Number(item.days_90_plus ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td className="p-4 text-right font-bold text-gray-900 dark:text-white">R {Number(item.total ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
               </tr>
             ))}
             <tr className="bg-gray-50 dark:bg-gray-900/50 font-bold">
               <td className="p-4 text-gray-900 dark:text-white">Total</td>
-              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_current?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_1_30?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_31_60?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_61_90?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td className="p-4 text-right text-red-600 dark:text-red-400">R {data.total_90_plus?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
-              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.grand_total?.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_current?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_1_30?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_31_60?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.total_61_90?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-red-600 dark:text-red-400">R {data.total_90_plus?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td className="p-4 text-right text-gray-900 dark:text-white">R {data.grand_total?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             </tr>
           </tbody>
         </table>
@@ -399,7 +399,7 @@ export default function FinancialReports() {
 
   const renderReport = () => {
     if (loading) {
-      return <div className="p-12 text-center text-gray-500 dark:text-gray-400">Loading report...</div>;
+      return <div className="p-12 text-center text-gray-500 dark:text-gray-300">Loading report...</div>;
     }
 
     switch (selectedReport) {
@@ -414,21 +414,21 @@ export default function FinancialReports() {
       case 'aged_payables':
         return renderAgedReport('payables');
       default:
-        return <div className="p-12 text-center text-gray-500 dark:text-gray-400">Select a report to view</div>;
+        return <div className="p-12 text-center text-gray-500 dark:text-gray-300">Select a report to view</div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Financial Reports</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">View comprehensive financial reports and analytics</p>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Financial Reports</h1>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">View comprehensive financial reports and analytics</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-64 flex-shrink-0">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
               <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">Reports</h3>
               {reports.map((report) => {
                 const Icon = report.icon;
@@ -438,7 +438,7 @@ export default function FinancialReports() {
                     onClick={() => setSelectedReport(report.id)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium mb-2 text-left transition-all ${
                       selectedReport === report.id
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30'
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white '
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -449,17 +449,18 @@ export default function FinancialReports() {
               })}
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mt-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mt-4">
               <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
                 <Calendar size={18} />
                 Date Range
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  <label htmlFor="financial-report-start-date" className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
                     Start Date
                   </label>
                   <input
+                    id="financial-report-start-date"
                     type="date"
                     value={dateRange.start_date}
                     onChange={(e) => setDateRange({ ...dateRange, start_date: e.target.value })}
@@ -467,10 +468,11 @@ export default function FinancialReports() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  <label htmlFor="financial-report-end-date" className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">
                     End Date
                   </label>
                   <input
+                    id="financial-report-end-date"
                     type="date"
                     value={dateRange.end_date}
                     onChange={(e) => setDateRange({ ...dateRange, end_date: e.target.value })}
@@ -483,10 +485,10 @@ export default function FinancialReports() {
 
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {reports.find(r => r.id === selectedReport)?.name}
               </h2>
-              <button className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm">
+              <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm">
                 <Download size={18} />
                 Export PDF
               </button>

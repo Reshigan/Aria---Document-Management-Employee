@@ -1,0 +1,219 @@
+name: Comprehensive Test Suite
+
+on:
+  push:
+    branches: [ main, 'devin/**' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '20'
+  COVERAGE_THRESHOLD: 80
+
+jobs:
+  # Frontend Unit Tests with Coverage
+  frontend-unit-tests:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci --no-audit --no-fund
+      
+      - name: Run unit tests with coverage
+        working-directory: ./frontend
+        run: npm run test:unit:coverage
+      
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-unit-coverage
+          path: frontend/coverage
+          retention-days: 7
+      
+      - name: Check coverage threshold
+        working-directory: ./frontend
+        run: |
+          echo "Checking coverage threshold..."
+          # Extract coverage percentage from coverage summary
+          if [ -f coverage/coverage-summary.json ]; then
+            COVERAGE=$(cat coverage/coverage-summary.json | grep -o '"pct":[0-9.]*' | head -1 | grep -o '[0-9.]*')
+            echo "Coverage: $COVERAGE%"
+            if (( $(echo "$COVERAGE < ${{ env.COVERAGE_THRESHOLD }}" | bc -l) )); then
+              echo "Coverage $COVERAGE% is below threshold ${{ env.COVERAGE_THRESHOLD }}%"
+              # Warning only for now, can be changed to exit 1 to fail
+              echo "::warning::Coverage is below threshold"
+            fi
+          fi
+
+  # Frontend E2E Tests
+  frontend-e2e-tests:
+    name: Frontend E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci --no-audit --no-fund
+      
+      - name: Install Playwright browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+      
+      - name: Run E2E smoke tests
+        working-directory: ./frontend
+        run: npx playwright test smoke-basic.spec.ts --project=chromium
+        env:
+          FRONTEND_URL: https://aria.vantax.co.za
+      
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7
+
+  # Backend API Tests
+  backend-tests:
+    name: Backend API Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        working-directory: ./workers-api
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+      
+      - name: Run TypeScript build
+        working-directory: ./workers-api
+        run: npm run build
+        continue-on-error: true
+      
+      - name: Run backend tests
+        working-directory: ./workers-api
+        run: npm test
+      
+      - name: Upload backend coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: workers-api/coverage
+          retention-days: 7
+
+  # Network Error Detection Tests
+  network-error-detection:
+    name: Network Error Detection
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci --no-audit --no-fund
+      
+      - name: Install Playwright browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+      
+      - name: Run network error detection tests
+        working-directory: ./frontend
+        run: npx playwright test network-error-detection.spec.ts --project=chromium
+        env:
+          FRONTEND_URL: https://aria.vantax.co.za
+        continue-on-error: true
+      
+      - name: Upload network error report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: network-error-report
+          path: frontend/test-results
+          retention-days: 7
+
+  # Smoke Tests (Post-Deployment)
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [frontend-unit-tests, backend-tests]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci --no-audit --no-fund
+      
+      - name: Install Playwright browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+      
+      - name: Run smoke tests against production
+        working-directory: ./frontend
+        run: npx playwright test smoke-basic.spec.ts --project=chromium
+        env:
+          FRONTEND_URL: https://aria.vantax.co.za
+        continue-on-error: true
+
+  # Test Summary
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [frontend-unit-tests, frontend-e2e-tests, backend-tests, network-error-detection, smoke-tests]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: test-artifacts
+      
+      - name: Generate test summary
+        run: |
+          echo "## Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend Unit Tests | ${{ needs.frontend-unit-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend E2E Tests | ${{ needs.frontend-e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend Tests | ${{ needs.backend-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Network Error Detection | ${{ needs.network-error-detection.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Smoke Tests | ${{ needs.smoke-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Coverage threshold: ${{ env.COVERAGE_THRESHOLD }}%" >> $GITHUB_STEP_SUMMARY

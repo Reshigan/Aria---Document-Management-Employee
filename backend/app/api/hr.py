@@ -12,11 +12,10 @@ import calendar
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.hr import (
-    Employee, EmployeeLeave, LeaveType, Payroll, PayrollItem,
-    Attendance, Department, Position
-)
-from models.user import User
+ # from app.models.hr import (Employee, EmployeeLeave, LeaveType, Payroll, PayrollItem, Attendance, Department, Position)
+from app.models.user import User
+# If you need HR models, import from backend.models.hr
+# from backend.models.hr import Employee, EmployeeLeave, LeaveType, Payroll, PayrollItem, Attendance, Department, Position
 from pydantic import BaseModel, EmailStr, Field
 
 router = APIRouter(prefix="/api/hr", tags=["HR & Payroll"])
@@ -63,8 +62,8 @@ class EmployeeResponse(BaseModel):
     email: Optional[str]
     phone: Optional[str]
     hire_date: date
-    department_id: Optional[int]
-    position_id: Optional[int]
+    department: Optional[str] = None
+    position: Optional[str] = None
     employment_type: str
     salary: Decimal
     is_active: bool
@@ -187,7 +186,7 @@ def create_employee(
     
     return db_employee
 
-@router.get("/employees", response_model=List[EmployeeResponse])
+@router.get("/employees", response_model=dict)
 def list_employees(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
@@ -199,7 +198,6 @@ def list_employees(
 ):
     """List employees with optional filters"""
     query = db.query(Employee).filter(Employee.tenant_id == current_user.tenant_id)
-    
     if search:
         search_filter = or_(
             Employee.first_name.ilike(f"%{search}%"),
@@ -207,15 +205,31 @@ def list_employees(
             Employee.employee_number.ilike(f"%{search}%")
         )
         query = query.filter(search_filter)
-    
     if department_id:
         query = query.filter(Employee.department_id == department_id)
-    
     if is_active is not None:
         query = query.filter(Employee.is_active == is_active)
-    
     employees = query.order_by(Employee.first_name, Employee.last_name).offset(skip).limit(limit).all()
-    return employees
+    # Map department and position fields for frontend compatibility
+    employees_response = []
+    for emp in employees:
+        employees_response.append({
+            "id": emp.id,
+            "tenant_id": emp.tenant_id,
+            "employee_number": emp.employee_number,
+            "first_name": emp.first_name,
+            "last_name": emp.last_name,
+            "email": emp.email,
+            "phone": emp.phone,
+            "hire_date": emp.hire_date,
+            "department": getattr(emp, "department", None),
+            "position": getattr(emp, "job_title", None),
+            "employment_type": emp.employment_type,
+            "salary": getattr(emp, "salary", getattr(emp, "basic_salary", 0)),
+            "is_active": getattr(emp, "is_active", True),
+            "created_at": emp.created_at,
+        })
+    return {"employees": employees_response}
 
 @router.get("/employees/{employee_id}", response_model=EmployeeResponse)
 def get_employee(

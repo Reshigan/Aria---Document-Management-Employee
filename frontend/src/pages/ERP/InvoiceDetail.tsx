@@ -285,8 +285,8 @@ export default function InvoiceDetail() {
             </div>
             <div class="info-box">
               <h3>Invoice Details</h3>
-              <p><strong>Invoice Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</p>
-              <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
+              <p><strong>Invoice Date:</strong> ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}</p>
+              <p><strong>Due Date:</strong> ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}</p>
               <p><strong>Status:</strong> ${invoice.status.toUpperCase()}</p>
             </div>
           </div>
@@ -310,9 +310,9 @@ export default function InvoiceDetail() {
                     <td>${idx + 1}</td>
                     <td>${line.description}</td>
                     <td>${line.quantity}</td>
-                    <td>R ${line.unit_price.toFixed(2)}</td>
+                    <td>R ${Number(line.unit_price ?? 0).toFixed(2)}</td>
                     <td>${line.tax_rate || 15}%</td>
-                    <td>R ${lineTotal.toFixed(2)}</td>
+                    <td>R ${Number(lineTotal ?? 0).toFixed(2)}</td>
                   </tr>
                 `;
               }).join('')}
@@ -320,9 +320,9 @@ export default function InvoiceDetail() {
           </table>
         
           <div class="totals">
-            <div class="row"><span>Subtotal:</span><span>R ${invoice.subtotal.toFixed(2)}</span></div>
-            <div class="row"><span>VAT (15%):</span><span>R ${invoice.tax_amount.toFixed(2)}</span></div>
-            <div class="row total"><span>Total:</span><span>R ${invoice.total_amount.toFixed(2)}</span></div>
+            <div class="row"><span>Subtotal:</span><span>R ${Number(invoice.subtotal ?? 0).toFixed(2)}</span></div>
+            <div class="row"><span>VAT (15%):</span><span>R ${Number(invoice.tax_amount ?? 0).toFixed(2)}</span></div>
+            <div class="row total"><span>Total:</span><span>R ${Number(invoice.total_amount ?? 0).toFixed(2)}</span></div>
           </div>
         
           ${invoice.notes ? `<div style="margin-top: 30px;"><strong>Notes:</strong><p>${invoice.notes}</p></div>` : ''}
@@ -351,15 +351,15 @@ export default function InvoiceDetail() {
       setEmailSubject(`Invoice ${invoice.invoice_number} from ARIA ERP`);
       setEmailBody(`Dear ${customer?.name || 'Customer'},
 
-  Please find attached Invoice ${invoice.invoice_number} dated ${new Date(invoice.invoice_date).toLocaleDateString()}.
+  Please find attached Invoice ${invoice.invoice_number} dated ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}.
 
   Invoice Details:
   - Invoice Number: ${invoice.invoice_number}
-  - Invoice Date: ${new Date(invoice.invoice_date).toLocaleDateString()}
-  - Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
-  - Total Amount: R ${invoice.total_amount.toFixed(2)}
+  - Invoice Date: ${(invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : "-")}
+  - Due Date: ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}
+  - Total Amount: R ${Number(invoice.total_amount ?? 0).toFixed(2)}
 
-  Payment is due by ${new Date(invoice.due_date).toLocaleDateString()}.
+  Payment is due by ${(invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "-")}.
 
   Thank you for your business.
 
@@ -418,7 +418,7 @@ export default function InvoiceDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TransactionCard title="Invoice Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Customer"
                 type="select"
@@ -461,7 +461,7 @@ export default function InvoiceDetail() {
                 type="textarea"
                 value={termsAndConditions}
                 onChange={setTermsAndConditions}
-                rows={3}
+                rows={2}
                 disabled={invoice?.status !== 'draft' && !isNew}
               />
             </div>
@@ -506,17 +506,17 @@ export default function InvoiceDetail() {
             <TransactionCard title="Payment Status">
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {invoice.total_amount.toFixed(2)}</span>
+                  <span className="text-gray-500 dark:text-gray-300">Total Amount:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(invoice.total_amount ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Amount Paid:</span>
-                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {invoice.amount_paid.toFixed(2)}</span>
+                  <span className="text-gray-500 dark:text-gray-300">Amount Paid:</span>
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {Number(invoice.amount_paid ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                   <span className="text-gray-900 dark:text-white">Outstanding:</span>
                   <span className={invoice.amount_outstanding > 0 ? 'text-red-500' : 'text-emerald-500'}>
-                    R {invoice.amount_outstanding.toFixed(2)}
+                    R {Number(invoice.amount_outstanding ?? 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="mt-2">
@@ -533,16 +533,16 @@ export default function InvoiceDetail() {
           <TransactionCard title="Totals">
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.subtotal.toFixed(2)}</span>
+                <span className="text-gray-500 dark:text-gray-300">Subtotal:</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.taxAmount.toFixed(2)}</span>
+                <span className="text-gray-500 dark:text-gray-300">Tax (VAT):</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Total:</span>
-                <span className="text-gray-900 dark:text-white">R {totals.total.toFixed(2)}</span>
+                <span className="text-gray-900 dark:text-white">R {Number(totals.total ?? 0).toFixed(2)}</span>
               </div>
             </div>
           </TransactionCard>
@@ -552,7 +552,7 @@ export default function InvoiceDetail() {
               <button
                 onClick={handleCreateReceipt}
                 disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700  transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <DollarSign size={16} />
                 Record Payment
@@ -564,14 +564,14 @@ export default function InvoiceDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(invoice.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{invoice.created_at ? new Date(invoice.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(invoice.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{invoice.updated_at ? new Date(invoice.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>
@@ -582,17 +582,17 @@ export default function InvoiceDetail() {
       {/* Email Modal */}
       {showEmailModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 w-full max-w-[600px] max-h-[90vh] overflow-auto shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Mail size={20} />
                 Send Invoice via Email
               </h2>
-              <button onClick={() => setShowEmailModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              <button onClick={() => setShowEmailModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200">
                 <X size={20} />
               </button>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               <div>
                 <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">To *</label>
                 <input
@@ -635,7 +635,7 @@ export default function InvoiceDetail() {
               <button
                 onClick={handleSendEmail}
                 disabled={sendingEmail || !emailTo}
-                className={`px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium flex items-center gap-2 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all ${sendingEmail || !emailTo ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium flex items-center gap-2 hover:from-blue-600 hover:to-blue-700  transition-all ${sendingEmail || !emailTo ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <Mail size={16} />
                 {sendingEmail ? 'Sending...' : 'Send Email'}

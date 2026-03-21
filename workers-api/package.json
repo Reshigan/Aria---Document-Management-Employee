@@ -7,11 +7,12 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "db:create": "wrangler d1 create aria-erp-db",
     "db:migrate": "wrangler d1 execute aria-erp-db --file=./migrations/001_auth_tables.sql",
-    "db:migrate:local": "wrangler d1 execute aria-erp-db --local --file=./migrations/001_auth_tables.sql",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "db:migrate:local": "wrangler d1 execute aria-erp-db --local --file=./migrations/001_auth_tables.sql"
   },
   "dependencies": {
     "hono": "^4.0.0",

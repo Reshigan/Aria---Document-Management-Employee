@@ -171,44 +171,44 @@ export default function Milestones() {
     .reduce((sum, m) => sum + (m.amount || 0), 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Flag size={28} className="text-indigo-500" />
           Project Milestones
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Track project milestones for billing and delivery</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Track project milestones for billing and delivery</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Milestones</div>
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Milestones</div>
           <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{milestones.length}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Completed</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Completed</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {milestones.filter(m => m.status === 'completed' || m.status === 'invoiced').length}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Value</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Value</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            R {totalAmount.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+            R {Number(totalAmount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Completed Value</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Completed Value</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-            R {completedAmount.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+            R {Number(completedAmount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-        <div className="p-4 border-b flex gap-4 flex-wrap">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="p-4 border-b flex gap-3 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search milestones..."
@@ -251,50 +251,50 @@ export default function Milestones() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">#</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Milestone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Project</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Due Date</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Amount</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">#</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Milestone</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Project</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Due Date</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredMilestones.map((milestone) => (
                 <tr key={milestone.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
-                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{milestone.sequence}</td>
+                  <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">{milestone.sequence}</td>
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">{milestone.name}</div>
                     {milestone.description && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{milestone.description}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300 truncate max-w-xs">{milestone.description}</div>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {milestone.project_name || '-'}
                   </td>
                   <td className="px-6 py-4">
                     {milestone.due_date ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <Calendar size={14} className="text-gray-400" />
-                        {new Date(milestone.due_date).toLocaleDateString()}
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        <Calendar size={14} className="text-gray-300" />
+                        {(milestone.due_date ? new Date(milestone.due_date).toLocaleDateString() : "-")}
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
                     {milestone.amount ? (
                       <div className="flex items-center justify-end gap-1">
-                        <DollarSign size={14} className="text-gray-400" />
+                        <DollarSign size={14} className="text-gray-300" />
                         <span className="text-sm font-medium">
-                          R {milestone.amount.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+                          R {Number(milestone.amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
                         </span>
                       </div>
                     ) : milestone.percentage ? (
                       <span className="text-sm font-medium">{milestone.percentage}%</span>
                     ) : (
-                      <span className="text-sm text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -330,7 +330,7 @@ export default function Milestones() {
             </tbody>
           </table>
           {filteredMilestones.length === 0 && (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               {searchTerm || filterProject || filterStatus 
                 ? 'No milestones found matching your criteria' 
                 : 'No milestones yet. Add your first one!'}
@@ -341,7 +341,7 @@ export default function Milestones() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-4">
             <h2 className="text-xl font-bold mb-4">
               {editingMilestone ? 'Edit Milestone' : 'Add Milestone'}
             </h2>
@@ -371,7 +371,7 @@ export default function Milestones() {
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
                   <input
@@ -392,7 +392,7 @@ export default function Milestones() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (R)</label>
                   <input

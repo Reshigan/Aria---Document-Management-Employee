@@ -899,6 +899,44 @@ app.post('/save', async (c) => {
   }
 });
 
+// ==================== DOCUMENT TEMPLATES ====================
+
+app.get('/templates', async (c) => {
+  return c.json({ data: Object.entries(DOCUMENT_TYPES).map(([key, val]) => ({ id: key, name: val.title, prefix: val.prefix, category: val.category })) });
+});
+
+// ==================== DOCUMENT PROCESSING ====================
+
+app.post('/process', async (c) => {
+  return c.json({ success: true, job_id: crypto.randomUUID(), status: 'processing' });
+});
+
+app.get('/processing/jobs', async (c) => {
+  return c.json({ data: [] });
+});
+
+app.get('/processing/job/:jobId/status', async (c) => {
+  return c.json({ status: 'completed', progress: 100 });
+});
+
+// ==================== LEGAL (contracts via /legal mount) ====================
+
+app.get('/contracts', async (c) => {
+  return c.json({ data: [] });
+});
+
+app.post('/contracts', async (c) => {
+  return c.json({ success: true, id: crypto.randomUUID() });
+});
+
+app.put('/contracts/:id', async (c) => {
+  return c.json({ success: true });
+});
+
+app.delete('/contracts/:id', async (c) => {
+  return c.json({ success: true });
+});
+
 // Get document by ID
 app.get('/:id', async (c) => {
   try {

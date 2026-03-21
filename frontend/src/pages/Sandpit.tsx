@@ -37,7 +37,7 @@ const QuickLink: React.FC<QuickLinkProps> = ({ to, icon: Icon, title, descriptio
   };
 
   const content = (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 cursor-pointer">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hover:shadow-xl transition-all hover:scale-105 cursor-pointer">
       <div className="flex items-start justify-between mb-4">
         <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
           <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
@@ -52,7 +52,7 @@ const QuickLink: React.FC<QuickLinkProps> = ({ to, icon: Icon, title, descriptio
         {external && <ExternalLink className="inline w-4 h-4 ml-2" />}
       </h3>
       
-      <p className="text-gray-600 dark:text-gray-400 text-sm">
+      <p className="text-gray-600 dark:text-gray-300 text-sm">
         {description}
       </p>
     </div>
@@ -71,10 +71,10 @@ const QuickLink: React.FC<QuickLinkProps> = ({ to, icon: Icon, title, descriptio
 
 export default function Sandpit() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="mx-auto px-4 py-12">
           <div className="text-center mb-8">
             <div className="inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm font-semibold px-4 py-2 rounded-full mb-4">
               <CheckCircle className="inline w-4 h-4 mr-2" />
@@ -85,43 +85,43 @@ export default function Sandpit() {
               ARIA Testing Sandpit
             </h1>
             
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Complete testing environment with 8 operational agents and 5 ERP modules.
               Everything is live and ready to test!
             </p>
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">8</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Agents Active</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">8</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Agents Active</div>
             </div>
             <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">5</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">ERP Modules</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">5</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">ERP Modules</div>
             </div>
             <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">16+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">UI Pages</div>
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">16+</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">UI Pages</div>
             </div>
             <div className="bg-orange-50 rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold text-orange-600">100%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Uptime</div>
+              <div className="text-2xl font-bold text-orange-600">100%</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Uptime</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="mx-auto px-4 py-12">
         
         {/* Testing Tools Section */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
             🧪 Testing Tools
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             <QuickLink
               to="/api-test"
               icon={TestTube}
@@ -150,10 +150,10 @@ export default function Sandpit() {
 
         {/* Agent Testing Section */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
             🤖 Agent Testing
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             <QuickLink
               to="/agents-live"
               icon={Agent}
@@ -181,10 +181,10 @@ export default function Sandpit() {
 
         {/* ERP Modules Section */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
             🏢 ERP Modules
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             <QuickLink
               to="http://localhost:8000/api/erp/financial"
               icon={DollarSign}
@@ -230,10 +230,10 @@ export default function Sandpit() {
 
         {/* UI Pages Section */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
             🎨 User Interface
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             <QuickLink
               to="/"
               icon={FileText}
@@ -294,21 +294,21 @@ export default function Sandpit() {
         </div>
 
         {/* Quick Commands */}
-        <div className="mt-8 bg-gray-900 rounded-lg p-6 text-white">
+        <div className="mt-8 bg-gray-900 rounded-lg p-4 text-white">
           <h3 className="text-lg font-bold mb-4">🚀 Quick Commands</h3>
           <div className="space-y-2 font-mono text-sm">
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-gray-400"># Test backend health</span>
+              <span className="text-gray-300"># Test backend health</span>
               <br />
               curl http://localhost:8000/health
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-gray-400"># List all agents</span>
+              <span className="text-gray-300"># List all agents</span>
               <br />
               curl http://localhost:8000/api/agents
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-gray-400"># Run automated tests</span>
+              <span className="text-gray-300"># Run automated tests</span>
               <br />
               ./test_sandpit.sh
             </div>

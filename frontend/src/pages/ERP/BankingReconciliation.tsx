@@ -5,6 +5,9 @@ import {
   FileText, TrendingUp
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface BankAccount {
   id: string;
   account_number: string;
@@ -84,28 +87,28 @@ const BankingReconciliation: React.FC = () => {
 
       switch (activeTab) {
         case 'accounts':
-          const accountsRes = await fetch(`/api/erp/banking/bank-accounts?company_id=${companyId}`, { headers });
+          const accountsRes = await fetch(`${API_BASE}/erp/banking/bank-accounts?company_id=${companyId}`, { headers });
           if (accountsRes.ok) {
             const data = await accountsRes.json();
             setBankAccounts(data.bank_accounts || []);
           }
           break;
         case 'statements':
-          const statementsRes = await fetch(`/api/erp/banking/bank-statements?company_id=${companyId}`, { headers });
+          const statementsRes = await fetch(`${API_BASE}/erp/banking/bank-statements?company_id=${companyId}`, { headers });
           if (statementsRes.ok) {
             const data = await statementsRes.json();
             setBankStatements(data.bank_statements || []);
           }
           break;
         case 'transactions':
-          const transactionsRes = await fetch(`/api/erp/banking/bank-transactions?company_id=${companyId}`, { headers });
+          const transactionsRes = await fetch(`${API_BASE}/erp/banking/bank-transactions?company_id=${companyId}`, { headers });
           if (transactionsRes.ok) {
             const data = await transactionsRes.json();
             setBankTransactions(data.bank_transactions || []);
           }
           break;
         case 'rules':
-          const rulesRes = await fetch(`/api/erp/banking/reconciliation-rules?company_id=${companyId}`, { headers });
+          const rulesRes = await fetch(`${API_BASE}/erp/banking/reconciliation-rules?company_id=${companyId}`, { headers });
           if (rulesRes.ok) {
             const data = await rulesRes.json();
             setReconciliationRules(data.reconciliation_rules || []);
@@ -147,9 +150,9 @@ const BankingReconciliation: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {bankAccounts.map((account) => (
-          <div key={account.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div key={account.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
@@ -157,7 +160,7 @@ const BankingReconciliation: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white">{account.account_name}</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{account.bank_name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">{account.bank_name}</p>
                 </div>
               </div>
               {account.is_active ? (
@@ -169,21 +172,21 @@ const BankingReconciliation: React.FC = () => {
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Account Number:</span>
+                <span className="text-gray-500 dark:text-gray-300">Account Number:</span>
                 <span className="font-medium">{account.account_number}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Type:</span>
+                <span className="text-gray-500 dark:text-gray-300">Type:</span>
                 <span className="font-medium">{account.account_type}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Currency:</span>
+                <span className="text-gray-500 dark:text-gray-300">Currency:</span>
                 <span className="font-medium">{account.currency}</span>
               </div>
               <div className="flex justify-between text-sm pt-2 border-t">
-                <span className="text-gray-500 dark:text-gray-400">Current Balance:</span>
+                <span className="text-gray-500 dark:text-gray-300">Current Balance:</span>
                 <span className="font-bold text-lg text-gray-900 dark:text-white">
-                  R {account.current_balance.toLocaleString()}
+                  R {Number(account.current_balance ?? 0).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -192,7 +195,7 @@ const BankingReconciliation: React.FC = () => {
               <button className="flex-1 px-3 py-2 text-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100 dark:bg-blue-900/30">
                 View Statements
               </button>
-              <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
+              <button className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700">
                 Edit
               </button>
             </div>
@@ -202,8 +205,8 @@ const BankingReconciliation: React.FC = () => {
 
       {bankAccounts.length === 0 && !loading && (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">No bank accounts found</p>
+          <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-300">No bank accounts found</p>
           <button className="mt-4 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700">
             Add Your First Bank Account
           </button>
@@ -228,31 +231,31 @@ const BankingReconciliation: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Account</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Statement Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Opening Balance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Closing Balance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Debits</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Credits</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Account</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Statement Date</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Opening Balance</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Closing Balance</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Debits</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Credits</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {bankStatements.map((statement) => (
               <tr key={statement.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{statement.account_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(statement.statement_date).toLocaleDateString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {statement.opening_balance.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {statement.closing_balance.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">R {statement.total_debits.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">R {statement.total_credits.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{(statement.statement_date ? new Date(statement.statement_date).toLocaleDateString() : "-")}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(statement.opening_balance ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(statement.closing_balance ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">R {Number(statement.total_debits ?? 0).toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">R {Number(statement.total_credits ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(statement.status)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Reconcile</button>
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">View</button>
                 </td>
@@ -276,33 +279,33 @@ const BankingReconciliation: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Description</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Reference</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Debit</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Credit</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Balance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Description</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Reference</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Debit</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Credit</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Balance</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {bankTransactions.map((transaction) => (
               <tr key={transaction.id} className={`hover:bg-gray-50 ${transaction.is_reconciled ? 'bg-green-50' : ''}`}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(transaction.transaction_date).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{(transaction.transaction_date ? new Date(transaction.transaction_date).toLocaleDateString() : "-")}</td>
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{transaction.description}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{transaction.reference}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{transaction.reference}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">
-                  {transaction.debit_amount > 0 ? `R ${transaction.debit_amount.toLocaleString()}` : '-'}
+                  {transaction.debit_amount > 0 ? `R ${Number(transaction.debit_amount ?? 0).toLocaleString()}` : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">
-                  {transaction.credit_amount > 0 ? `R ${transaction.credit_amount.toLocaleString()}` : '-'}
+                  {transaction.credit_amount > 0 ? `R ${Number(transaction.credit_amount ?? 0).toLocaleString()}` : '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {transaction.balance.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">R {Number(transaction.balance ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {transaction.is_reconciled ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
@@ -316,7 +319,7 @@ const BankingReconciliation: React.FC = () => {
                     </span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   {!transaction.is_reconciled && (
                     <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100">Match</button>
                   )}
@@ -339,25 +342,25 @@ const BankingReconciliation: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Rule Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pattern</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">GL Account</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rule Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Type</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Pattern</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">GL Account</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {reconciliationRules.map((rule) => (
               <tr key={rule.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{rule.rule_name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{rule.rule_type}</td>
-                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono">{rule.pattern}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{rule.gl_account}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{rule.rule_type}</td>
+                <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300 font-mono">{rule.pattern}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">{rule.gl_account}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {rule.is_active ? (
                     <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs rounded-full">Active</span>
@@ -365,7 +368,7 @@ const BankingReconciliation: React.FC = () => {
                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs rounded-full">Inactive</span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-300">
                   <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:text-blue-100 mr-3">Edit</button>
                   <button className="text-red-600 dark:text-red-400 hover:text-red-900">Delete</button>
                 </td>
@@ -382,18 +385,18 @@ const BankingReconciliation: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Please select a company to view banking data</p>
+          <p className="text-gray-600 dark:text-gray-300">Please select a company to view banking data</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 space-y-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 space-y-3">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Banking & Reconciliation</h1>
-          <p className="text-gray-600 dark:text-gray-400">Manage bank accounts, statements, and automated reconciliation</p>
+          <p className="text-gray-600 dark:text-gray-300">Manage bank accounts, statements, and automated reconciliation</p>
         </div>
       </div>
 

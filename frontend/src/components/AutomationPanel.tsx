@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Bot, Play, Clock, CheckCircle, XCircle, ChevronRight, Loader } from 'lucide-react';
-import { botsService, ariaControllerService, getBotsForDocumentType } from '../services/agents';
+import { botsService, ariaControllerService, getBotsForDocumentType } from '../services/bots';
 import type { Agent as BotType, BotExecution } from '../types/erp';
 
 interface AutomationPanelProps {
@@ -93,13 +93,8 @@ export function AutomationPanel({
 
   if (loading) {
     return (
-      <div style={{
-        padding: '1.5rem',
-        background: 'white',
-        borderRadius: '0.5rem',
-        border: '1px solid #e5e7eb'
-      }}>
-        <div style={{ textAlign: 'center', color: '#6b7280' }}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="text-center text-gray-500 dark:text-gray-400">
           Loading automation...
         </div>
       </div>
@@ -107,25 +102,16 @@ export function AutomationPanel({
   }
 
   return (
-    <div style={{
-      background: 'white',
-      borderRadius: '0.5rem',
-      border: '1px solid #e5e7eb',
-      overflow: 'hidden'
-    }}>
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       {/* Header */}
-      <div style={{
-        padding: '1rem',
-        borderBottom: '1px solid #e5e7eb',
-        background: '#f9fafb'
-      }}>
+      <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-4">
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem'
         }}>
-          <Agent size={18} style={{ color: '#2563eb' }} />
-          <h3 style={{ fontSize: '1rem', fontWeight: '600', margin: 0 }}>
+          <Bot size={18} style={{ color: '#2563eb' }} />
+          <h3 className="text-gray-900 dark:text-white" style={{ fontSize: '1rem', fontWeight: '600', margin: 0 }}>
             Automation
           </h3>
         </div>
@@ -133,23 +119,12 @@ export function AutomationPanel({
 
       {/* Available Agents */}
       <div style={{ padding: '1rem' }}>
-        <div style={{
-          fontSize: '0.75rem',
-          fontWeight: '600',
-          color: '#6b7280',
-          textTransform: 'uppercase',
-          marginBottom: '0.75rem'
-        }}>
+        <div className="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase mb-3">
           Available Agents
         </div>
 
         {availableBots.length === 0 ? (
-          <div style={{
-            padding: '1rem',
-            textAlign: 'center',
-            color: '#6b7280',
-            fontSize: '0.875rem'
-          }}>
+          <div className="text-center text-gray-500 dark:text-gray-400 text-sm p-4">
             No agents available for this document type
           </div>
         ) : (
@@ -157,12 +132,7 @@ export function AutomationPanel({
             {availableBots.map(agent => (
               <div
                 key={agent.id}
-                style={{
-                  padding: '0.75rem',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '0.375rem',
-                  background: agent.is_active ? 'white' : '#f9fafb'
-                }}
+                className={`border rounded-md p-3 ${agent.is_active ? 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700' : 'bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700'}`}
               >
                 <div style={{
                   display: 'flex',
@@ -178,10 +148,7 @@ export function AutomationPanel({
                     }}>
                       {agent.name}
                     </div>
-                    <div style={{
-                      fontSize: '0.75rem',
-                      color: '#6b7280'
-                    }}>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       {agent.description}
                     </div>
                   </div>
@@ -246,17 +213,8 @@ export function AutomationPanel({
 
       {/* Execution History */}
       {executions.length > 0 && (
-        <div style={{
-          borderTop: '1px solid #e5e7eb',
-          padding: '1rem'
-        }}>
-          <div style={{
-            fontSize: '0.75rem',
-            fontWeight: '600',
-            color: '#6b7280',
-            textTransform: 'uppercase',
-            marginBottom: '0.75rem'
-          }}>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+          <div className="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase mb-3">
             Recent Executions
           </div>
 
@@ -264,12 +222,7 @@ export function AutomationPanel({
             {executions.slice(0, 5).map(execution => (
               <div
                 key={execution.id}
-                style={{
-                  padding: '0.75rem',
-                  background: '#f9fafb',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.75rem'
-                }}
+                className="bg-gray-50 dark:bg-gray-900/50 rounded-md p-3 text-xs"
               >
                 <div style={{
                   display: 'flex',
@@ -286,8 +239,8 @@ export function AutomationPanel({
                     {getExecutionStatusIcon(execution.status)}
                     {execution.bot_name}
                   </div>
-                  <div style={{ color: '#6b7280' }}>
-                    {new Date(execution.started_at).toLocaleTimeString()}
+                  <div className="text-gray-500 dark:text-gray-400">
+                    {execution.started_at ? new Date(execution.started_at).toLocaleTimeString() : '-'}
                   </div>
                 </div>
                 {execution.error && (
@@ -334,24 +287,14 @@ export function AutomationPanelCompact({
   return (
     <button
       onClick={onOpenFull}
-      style={{
-        width: '100%',
-        padding: '0.75rem',
-        background: 'white',
-        border: '1px solid #e5e7eb',
-        borderRadius: '0.375rem',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}
+      className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md cursor-pointer flex items-center justify-between p-3"
     >
       <div style={{
         display: 'flex',
         alignItems: 'center',
         gap: '0.5rem'
       }}>
-        <Agent size={16} style={{ color: '#2563eb' }} />
+        <Bot size={16} style={{ color: '#2563eb' }} />
         <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>
           Automation ({botCount})
         </span>

@@ -107,7 +107,7 @@ const SupplierPortal: React.FC = () => {
   const stats = {
     totalOrders: orders.length,
     pendingOrders: orders.filter(o => o.status === 'pending' || o.status === 'confirmed').length,
-    totalInvoices: invoices.reduce((sum, i) => sum + i.amount, 0),
+    totalInvoices: invoices.reduce((sum, i) => sum + (i.amount || 0), 0),
     overdueInvoices: invoices.filter(i => i.status === 'overdue').length
   };
 
@@ -122,7 +122,7 @@ const SupplierPortal: React.FC = () => {
         {[
           { label: 'Total Orders', value: stats.totalOrders, icon: <ShoppingCart />, color: '#667eea' },
           { label: 'Pending Orders', value: stats.pendingOrders, icon: <Business />, color: '#FF9800' },
-          { label: 'Total Invoiced', value: `R ${stats.totalInvoices.toLocaleString()}`, icon: <Receipt />, color: '#4CAF50' },
+          { label: 'Total Invoiced', value: `R ${Number(stats.totalInvoices ?? 0).toLocaleString()}`, icon: <Receipt />, color: '#4CAF50' },
           { label: 'Overdue Invoices', value: stats.overdueInvoices, icon: <TrendingUp />, color: '#f44336' },
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
@@ -171,7 +171,7 @@ const SupplierPortal: React.FC = () => {
                         <TableCell><Typography fontWeight={600}>{order.orderNumber}</Typography></TableCell>
                         <TableCell>{order.date}</TableCell>
                         <TableCell>{order.items}</TableCell>
-                        <TableCell>R {order.total.toLocaleString()}</TableCell>
+                        <TableCell>R {Number(order.total ?? 0).toLocaleString()}</TableCell>
                         <TableCell><Chip label={order.status.toUpperCase()} color={statusColors[order.status]} size="small" /></TableCell>
                       </TableRow>
                     ))}
@@ -197,7 +197,7 @@ const SupplierPortal: React.FC = () => {
                       <TableRow key={invoice.id} hover>
                         <TableCell><Typography fontWeight={600}>{invoice.invoiceNumber}</Typography></TableCell>
                         <TableCell>{invoice.date}</TableCell>
-                        <TableCell>R {invoice.amount.toLocaleString()}</TableCell>
+                        <TableCell>R {Number(invoice.amount ?? 0).toLocaleString()}</TableCell>
                         <TableCell>{invoice.dueDate}</TableCell>
                         <TableCell><Chip label={invoice.status.toUpperCase()} color={statusColors[invoice.status]} size="small" /></TableCell>
                       </TableRow>

@@ -58,9 +58,9 @@ export default function PurchaseOrders() {
         api.get('/erp/master-data/suppliers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setPurchaseOrders(posRes.data);
-      setSuppliers(suppliersRes.data);
-      setProducts(productsRes.data);
+      setPurchaseOrders(Array.isArray(posRes.data) ? posRes.data : posRes.data?.data || posRes.data?.purchase_orders || []);
+      setSuppliers(Array.isArray(suppliersRes.data) ? suppliersRes.data : suppliersRes.data?.data || suppliersRes.data?.suppliers || []);
+      setProducts(Array.isArray(productsRes.data) ? productsRes.data : productsRes.data?.data || productsRes.data?.products || []);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -159,11 +159,11 @@ export default function PurchaseOrders() {
 
   const getStatIcon = (status: string) => {
     switch (status) {
-      case 'draft': return <FileText className="h-6 w-6 text-white" />;
-      case 'sent': return <Clock className="h-6 w-6 text-white" />;
-      case 'acknowledged': return <Package className="h-6 w-6 text-white" />;
-      case 'received': return <CheckCircle className="h-6 w-6 text-white" />;
-      default: return <ShoppingCart className="h-6 w-6 text-white" />;
+      case 'draft': return <FileText className="h-5 w-5 text-white" />;
+      case 'sent': return <Clock className="h-5 w-5 text-white" />;
+      case 'acknowledged': return <Package className="h-5 w-5 text-white" />;
+      case 'received': return <CheckCircle className="h-5 w-5 text-white" />;
+      default: return <ShoppingCart className="h-5 w-5 text-white" />;
     }
   };
 
@@ -179,7 +179,7 @@ export default function PurchaseOrders() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
         </div>
@@ -188,21 +188,21 @@ export default function PurchaseOrders() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg shadow-orange-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl ">
               <ShoppingCart className="h-7 w-7 text-white" />
             </div>
             Purchase Orders
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage purchase orders and track supplier deliveries</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage purchase orders and track supplier deliveries</p>
         </div>
         <button
           onClick={() => navigate('/ap/purchase-orders/new')}
-          className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all  flex items-center gap-2 font-medium"
         >
           <Plus className="h-5 w-5" />
           New Purchase Order
@@ -210,10 +210,10 @@ export default function PurchaseOrders() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search purchase orders..."
@@ -241,16 +241,16 @@ export default function PurchaseOrders() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         {Object.entries(statsByStatus).map(([status, pos]) => (
-          <div key={status} className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-4">
-              <div className={`p-3 bg-gradient-to-br ${getStatGradient(status)} rounded-xl shadow-lg`}>
+          <div key={status} className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 bg-gradient-to-br ${getStatGradient(status)} rounded-lg`}>
                 {getStatIcon(status)}
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{pos.length}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{status.replace('_', ' ')} POs</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                  R {pos.reduce((sum, po) => sum + po.total_amount, 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                <p className="text-xl font-bold text-gray-900 dark:text-white">{pos.length}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300 capitalize">{status.replace('_', ' ')} POs</p>
+                <p className="text-xs text-gray-300 dark:text-gray-500 mt-0.5">
+                  R {pos.reduce((sum, po) => sum + (po.total_amount || 0), 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
@@ -259,15 +259,15 @@ export default function PurchaseOrders() {
       </div>
 
       {/* Purchase Orders Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {filteredPOs.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <ShoppingCart className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No purchase orders found</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Create your first purchase order to order from suppliers</p>
+            <p className="text-gray-500 dark:text-gray-300">No purchase orders found</p>
+            <p className="text-xs text-gray-300 dark:text-gray-500 mt-1">Create your first purchase order to order from suppliers</p>
             <button
               onClick={() => navigate('/ap/purchase-orders/new')}
-              className="mt-4 px-5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30"
+              className="mt-4 px-5 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all "
             >
               Create Purchase Order
             </button>
@@ -295,8 +295,8 @@ export default function PurchaseOrders() {
                   >
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{po.po_number}</td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{supplier?.supplier_name || 'Unknown'}</td>
-                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{new Date(po.order_date).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {po.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{(po.order_date ? new Date(po.order_date).toLocaleDateString() : "-")}</td>
+                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">R {Number(po.total_amount ?? 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusBadge(po.status)}`}>
                         {po.status.replace('_', ' ')}
@@ -340,7 +340,7 @@ export default function PurchaseOrders() {
                 New Purchase Order
               </h2>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <form onSubmit={handleSubmit} className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -449,7 +449,7 @@ export default function PurchaseOrders() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all "
                 >
                   Create Purchase Order
                 </button>

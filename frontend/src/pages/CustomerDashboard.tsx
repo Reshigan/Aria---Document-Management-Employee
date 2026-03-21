@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import {
-  TrendingUp, Users, Agent, DollarSign, Target, AlertCircle,
+  TrendingUp, Users, Bot, DollarSign, Target, AlertCircle,
   CheckCircle, ArrowUp, ArrowDown, Zap, Settings
 } from 'lucide-react';
 
@@ -103,72 +103,72 @@ export const CustomerDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Customer Growth Dashboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600 dark:text-gray-300">
             Track Aria's integration and discover expansion opportunities
           </p>
         </div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Embedding Score */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Embedding Score
               </h3>
               <Target className="w-5 h-5 text-indigo-600" />
             </div>
             <div className="flex items-end space-x-2">
-              <span className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {metrics?.embeddingScore || 0}
               </span>
-              <span className="text-sm text-gray-500 pb-1">/100</span>
+              <span className="text-xs text-gray-500 pb-1">/100</span>
             </div>
             {metrics && (
               <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getEmbeddingStatusColor(metrics.status)}`}>
-                {metrics.status.replace('_', ' ').toUpperCase()}
+                {(metrics.status || '').replace('_', ' ').toUpperCase()}
               </span>
             )}
           </div>
 
           {/* Health Score */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Health Score
               </h3>
               <Zap className="w-5 h-5 text-yellow-600" />
             </div>
             <div className="flex items-end space-x-2">
-              <span className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {health?.healthScore || 0}
               </span>
-              <span className="text-sm text-gray-500 pb-1">/100</span>
+              <span className="text-xs text-gray-500 pb-1">/100</span>
             </div>
             {health && (
               <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getRiskColor(health.churnRisk)}`}>
-                {health.churnRisk.toUpperCase()} RISK
+                {(health.churnRisk || '').toUpperCase()} RISK
               </span>
             )}
           </div>
 
           {/* Active Users */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Daily Active Users
               </h3>
               <Users className="w-5 h-5 text-blue-600" />
             </div>
             <div className="flex items-end space-x-2">
-              <span className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {metrics?.avgDailyActiveUsers || 0}
               </span>
             </div>
@@ -179,18 +179,18 @@ export const CustomerDashboard: React.FC = () => {
           </div>
 
           {/* Departments */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Departments
               </h3>
-              <Agent className="w-5 h-5 text-purple-600" />
+              <Bot className="w-5 h-5 text-purple-600" />
             </div>
             <div className="flex items-end space-x-2">
-              <span className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {metrics?.departmentsCovered || 0}
               </span>
-              <span className="text-sm text-gray-500 pb-1">/7</span>
+              <span className="text-xs text-gray-500 pb-1">/7</span>
             </div>
             <p className="text-xs text-gray-500 mt-2">
               {metrics?.customBots || 0} custom agents deployed
@@ -200,7 +200,7 @@ export const CustomerDashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Health Indicators */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
               Health Indicators
@@ -208,11 +208,11 @@ export const CustomerDashboard: React.FC = () => {
             
             {/* Positive Indicators */}
             <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+              <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                 ✅ Positive Signals
               </h4>
               <div className="space-y-2">
-                {health?.positiveIndicators.map((indicator, i) => (
+                {(health?.positiveIndicators || []).map((indicator, i) => (
                   <div key={i} className="flex items-start space-x-2 text-sm text-green-700 dark:text-green-400">
                     <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <span>{indicator}</span>
@@ -222,13 +222,13 @@ export const CustomerDashboard: React.FC = () => {
             </div>
 
             {/* Risk Factors */}
-            {health && health.riskFactors.length > 0 && (
+            {health && (health.riskFactors || []).length > 0 && (
               <div>
-                <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                   ⚠️ Risk Factors
                 </h4>
                 <div className="space-y-2">
-                  {health.riskFactors.map((factor, i) => (
+                  {(health.riskFactors || []).map((factor, i) => (
                     <div key={i} className="flex items-start space-x-2 text-sm text-red-700 dark:text-red-400">
                       <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       <span>{factor}</span>
@@ -244,8 +244,8 @@ export const CustomerDashboard: React.FC = () => {
                 Recommended Actions
               </h4>
               <ul className="space-y-1">
-                {health?.recommendedActions.map((action, i) => (
-                  <li key={i} className="text-sm text-gray-600 dark:text-gray-400">
+                {(health?.recommendedActions || []).map((action, i) => (
+                  <li key={i} className="text-sm text-gray-600 dark:text-gray-300">
                     • {action}
                   </li>
                 ))}
@@ -254,7 +254,7 @@ export const CustomerDashboard: React.FC = () => {
           </div>
 
           {/* Expansion Opportunities */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
               <TrendingUp className="w-5 h-5 mr-2 text-indigo-600" />
               Growth Opportunities
@@ -271,7 +271,7 @@ export const CustomerDashboard: React.FC = () => {
                           opp.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' : 
                           'bg-gray-100 text-gray-700'}
                       `}>
-                        {opp.priority.toUpperCase()}
+                        {(opp.priority || '').toUpperCase()}
                       </span>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {opp.description}
@@ -285,7 +285,7 @@ export const CustomerDashboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>Type: {opp.type.replace('_', ' ')}</span>
+                    <span>Type: {(opp.type || '').replace('_', ' ')}</span>
                     <span className="flex items-center">
                       <span className={`
                         inline-block w-2 h-2 rounded-full mr-1
@@ -300,19 +300,19 @@ export const CustomerDashboard: React.FC = () => {
               ))}
             </div>
 
-            <button className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30 rounded-lg font-medium transition-colors">
+            <button className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white  rounded-lg font-medium transition-colors">
               View All Opportunities
             </button>
           </div>
         </div>
 
         {/* Department Coverage */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-md p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-md p-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Department Coverage
           </h3>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {['Sales', 'Marketing', 'HR', 'Finance', 'Legal', 'Operations', 'Support', 'Engineering'].map((dept) => {
               const isActive = Math.random() > 0.5; // Placeholder
               return (

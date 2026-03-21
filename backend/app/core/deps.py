@@ -8,9 +8,9 @@ from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from uuid import UUID
 
-from app.core.config import settings
-from app.core.database import SessionLocal
-from app.models.user import User
+from core.config import settings
+from core.database import SessionLocal
+from models.user import User
 from app.schemas.auth import TokenData
 
 

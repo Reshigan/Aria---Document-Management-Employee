@@ -119,8 +119,8 @@ const Recruitment: React.FC = () => {
   const stats = {
     total: jobs.length,
     open: jobs.filter(j => j.status === 'open').length,
-    totalApplicants: jobs.reduce((sum, j) => sum + j.applicants, 0),
-    avgApplicants: Math.round(jobs.reduce((sum, j) => sum + j.applicants, 0) / jobs.length) || 0
+    totalApplicants: jobs.reduce((sum, j) => sum + (j.applicants || 0), 0),
+    avgApplicants: Math.round(jobs.reduce((sum, j) => sum + (j.applicants || 0), 0) / jobs.length) || 0
   };
 
   return (

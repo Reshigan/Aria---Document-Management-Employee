@@ -131,13 +131,11 @@ const Employees: React.FC = () => {
     return styles[type] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
@@ -146,21 +144,21 @@ const Employees: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-employees">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-employees">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
               <Users className="h-7 w-7 text-white" />
             </div>
             Employees
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage employee records and information</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Manage employee records and information</p>
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -175,9 +173,9 @@ const Employees: React.FC = () => {
       )}
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
           <input
             type="text"
             placeholder="Search employees..."
@@ -191,58 +189,58 @@ const Employees: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Users className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Employees</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <UserCheck className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <UserCheck className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Permanent</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Permanent</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30">
-              <Briefcase className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl ">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Contract</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Contract</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'TEMPORARY').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Temporary</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'TEMPORARY').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Temporary</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Employees Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No employees found</p>
+            <p className="text-gray-500 dark:text-gray-300">No employees found</p>
           </div>
         ) : (
           <table className="w-full" data-testid="employees-table">
@@ -266,15 +264,15 @@ const Employees: React.FC = () => {
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                     {employee.first_name} {employee.last_name}
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.email}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.department}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.position}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.email}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.department}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.position}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getTypeBadge(employee.employment_type)}`}>
                       {employee.employment_type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(employee.hire_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(employee.hire_date)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                       employee.is_active 
@@ -318,7 +316,7 @@ const Employees: React.FC = () => {
                 {editingEmployee ? 'Edit Employee' : 'New Employee'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name *</label>
@@ -327,6 +325,8 @@ const Employees: React.FC = () => {
                     value={form.first_name}
                     onChange={(e) => setForm({ ...form, first_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter first name"
+                    title="First Name"
                   />
                 </div>
                 <div>
@@ -336,6 +336,8 @@ const Employees: React.FC = () => {
                     value={form.last_name}
                     onChange={(e) => setForm({ ...form, last_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter last name"
+                    title="Last Name"
                   />
                 </div>
               </div>
@@ -346,6 +348,8 @@ const Employees: React.FC = () => {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter email address"
+                  title="Email"
                 />
               </div>
               <div className="mb-5">
@@ -355,6 +359,8 @@ const Employees: React.FC = () => {
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter phone number"
+                  title="Phone"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -365,6 +371,8 @@ const Employees: React.FC = () => {
                     value={form.department}
                     onChange={(e) => setForm({ ...form, department: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter department"
+                    title="Department"
                   />
                 </div>
                 <div>
@@ -374,6 +382,8 @@ const Employees: React.FC = () => {
                     value={form.position}
                     onChange={(e) => setForm({ ...form, position: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter position"
+                    title="Position"
                   />
                 </div>
               </div>
@@ -384,6 +394,7 @@ const Employees: React.FC = () => {
                     value={form.employment_type}
                     onChange={(e) => setForm({ ...form, employment_type: e.target.value as any })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    title="Employment Type"
                   >
                     <option value="PERMANENT">Permanent</option>
                     <option value="CONTRACT">Contract</option>
@@ -397,6 +408,8 @@ const Employees: React.FC = () => {
                     value={form.hire_date}
                     onChange={(e) => setForm({ ...form, hire_date: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Select hire date"
+                    title="Hire Date"
                   />
                 </div>
               </div>
@@ -420,7 +433,7 @@ const Employees: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg shadow-blue-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all "
                 >
                   Save
                 </button>
@@ -435,7 +448,7 @@ const Employees: React.FC = () => {
         title="Delete Employee"
         message={`Are you sure you want to delete ${deleteConfirm.name}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
       />
     </div>
   );

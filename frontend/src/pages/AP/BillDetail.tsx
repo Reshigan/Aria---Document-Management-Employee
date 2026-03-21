@@ -73,8 +73,8 @@ export default function BillDetail() {
         api.get('/erp/master-data/suppliers'),
         api.get('/erp/order-to-cash/products')
       ]);
-      setSuppliers(suppliersRes.data);
-      setProducts(productsRes.data);
+      setSuppliers(Array.isArray(suppliersRes.data) ? suppliersRes.data : suppliersRes.data?.data || suppliersRes.data?.suppliers || []);
+      setProducts(Array.isArray(productsRes.data) ? productsRes.data : productsRes.data?.data || productsRes.data?.products || []);
     } catch (err) {
       console.error('Error loading master data:', err);
     }
@@ -248,7 +248,7 @@ export default function BillDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TransactionCard title="Bill Information">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <TransactionField
                 label="Supplier"
                 type="select"
@@ -291,7 +291,7 @@ export default function BillDetail() {
                 type="textarea"
                 value={termsAndConditions}
                 onChange={setTermsAndConditions}
-                rows={3}
+                rows={2}
                 disabled={bill?.status !== 'draft' && !isNew}
               />
             </div>
@@ -312,17 +312,17 @@ export default function BillDetail() {
             <TransactionCard title="Payment Status">
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Total Amount:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {bill.total_amount.toFixed(2)}</span>
+                  <span className="text-gray-500 dark:text-gray-300">Total Amount:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(bill.total_amount ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">Amount Paid:</span>
-                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {bill.amount_paid.toFixed(2)}</span>
+                  <span className="text-gray-500 dark:text-gray-300">Amount Paid:</span>
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">R {Number(bill.amount_paid ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                   <span className="text-gray-900 dark:text-white">Outstanding:</span>
                   <span className={bill.amount_outstanding > 0 ? 'text-red-500' : 'text-emerald-500'}>
-                    R {bill.amount_outstanding.toFixed(2)}
+                    R {Number(bill.amount_outstanding ?? 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="mt-2">
@@ -339,16 +339,16 @@ export default function BillDetail() {
           <TransactionCard title="Totals">
             <div className="flex flex-col gap-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Subtotal:</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.subtotal.toFixed(2)}</span>
+                <span className="text-gray-500 dark:text-gray-300">Subtotal:</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Tax (VAT):</span>
-                <span className="font-medium text-gray-900 dark:text-white">R {totals.taxAmount.toFixed(2)}</span>
+                <span className="text-gray-500 dark:text-gray-300">Tax (VAT):</span>
+                <span className="font-medium text-gray-900 dark:text-white">R {Number(totals.taxAmount ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t-2 border-gray-200 dark:border-gray-700 text-lg font-semibold">
                 <span className="text-gray-900 dark:text-white">Total:</span>
-                <span className="text-gray-900 dark:text-white">R {totals.total.toFixed(2)}</span>
+                <span className="text-gray-900 dark:text-white">R {Number(totals.total ?? 0).toFixed(2)}</span>
               </div>
             </div>
           </TransactionCard>
@@ -358,7 +358,7 @@ export default function BillDetail() {
               <button
                 onClick={handleCreatePayment}
                 disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`w-full py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:from-emerald-600 hover:to-emerald-700  transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <DollarSign size={16} />
                 Record Payment
@@ -370,14 +370,14 @@ export default function BillDetail() {
             <TransactionCard title="Metadata">
               <div className="flex flex-col gap-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Created:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(bill.created_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{bill.created_at ? new Date(bill.created_at).toLocaleString() : '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Last Updated:</span>
+                  <span className="text-gray-500 dark:text-gray-300">Last Updated:</span>
                   <br />
-                  <span className="text-gray-900 dark:text-white">{new Date(bill.updated_at).toLocaleString()}</span>
+                  <span className="text-gray-900 dark:text-white">{bill.updated_at ? new Date(bill.updated_at).toLocaleString() : '-'}</span>
                 </div>
               </div>
             </TransactionCard>

@@ -890,4 +890,8 @@ app.post('/exchange-rates/convert', async (c) => {
   }
 });
 
+app.get('/settings', async (c) => {
+  return c.json({ default_currency: 'ZAR', tax_year_start: '03-01', vat_rate: 15, income_tax_enabled: true, provisional_tax_enabled: true });
+});
+
 export default app;

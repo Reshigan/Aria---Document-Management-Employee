@@ -44,24 +44,27 @@ const StockValuationReport: React.FC = () => {
   const filteredData = filterCategory ? data.filter(item => item.category === filterCategory) : data;
 
   const totals = {
-    quantity: filteredData.reduce((sum, item) => sum + item.quantity, 0),
-    value: filteredData.reduce((sum, item) => sum + item.total_value, 0),
+    quantity: filteredData.reduce((sum, item) => sum + Number(item.quantity ?? 0), 0),
+    value: filteredData.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0),
     items: filteredData.length
   };
 
   const categoryTotals = categories.map(cat => ({
     category: cat,
-    value: data.filter(item => item.category === cat).reduce((sum, item) => sum + item.total_value, 0),
-    percentage: (data.filter(item => item.category === cat).reduce((sum, item) => sum + item.total_value, 0) / totals.value) * 100
-  })).sort((a, b) => b.value - a.value);
+    value: data.filter(item => item.category === cat).reduce((sum, item) => sum + Number(item.total_value ?? 0), 0),
+    percentage: totals.value > 0 ? (data.filter(item => item.category === cat).reduce((sum, item) => sum + Number(item.total_value ?? 0), 0) / totals.value) * 100 : 0
+  })).sort((a, b) => b.value - a.value).map(cat => ({
+    ...cat,
+    percentValue: Math.round(Number(cat.percentage) || 0)
+  }));
 
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Stock Valuation Report</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Current inventory valuation</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Stock Valuation Report</h1>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Current inventory valuation</p>
         </div>
         <button className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 flex items-center">
           <Download className="w-4 h-4 mr-2" />
@@ -70,36 +73,36 @@ const StockValuationReport: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+        <div key="total-value" className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <Package className="w-10 h-10 opacity-80" />
           </div>
           <div className="text-sm opacity-90 mb-1">Total Stock Value</div>
-          <div className="text-3xl font-bold">{formatCurrency(totals.value)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totals.value)}</div>
           <div className="text-xs opacity-75 mt-2 flex items-center">
             <TrendingUp className="w-3 h-3 mr-1" />
             +8.5% vs last month
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+        <div key="total-units" className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <Package className="w-10 h-10 opacity-80" />
           </div>
           <div className="text-sm opacity-90 mb-1">Total Units</div>
-          <div className="text-3xl font-bold">{totals.quantity.toLocaleString()}</div>
+          <div className="text-2xl font-bold">{Number(totals.quantity ?? 0).toLocaleString()}</div>
           <div className="text-xs opacity-75 mt-2">
             Across {totals.items} products
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+        <div key="avg-value" className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <Package className="w-10 h-10 opacity-80" />
           </div>
           <div className="text-sm opacity-90 mb-1">Average Value per Product</div>
-          <div className="text-3xl font-bold">{formatCurrency(totals.value / totals.items)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totals.items > 0 ? totals.value / totals.items : 0)}</div>
           <div className="text-xs opacity-75 mt-2">
             Cost-weighted average
           </div>
@@ -107,7 +110,7 @@ const StockValuationReport: React.FC = () => {
       </div>
 
       {/* Category Breakdown */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
         <h2 className="text-lg font-semibold mb-4">Valuation by Category</h2>
         <div className="space-y-4">
           {categoryTotals.map((cat) => (
@@ -117,12 +120,18 @@ const StockValuationReport: React.FC = () => {
                 <span className="text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(cat.value)}</span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                {/* eslint-disable-next-line react/forbid-component-props */}
                 <div
                   className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all"
                   style={{ width: `${cat.percentage}%` }}
+                  role="progressbar"
+                  aria-valuenow={cat.percentValue}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`${cat.category}: ${cat.percentValue} percent of inventory`}
                 />
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{cat.percentage.toFixed(1)}% of total inventory value</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mt-1">{Number(cat.percentage ?? 0).toFixed(1)}% of total inventory value</div>
             </div>
           ))}
         </div>
@@ -130,9 +139,12 @@ const StockValuationReport: React.FC = () => {
 
       {/* Filter */}
       <div className="mb-6">
+        <label htmlFor="category-filter" className="sr-only">Filter by Category</label>
         <select
+          id="category-filter"
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
+          aria-label="Filter by category"
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
         >
           <option value="">All Categories</option>
@@ -147,12 +159,12 @@ const StockValuationReport: React.FC = () => {
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Code</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Category</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Quantity</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cost Price</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total Value</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product Code</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product Name</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Quantity</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Cost Price</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total Value</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -165,7 +177,7 @@ const StockValuationReport: React.FC = () => {
                     {item.category}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right text-sm">{item.quantity.toLocaleString()}</td>
+                <td className="px-6 py-4 text-right text-sm">{Number(item.quantity ?? 0).toLocaleString()}</td>
                 <td className="px-6 py-4 text-right text-sm">{formatCurrency(item.cost_price)}</td>
                 <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(item.total_value)}</td>
               </tr>
@@ -173,7 +185,7 @@ const StockValuationReport: React.FC = () => {
             {/* Totals Row */}
             <tr className="bg-gray-50 dark:bg-gray-900 font-bold">
               <td colSpan={3} className="px-6 py-4 text-gray-900 dark:text-white">TOTAL ({filteredData.length} products)</td>
-              <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300">{totals.quantity.toLocaleString()}</td>
+              <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300">{Number(totals.quantity ?? 0).toLocaleString()}</td>
               <td className="px-6 py-4"></td>
               <td className="px-6 py-4 text-right text-blue-700 dark:text-blue-300 text-lg">{formatCurrency(totals.value)}</td>
             </tr>
@@ -182,17 +194,17 @@ const StockValuationReport: React.FC = () => {
       </div>
 
       {/* Insights */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-400 p-4 rounded">
           <h3 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">Top Category</h3>
           <p className="text-sm text-green-700 dark:text-green-300">
-            {categoryTotals[0]?.category} accounts for {categoryTotals[0]?.percentage.toFixed(1)}% of inventory value ({formatCurrency(categoryTotals[0]?.value)})
+            {categoryTotals[0]?.category} accounts for {Number(categoryTotals[0]?.percentage ?? 0).toFixed(1)}% of inventory value ({formatCurrency(categoryTotals[0]?.value)})
           </p>
         </div>
         <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 p-4 rounded">
           <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Inventory Health</h3>
           <p className="text-sm text-blue-700 dark:text-blue-300">
-            Total inventory value of {formatCurrency(totals.value)} across {totals.items} products with average holding of {Math.round(totals.quantity / totals.items)} units per product
+            Total inventory value of {formatCurrency(totals.value)} across {totals.items} products with average holding of {Math.round(totals.items > 0 ? totals.quantity / totals.items : 0)} units per product
           </p>
         </div>
       </div>

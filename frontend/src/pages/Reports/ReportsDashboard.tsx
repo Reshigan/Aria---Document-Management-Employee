@@ -81,17 +81,17 @@ const reportCategories: ReportCategory[] = [
 
 export const ReportsDashboard: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
               <BarChart3 className="h-7 w-7 text-white" />
             </div>
             Reports
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Comprehensive reporting across all ERP modules</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Comprehensive reporting across all ERP modules</p>
         </div>
 
         {/* Report Categories Grid */}
@@ -101,12 +101,12 @@ export const ReportsDashboard: React.FC = () => {
             return (
               <div
                 key={category.title}
-                className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all duration-300"
+                className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700  duration-300"
               >
                 {/* Category Header */}
                 <div className="flex items-center gap-3 mb-5">
-                  <div className={`p-3 bg-gradient-to-br ${category.gradient} rounded-xl shadow-lg ${category.shadowColor}`}>
-                    <IconComponent className="h-6 w-6 text-white" />
+                  <div className={`p-2 bg-gradient-to-br ${category.gradient} rounded-lg ${category.shadowColor}`}>
+                    <IconComponent className="h-5 w-5 text-white" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{category.title}</h2>
                 </div>
@@ -123,11 +123,11 @@ export const ReportsDashboard: React.FC = () => {
                         <div className="font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {report.name}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-gray-300">
                           {report.description}
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+                      <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                     </Link>
                   ))}
                 </div>

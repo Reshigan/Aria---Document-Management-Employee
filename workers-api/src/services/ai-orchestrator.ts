@@ -124,8 +124,9 @@ function buildSystemPrompt(): string {
 
 Your job is to understand user requests and either:
 1. Execute a bot to perform a transaction (create orders, invoices, etc.)
-2. Query data (list customers, show invoices, etc.)
-3. Provide help and guidance
+2. Run the controller bot to execute multiple bots by category or workflow
+3. Query data (list customers, show invoices, etc.)
+4. Provide help and guidance
 
 AVAILABLE BOTS FOR TRANSACTIONS:
 ${botList}
@@ -133,15 +134,30 @@ ${botList}
 AVAILABLE DATA QUERIES:
 ${queryList}
 
+CONTROLLER BOT (runs multiple sub-bots):
+- intent: "controller_all" - Run ALL bots
+- intent: "controller_financial" - Run all Financial bots
+- intent: "controller_procurement" - Run all Procurement bots
+- intent: "controller_sales" - Run all Sales bots
+- intent: "controller_hr" - Run all HR bots
+- intent: "controller_manufacturing" - Run all Manufacturing bots
+- intent: "controller_inventory" - Run all Inventory bots
+- intent: "controller_governance" - Run all Governance/Compliance bots
+- intent: "controller_documents" - Run all Document/Workflow bots
+- intent: "controller_o2c" - Run Order-to-Cash workflow (Quote -> SO -> Invoice -> AR -> Payment)
+- intent: "controller_p2p" - Run Procure-to-Pay workflow (PO -> GR -> AP -> Payment)
+- intent: "controller_monthend" - Run Month-End Close workflow (Reconciliation -> GL -> Close -> Reports -> Tax)
+- intent: "controller_reconciliation" - Run Full Reconciliation suite
+
 RESPONSE FORMAT:
 You must respond with a JSON object containing:
 {
-  "intent": "the classified intent (bot_id or query intent)",
+  "intent": "the classified intent (bot_id, query intent, or controller_* intent)",
   "confidence": 0.0-1.0,
-  "bot_id": "bot_id if executing a bot, null otherwise",
+  "bot_id": "bot_id if executing a single bot, null for queries/controller",
   "parameters": { extracted parameters from the user message },
   "requires_confirmation": false (always false for autonomous execution),
-  "action": "execute_bot" | "query_data" | "help" | "clarify",
+  "action": "execute_bot" | "execute_controller" | "query_data" | "help" | "clarify",
   "response": "A brief message to the user about what you're doing"
 }
 
@@ -151,12 +167,17 @@ IMPORTANT RULES:
 3. For transactions, set requires_confirmation to false - execute autonomously
 4. If you can't determine the intent, ask for clarification
 5. Be helpful and proactive - suggest next steps when appropriate
+6. For category/workflow requests like "handle all accounting" or "do month end", use controller_* intents
+7. Natural language like "take care of finances" should map to controller_financial
 
 Examples:
 - "create a sales order for Acme Corp" -> intent: "sales_order", parameters: {customer_name: "Acme Corp"}
 - "show me all customers" -> intent: "list_customers", action: "query_data"
 - "run the payroll bot" -> intent: "payroll", bot_id: "payroll", action: "execute_bot"
-- "what's our inventory status" -> intent: "inventory", action: "query_data" or bot_id: "inventory"`;
+- "handle all the financial tasks" -> intent: "controller_financial", action: "execute_controller"
+- "do the month end close" -> intent: "controller_monthend", action: "execute_controller"
+- "process order to cash" -> intent: "controller_o2c", action: "execute_controller"
+- "run all bots" -> intent: "controller_all", action: "execute_controller"`;
 }
 
 /**
@@ -254,6 +275,38 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
   const lowerMessage = message.toLowerCase().trim();
   const words = lowerMessage.split(/\s+/);
   
+  // Controller bot patterns (category & workflow execution)
+  const controllerPatterns: Array<{patterns: RegExp[], intent: string, label: string}> = [
+    { patterns: [/run\s+(?:all|every)\s+bots?/i, /execute\s+all/i, /run\s+(?:the\s+)?full\s+suite/i, /run\s+(?:the\s+)?controller/i], intent: 'controller_all', label: 'All Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:financial|finance|accounting)\s+(?:bots?|tasks?|processes?)/i, /take\s+care\s+of\s+(?:the\s+)?financ/i, /handle\s+(?:the\s+)?accounting/i], intent: 'controller_financial', label: 'Financial Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:procurement|purchasing|supply\s*chain)\s+(?:bots?|tasks?|processes?)/i], intent: 'controller_procurement', label: 'Procurement Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:sales|crm|revenue)\s+(?:bots?|tasks?|processes?)/i], intent: 'controller_sales', label: 'Sales Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:hr|human\s*resource|payroll|people)\s+(?:bots?|tasks?|processes?)/i], intent: 'controller_hr', label: 'HR Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:manufacturing|production|factory)\s+(?:bots?|tasks?|processes?)/i], intent: 'controller_manufacturing', label: 'Manufacturing Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:inventory|stock|warehouse)\s+(?:bots?|tasks?|processes?)/i], intent: 'controller_inventory', label: 'Inventory Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:governance|compliance|audit)\s+(?:bots?|tasks?|processes?)/i], intent: 'controller_governance', label: 'Governance Bots' },
+    { patterns: [/(?:run|do|process|handle)\s+(?:all\s+)?(?:document|workflow)\s+(?:bots?|tasks?|processes?)/i], intent: 'controller_documents', label: 'Document Bots' },
+    { patterns: [/order[- ]?to[- ]?cash/i, /o2c\s+(?:cycle|flow|process)/i], intent: 'controller_o2c', label: 'Order-to-Cash' },
+    { patterns: [/procure[- ]?to[- ]?pay/i, /p2p\s+(?:cycle|flow|process)/i], intent: 'controller_p2p', label: 'Procure-to-Pay' },
+    { patterns: [/month[- ]?end/i, /period[- ]?end/i, /year[- ]?end/i, /financial\s+close/i, /close\s+(?:the\s+)?month/i], intent: 'controller_monthend', label: 'Month-End Close' },
+    { patterns: [/(?:full\s+)?reconciliation\s+(?:suite|process|cycle)/i, /reconcile\s+everything/i], intent: 'controller_reconciliation', label: 'Full Reconciliation' },
+  ];
+
+  for (const ctrl of controllerPatterns) {
+    for (const pattern of ctrl.patterns) {
+      if (pattern.test(lowerMessage)) {
+        return {
+          intent: ctrl.intent,
+          confidence: 0.9,
+          bot_id: null,
+          parameters: { controller_label: ctrl.label },
+          requires_confirmation: false,
+          response: `Running ${ctrl.label}...`,
+        };
+      }
+    }
+  }
+
   // Direct command patterns with high confidence
   const directCommands: Array<{patterns: RegExp[], bot_id: string, name: string, confidence: number}> = [
     // O2C Commands
@@ -306,6 +359,12 @@ function enhancedRuleBasedClassification(message: string): IntentClassification 
     { patterns: [/process\s+approval/i, /workflow\s+task/i, /pending\s+approval/i], bot_id: 'workflow_automation', name: 'Workflow Automation Bot', confidence: 0.9 },
     { patterns: [/process\s+document/i, /classify\s+document/i, /ocr/i], bot_id: 'document_processing', name: 'Document Processing Bot', confidence: 0.9 },
     { patterns: [/send\s+email/i, /email\s+notification/i, /automated\s+email/i], bot_id: 'email_automation', name: 'Email Automation Bot', confidence: 0.9 },
+    
+    // Helpdesk Commands
+    { patterns: [/(?:create|open|raise|log)\s+(?:a\s+)?(?:support\s+)?ticket/i, /(?:create|open)\s+(?:a\s+)?helpdesk\s+ticket/i, /helpdesk.*ticket/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.95 },
+    { patterns: [/(?:assign|escalate)\s+ticket/i, /ticket\s+assign/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.9 },
+    { patterns: [/(?:resolve|close)\s+ticket/i, /ticket\s+(?:resolved|closed)/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.9 },
+    { patterns: [/(?:show|list|view)\s+(?:support\s+)?tickets/i, /helpdesk\s+status/i, /open\s+tickets/i], bot_id: 'helpdesk_bot', name: 'Helpdesk Bot', confidence: 0.9 },
   ];
   
   // Check direct command patterns first
@@ -808,14 +867,20 @@ export async function orchestrate(
   const classification = await classifyIntent(message, conversationHistory, env);
   
   // Step 2: Execute based on classification
-  if (classification.bot_id) {
-    // Execute a bot
+  if (classification.intent.startsWith('controller_')) {
+    return {
+      success: true,
+      intent: classification.intent,
+      bot_id: null,
+      action_taken: 'controller',
+      response: classification.response,
+      data: { controller_intent: classification.intent, label: classification.parameters.controller_label },
+    };
+  } else if (classification.bot_id) {
     return executeBot(classification.bot_id, classification.parameters, companyId, userId, env);
   } else if (QUERY_INTENTS.some(q => q.intent === classification.intent)) {
-    // Execute a data query
     return executeQuery(classification.intent, classification.parameters, companyId, env);
   } else {
-    // Unknown intent - return the AI's response
     return {
       success: true,
       intent: classification.intent,

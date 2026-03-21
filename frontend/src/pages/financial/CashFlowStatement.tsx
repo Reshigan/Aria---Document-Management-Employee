@@ -108,10 +108,10 @@ export default function CashFlowStatementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Activity className="h-8 w-8 text-indigo-600" />
             Cash Flow Statement
           </h1>
@@ -134,7 +134,7 @@ export default function CashFlowStatementPage() {
             </div>
             <button
               onClick={fetchCashFlow}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -153,11 +153,11 @@ export default function CashFlowStatementPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
           </div>
         ) : data ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 space-y-3">
             {/* Opening Cash */}
             <div className="flex justify-between py-2 font-medium border-b border-gray-200 dark:border-gray-700">
               <span className="text-gray-700 dark:text-gray-300">Opening Cash Balance</span>
-              <span className="text-gray-900 dark:text-white">R {data.opening_cash.toLocaleString()}</span>
+              <span className="text-gray-900 dark:text-white">R {Number(data.opening_cash ?? 0).toLocaleString()}</span>
             </div>
 
             {/* Operating Activities */}
@@ -168,14 +168,14 @@ export default function CashFlowStatementPage() {
                   <div key={idx} className="flex justify-between py-1">
                     <span className="text-gray-700 dark:text-gray-300">{item.description}</span>
                     <span className={item.amount >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                      R {item.amount.toLocaleString()}
+                      R {Number(item.amount ?? 0).toLocaleString()}
                     </span>
                   </div>
                 ))}
                 <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-bold">
                   <span className="text-gray-900 dark:text-white">Net Operating Cash Flow</span>
                   <span className={data.operating.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                    R {data.operating.net.toLocaleString()}
+                    R {Number(data.operating.net ?? 0).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -189,14 +189,14 @@ export default function CashFlowStatementPage() {
                   <div key={idx} className="flex justify-between py-1">
                     <span className="text-gray-700 dark:text-gray-300">{item.description}</span>
                     <span className={item.amount >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                      R {item.amount.toLocaleString()}
+                      R {Number(item.amount ?? 0).toLocaleString()}
                     </span>
                   </div>
                 ))}
                 <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-bold">
                   <span className="text-gray-900 dark:text-white">Net Investing Cash Flow</span>
                   <span className={data.investing.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                    R {data.investing.net.toLocaleString()}
+                    R {Number(data.investing.net ?? 0).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -210,14 +210,14 @@ export default function CashFlowStatementPage() {
                   <div key={idx} className="flex justify-between py-1">
                     <span className="text-gray-700 dark:text-gray-300">{item.description}</span>
                     <span className={item.amount >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                      R {item.amount.toLocaleString()}
+                      R {Number(item.amount ?? 0).toLocaleString()}
                     </span>
                   </div>
                 ))}
                 <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-bold">
                   <span className="text-gray-900 dark:text-white">Net Financing Cash Flow</span>
                   <span className={data.financing.net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                    R {data.financing.net.toLocaleString()}
+                    R {Number(data.financing.net ?? 0).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -228,18 +228,18 @@ export default function CashFlowStatementPage() {
               <div className="flex justify-between text-lg font-bold">
                 <span className="text-gray-900 dark:text-white">Net Change in Cash</span>
                 <span className={data.net_change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                  R {data.net_change.toLocaleString()}
+                  R {Number(data.net_change ?? 0).toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-xl font-bold">
                 <span className="text-gray-900 dark:text-white">Closing Cash Balance</span>
-                <span className="text-blue-600 dark:text-blue-400">R {data.closing_cash.toLocaleString()}</span>
+                <span className="text-blue-600 dark:text-blue-400">R {Number(data.closing_cash ?? 0).toLocaleString()}</span>
               </div>
             </div>
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No data available</p>
+            <p className="text-gray-600 dark:text-gray-300">No data available</p>
           </div>
         )}
       </div>

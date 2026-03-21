@@ -121,10 +121,10 @@ export default function ProfitLossStatementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <TrendingUp className="h-8 w-8 text-indigo-600" />
             Profit & Loss Statement
           </h1>
@@ -157,7 +157,7 @@ export default function ProfitLossStatementPage() {
             </div>
             <button
               onClick={fetchPL}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -177,18 +177,18 @@ export default function ProfitLossStatementPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
           </div>
         ) : data ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 space-y-3">
             <div data-testid="section-revenue">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Revenue</h3>
               {data.revenue.map((item) => (
                 <div key={item.account_code} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700" data-testid={item.account_name.includes('Sales') ? 'revenue-sales' : undefined}>
                   <span className="text-gray-700 dark:text-gray-300">{item.account_code} - {item.account_name}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString()}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString()}</span>
                 </div>
               ))}
               <div className="flex justify-between py-2 font-bold text-lg" data-testid="total">
                 <span className="text-gray-900 dark:text-white">Total Revenue</span>
-                <span className="text-green-600 dark:text-green-400">R {data.total_revenue.toLocaleString()}</span>
+                <span className="text-green-600 dark:text-green-400">R {Number(data.total_revenue ?? 0).toLocaleString()}</span>
               </div>
             </div>
 
@@ -197,12 +197,12 @@ export default function ProfitLossStatementPage() {
               {data.cost_of_sales.map((item) => (
                 <div key={item.account_code} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
                   <span className="text-gray-700 dark:text-gray-300">{item.account_code} - {item.account_name}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString()}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString()}</span>
                 </div>
               ))}
               <div className="flex justify-between py-2 font-bold">
                 <span className="text-gray-900 dark:text-white">Total Cost of Sales</span>
-                <span className="text-red-600 dark:text-red-400">R {data.total_cost_of_sales.toLocaleString()}</span>
+                <span className="text-red-600 dark:text-red-400">R {Number(data.total_cost_of_sales ?? 0).toLocaleString()}</span>
               </div>
             </div>
 
@@ -210,11 +210,11 @@ export default function ProfitLossStatementPage() {
               <div className="flex justify-between py-2 font-bold text-lg">
                 <span className="text-gray-900 dark:text-white">Gross Profit</span>
                 <span className={data.gross_profit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                  R {data.gross_profit.toLocaleString()}
+                  R {Number(data.gross_profit ?? 0).toLocaleString()}
                 </span>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
-                {((data.gross_profit / data.total_revenue) * 100).toFixed(1)}% gross margin
+              <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
+                {Number(data.total_revenue ? ((data.gross_profit / data.total_revenue) * 100) : 0).toFixed(1)}% gross margin
               </div>
             </div>
 
@@ -223,12 +223,12 @@ export default function ProfitLossStatementPage() {
               {data.operating_expenses.map((item) => (
                 <div key={item.account_code} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
                   <span className="text-gray-700 dark:text-gray-300">{item.account_code} - {item.account_name}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">R {item.amount.toLocaleString()}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">R {Number(item.amount ?? 0).toLocaleString()}</span>
                 </div>
               ))}
               <div className="flex justify-between py-2 font-bold">
                 <span className="text-gray-900 dark:text-white">Total Operating Expenses</span>
-                <span className="text-red-600 dark:text-red-400">R {data.total_operating_expenses.toLocaleString()}</span>
+                <span className="text-red-600 dark:text-red-400">R {Number(data.total_operating_expenses ?? 0).toLocaleString()}</span>
               </div>
             </div>
 
@@ -236,17 +236,17 @@ export default function ProfitLossStatementPage() {
               <div className="flex justify-between py-2 text-xl font-bold" data-testid="net-profit">
                 <span className="text-gray-900 dark:text-white">Net Profit</span>
                 <span className={data.net_profit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                  R {data.net_profit.toLocaleString()}
+                  R {Number(data.net_profit ?? 0).toLocaleString()}
                 </span>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
-                {((data.net_profit / data.total_revenue) * 100).toFixed(1)}% net profit margin
+              <div className="text-sm text-gray-600 dark:text-gray-300 text-right">
+                {Number(data.total_revenue ? ((data.net_profit / data.total_revenue) * 100) : 0).toFixed(1)}% net profit margin
               </div>
             </div>
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">No data available</p>
+            <p className="text-gray-600 dark:text-gray-300">No data available</p>
           </div>
         )}
       </div>

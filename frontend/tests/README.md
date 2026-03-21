@@ -5,10 +5,22 @@ Comprehensive automated test suite for the ARIA ERP system. This test suite cove
 ## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
 # Install Playwright browsers (first time only)
 npm run test:install
 
-# Run all tests against production
+# Run all tests (unit + E2E)
+npm run test
+
+# Run unit tests only
+npm run test:unit
+
+# Run unit tests with coverage
+npm run test:unit:coverage
+
+# Run E2E tests against production
 npm run test:full
 
 # Run API integration tests
@@ -18,14 +30,36 @@ npm run test:api
 npm run test:smoke
 
 # Run tests with UI (interactive mode)
-npm run test:ui
+npm run test:e2e:ui
 
 # Run tests in headed mode (see browser)
-npm run test:headed
+npm run test:e2e:headed
 
 # View test report
 npm run test:report
 ```
+
+## Test Types
+
+### Unit Tests (Vitest + React Testing Library)
+Located in `frontend/src/__tests__/`:
+- Component tests
+- Store tests
+- Utility function tests
+- Form validation tests
+
+### E2E Tests (Playwright)
+Located in `frontend/tests/e2e/`:
+- Full browser-based tests
+- User flow tests
+- API integration tests
+- Network error detection tests
+
+### Backend Tests (Vitest)
+Located in `workers-api/test/`:
+- API endpoint tests
+- Authentication tests
+- Database operation tests
 
 ## Test Files
 

@@ -1,5 +1,5 @@
 /**
- * Cash Management Agent - Report Page
+ * Cash Management Bot - Report Page
  * Generated: 2025-10-26 14:16:23
  */
 
@@ -51,7 +51,7 @@ export default function CashManagementReport() {
       // Load activities
       const activitiesResponse = await fetch(`${API_BASE}/api/agents/cash_management/activities`, { headers });
       const activitiesData = await activitiesResponse.json();
-      setActivities(activitiesData);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : activitiesData?.results || activitiesData?.data || []);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
@@ -68,7 +68,7 @@ export default function CashManagementReport() {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Cash Management Agent - Report
+        Cash Management Bot - Report
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -118,7 +118,7 @@ export default function CashManagementReport() {
                 Success Rate
               </Typography>
               <Typography variant="h4">
-                {successRate.toFixed(1)}%
+                {Number(successRate ?? 0).toFixed(1)}%
               </Typography>
             </CardContent>
           </Card>
@@ -146,7 +146,7 @@ export default function CashManagementReport() {
                 {activities.map((activity, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      {new Date(activity.timestamp).toLocaleString()}
+                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : '-'}
                     </TableCell>
                     <TableCell>
                       {activity.success ? (
@@ -169,7 +169,7 @@ export default function CashManagementReport() {
                       {activity.result?.processed || 0}
                     </TableCell>
                     <TableCell>
-                      {activity.duration ? `${activity.duration.toFixed(2)}s` : 'N/A'}
+                      {activity.duration ? `${Number(activity.duration ?? 0).toFixed(2)}s` : 'N/A'}
                     </TableCell>
                     <TableCell>
                       {activity.result?.successful || 0} successful, {' '}

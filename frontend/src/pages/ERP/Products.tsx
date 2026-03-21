@@ -202,8 +202,10 @@ export default function Products() {
   };
 
   const marginPercent = (product: Product) => {
-    if (product.selling_price === 0) return 0;
-    return ((product.selling_price - product.cost_price) / product.selling_price * 100);
+    const sp = Number(product.selling_price) || 0;
+    const cp = Number(product.cost_price) || 0;
+    if (sp === 0) return 0;
+    return ((sp - cp) / sp * 100);
   };
 
   const renderFormModal = (isEdit: boolean) => {
@@ -213,8 +215,8 @@ export default function Products() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-          <div className="bg-gradient-to-r from-rose-600 to-pink-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+          <div className="bg-gradient-to-r from-rose-600 to-pink-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg"><Package className="h-6 w-6" /></div>
@@ -228,7 +230,7 @@ export default function Products() {
           </div>
 
           <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-180px)]">
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-3">
               {error && (
                 <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
                   <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
@@ -241,7 +243,7 @@ export default function Products() {
                   <span className="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs">1</span>
                   Basic Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Name *</label>
                     <input type="text" value={formData.name || ''} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all" placeholder="Enter product name" />
@@ -253,7 +255,7 @@ export default function Products() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
-                    <textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none" placeholder="Enter product description" />
+                    <textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none" placeholder="Enter product description" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Unit of Measure *</label>
@@ -279,7 +281,7 @@ export default function Products() {
                   <span className="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs">2</span>
                   Pricing
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cost Price (R)</label>
                     <input type="number" value={formData.cost_price || 0} onChange={(e) => setFormData({ ...formData, cost_price: parseFloat(e.target.value) })} step="0.01" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all" />
@@ -295,7 +297,7 @@ export default function Products() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Margin</label>
                     <div className="px-4 py-3 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300">
-                      {formData.selling_price && formData.cost_price ? `${((formData.selling_price - formData.cost_price) / formData.selling_price * 100).toFixed(2)}%` : '0.00%'}
+                      {formData.selling_price && formData.cost_price ? `${Number(((formData.selling_price - formData.cost_price) / formData.selling_price * 100) || 0).toFixed(2)}%` : '0.00%'}
                     </div>
                   </div>
                 </div>
@@ -306,7 +308,7 @@ export default function Products() {
                   <span className="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs">3</span>
                   Inventory Settings
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reorder Level</label>
                     <input type="number" value={formData.reorder_level || 0} onChange={(e) => setFormData({ ...formData, reorder_level: parseFloat(e.target.value) })} step="1" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all" />
@@ -317,19 +319,19 @@ export default function Products() {
                   </div>
                                     <div className="md:col-span-2">
                                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Item Type</label>
-                                      <div className="flex gap-4">
+                                      <div className="flex gap-3">
                                         <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${!formData.is_service ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'}`}>
                                           <input type="radio" name="item_type" checked={!formData.is_service} onChange={() => setFormData({ ...formData, is_service: false, track_inventory: true })} className="w-5 h-5 text-rose-600 border-gray-300 focus:ring-rose-500" />
                                           <div>
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">Stock Item</span>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Physical inventory that is tracked</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300">Physical inventory that is tracked</p>
                                           </div>
                                         </label>
                                         <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.is_service ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'}`}>
                                           <input type="radio" name="item_type" checked={formData.is_service ?? false} onChange={() => setFormData({ ...formData, is_service: true, track_inventory: false })} className="w-5 h-5 text-rose-600 border-gray-300 focus:ring-rose-500" />
                                           <div>
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">Service Item</span>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Non-physical service or labor</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300">Non-physical service or labor</p>
                                           </div>
                                         </label>
                                       </div>
@@ -348,9 +350,9 @@ export default function Products() {
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
-              <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
-              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all shadow-lg shadow-rose-500/30">{isEdit ? 'Update Product' : 'Create Product'}</button>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all ">{isEdit ? 'Update Product' : 'Create Product'}</button>
             </div>
           </form>
         </div>
@@ -361,14 +363,14 @@ export default function Products() {
   const renderDetailModal = () => {
     if (!selectedProduct || !showDetailModal) return null;
 
-    const totalOnHand = stockLevels.reduce((sum, level) => sum + level.on_hand, 0);
-    const totalAllocated = stockLevels.reduce((sum, level) => sum + level.allocated, 0);
-    const totalAvailable = stockLevels.reduce((sum, level) => sum + level.available, 0);
+    const totalOnHand = stockLevels.reduce((sum, level) => sum + (level.on_hand || 0), 0);
+    const totalAllocated = stockLevels.reduce((sum, level) => sum + (level.allocated || 0), 0);
+    const totalAvailable = stockLevels.reduce((sum, level) => sum + (level.available || 0), 0);
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailModal(false)}>
-        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
-          <div className="bg-gradient-to-r from-rose-600 to-pink-600 text-white p-6">
+        <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-h-[90vh] overflow-hidden">
+          <div className="bg-gradient-to-r from-rose-600 to-pink-600 text-white p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold">{selectedProduct.name}</h2>
@@ -378,8 +380,8 @@ export default function Products() {
             </div>
           </div>
 
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="p-4 overflow-y-auto max-h-[calc(90vh-120px)]">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
                 <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">On Hand</div>
                 <div className="text-2xl font-bold text-blue-900 dark:text-blue-100 mt-1">{totalOnHand}</div>
@@ -402,17 +404,17 @@ export default function Products() {
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Product Details</h3>
                 <div className="space-y-3">
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Category:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.category || '-'}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Unit:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.unit_of_measure}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Barcode:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.barcode || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Category:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.category || '-'}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Unit:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.unit_of_measure}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Barcode:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.barcode || '-'}</p></div>
                 </div>
               </div>
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Pricing</h3>
                 <div className="space-y-3">
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Cost Price:</span><p className="font-medium text-gray-900 dark:text-white">R {selectedProduct.cost_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Selling Price:</span><p className="font-medium text-gray-900 dark:text-white">R {selectedProduct.selling_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p></div>
-                  <div><span className="text-sm text-gray-500 dark:text-gray-400">Tax Rate:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.tax_rate}%</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Cost Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Selling Price:</span><p className="font-medium text-gray-900 dark:text-white">R {Number(selectedProduct.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p></div>
+                  <div><span className="text-xs text-gray-500 dark:text-gray-300">Tax Rate:</span><p className="font-medium text-gray-900 dark:text-white">{selectedProduct.tax_rate}%</p></div>
                 </div>
               </div>
             </div>
@@ -424,10 +426,10 @@ export default function Products() {
                   <table className="w-full">
                     <thead className="bg-gray-50 dark:bg-gray-900/50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Warehouse</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">On Hand</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Allocated</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Available</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Warehouse</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">On Hand</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Allocated</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Available</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -452,18 +454,18 @@ export default function Products() {
                   <table className="w-full">
                     <thead className="bg-gray-50 dark:bg-gray-900/50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Date</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Cost</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Selling</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Changed By</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Date</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Cost</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Selling</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Changed By</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {priceHistory.map((history) => (
                         <tr key={history.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{new Date(history.effective_date).toLocaleDateString()}</td>
-                          <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-300">R {history.cost_price.toLocaleString()}</td>
-                          <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-300">R {history.selling_price.toLocaleString()}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{(history.effective_date ? new Date(history.effective_date).toLocaleDateString() : "-")}</td>
+                          <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-300">R {Number(history.cost_price ?? 0).toLocaleString()}</td>
+                          <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-300">R {Number(history.selling_price ?? 0).toLocaleString()}</td>
                           <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{history.changed_by}</td>
                         </tr>
                       ))}
@@ -479,18 +481,18 @@ export default function Products() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-rose-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gradient-to-br from-gray-50 to-rose-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Products</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your product catalog</p>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Products</h1>
+            <p className="text-gray-500 dark:text-gray-300 mt-1">Manage your product catalog</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => { loadProducts(); loadProductStats(); }} className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700">
-              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-5 w-5 text-gray-600 dark:text-gray-300 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button onClick={handleCreate} className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all shadow-lg shadow-rose-500/30">
+            <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all ">
               <Plus className="h-5 w-5" />New Product
             </button>
           </div>
@@ -504,38 +506,38 @@ export default function Products() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl shadow-lg shadow-rose-500/30"><Package className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-sm text-gray-500 dark:text-gray-400">Total Products</p></div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl "><Package className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p><p className="text-xs text-gray-500 dark:text-gray-300">Total Products</p></div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30"><CheckCircle className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-sm text-gray-500 dark:text-gray-400">Active</p></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl "><CheckCircle className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{stats.active}</p><p className="text-xs text-gray-500 dark:text-gray-300">Active</p></div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30"><Tag className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{categories.length}</p><p className="text-sm text-gray-500 dark:text-gray-400">Categories</p></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl "><Tag className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{categories.length}</p><p className="text-xs text-gray-500 dark:text-gray-300">Categories</p></div>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl shadow-lg shadow-purple-500/30"><TrendingUp className="h-6 w-6 text-white" /></div>
-              <div><p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.avgMargin.toFixed(1)}%</p><p className="text-sm text-gray-500 dark:text-gray-400">Avg Margin</p></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl "><TrendingUp className="h-5 w-5 text-white" /></div>
+              <div><p className="text-xl font-bold text-gray-900 dark:text-white">{Number(stats.avgMargin ?? 0).toFixed(1)}%</p><p className="text-xs text-gray-500 dark:text-gray-300">Avg Margin</p></div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
                 <input type="text" placeholder="Search by name, code, or description..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all" />
               </div>
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all min-w-[160px]">
@@ -553,15 +555,15 @@ export default function Products() {
           {loading ? (
             <div className="p-12 text-center">
               <RefreshCw className="h-8 w-8 animate-spin text-rose-500 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading products...</p>
+              <p className="text-gray-500 dark:text-gray-300">Loading products...</p>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-400" /></div>
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Package className="h-8 w-8 text-gray-300" /></div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No products found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{searchTerm || statusFilter !== 'all' || categoryFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by adding your first product'}</p>
+              <p className="text-gray-500 dark:text-gray-300 mb-6">{searchTerm || statusFilter !== 'all' || categoryFilter !== 'all' ? 'Try adjusting your filters' : 'Get started by adding your first product'}</p>
               {!searchTerm && statusFilter === 'all' && categoryFilter === 'all' && (
-                <button onClick={handleCreate} className="px-5 py-3 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all">Add First Product</button>
+                <button onClick={handleCreate} className="px-4 py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl font-medium hover:from-rose-700 hover:to-pink-700 transition-all">Add First Product</button>
               )}
             </div>
           ) : (
@@ -569,24 +571,24 @@ export default function Products() {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cost</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Selling</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Margin</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cost</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Selling</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Margin</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {filteredProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4">
-                        <div><p className="font-semibold text-gray-900 dark:text-white">{product.name}</p><p className="text-sm text-gray-500 dark:text-gray-400">{product.code}</p></div>
+                        <div><p className="font-semibold text-gray-900 dark:text-white">{product.name}</p><p className="text-xs text-gray-500 dark:text-gray-300">{product.code}</p></div>
                       </td>
                       <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{product.category || '-'}</td>
-                      <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {product.cost_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {product.selling_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                      <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">R {Number(product.cost_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">R {Number(product.selling_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       <td className="px-6 py-4 text-right">
                         <span className={`font-medium ${marginPercent(product) >= 30 ? 'text-green-600 dark:text-green-400' : marginPercent(product) >= 15 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>{marginPercent(product).toFixed(1)}%</span>
                       </td>

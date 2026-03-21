@@ -116,40 +116,40 @@ export default function HelpdeskTeams() {
   const totalMembers = teams.reduce((sum, t) => sum + (t.member_count || 0), 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
           <Users size={28} className="text-blue-500" />
           Helpdesk Teams
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Organize support staff into teams with auto-assignment rules</p>
+        <p className="text-gray-600 dark:text-gray-300 mt-1">Organize support staff into teams with auto-assignment rules</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Teams</div>
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Teams</div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{teams.length}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Active Teams</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Active Teams</div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {teams.filter(t => t.is_active).length}
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Total Members</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Total Members</div>
           <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{totalMembers}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Open Tickets</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+          <div className="text-xs text-gray-500 dark:text-gray-300">Open Tickets</div>
           <div className="text-2xl font-bold text-orange-600">{totalOpenTickets}</div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-        <div className="p-4 border-b flex gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="p-4 border-b flex gap-3">
           <div className="flex-1 relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300" />
             <input
               type="text"
               placeholder="Search teams..."
@@ -171,14 +171,14 @@ export default function HelpdeskTeams() {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Team</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email Alias</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Assignment</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Members</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Open Tickets</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Auto-Close</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Team</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Email Alias</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Assignment</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Members</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Open Tickets</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Auto-Close</th>
+                <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -187,20 +187,20 @@ export default function HelpdeskTeams() {
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">{team.name}</div>
                     {team.description && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{team.description}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300 truncate max-w-xs">{team.description}</div>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     {team.email_alias ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <Mail size={14} className="text-gray-400" />
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        <Mail size={14} className="text-gray-300" />
                         {team.email_alias}
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                     {assignmentLabels[team.assignment_method] || team.assignment_method}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -219,12 +219,12 @@ export default function HelpdeskTeams() {
                   </td>
                   <td className="px-6 py-4 text-center">
                     {team.auto_close_days ? (
-                      <div className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                        <Clock size={14} className="text-gray-400" />
+                      <div className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-300">
+                        <Clock size={14} className="text-gray-300" />
                         {team.auto_close_days} days
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">-</span>
+                      <span className="text-xs text-gray-300">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -253,7 +253,7 @@ export default function HelpdeskTeams() {
             </tbody>
           </table>
           {filteredTeams.length === 0 && (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
               {searchTerm ? 'No teams found matching your search' : 'No teams yet. Create your first one!'}
             </div>
           )}
@@ -262,7 +262,7 @@ export default function HelpdeskTeams() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl w-full max-w-md p-4">
             <h2 className="text-xl font-bold mb-4">
               {editingTeam ? 'Edit Team' : 'Add Team'}
             </h2>
@@ -319,7 +319,7 @@ export default function HelpdeskTeams() {
                   onChange={(e) => setFormData({ ...formData, auto_close_days: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Set to 0 to disable auto-close</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Set to 0 to disable auto-close</p>
               </div>
               <div className="flex items-center">
                 <input

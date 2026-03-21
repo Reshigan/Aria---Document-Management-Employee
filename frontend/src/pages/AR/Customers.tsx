@@ -158,23 +158,23 @@ export default function Customers() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
+          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
             <Users className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Customers</h1>
-            <p className="text-gray-600 dark:text-gray-400">Manage customer master data and credit limits</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Customers</h1>
+            <p className="text-gray-600 dark:text-gray-300">Manage customer master data and credit limits</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300" />
             <input
               type="text"
               placeholder="Search customers..."
@@ -189,7 +189,7 @@ export default function Customers() {
               resetForm();
               setShowForm(true);
             }}
-            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 flex items-center gap-2 font-medium"
+            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
           >
             <Plus className="h-5 w-5" />
             Add Customer
@@ -198,25 +198,25 @@ export default function Customers() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-              <Users className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl ">
+              <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{customers.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Customers</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{customers.length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Total Customers</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <UserCheck className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <UserCheck className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{customers.filter(c => c.is_active).length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active Customers</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{customers.filter(c => c.is_active).length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Active Customers</p>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@ export default function Customers() {
             aria-modal="true"
             aria-labelledby="modal-title"
             onKeyDown={handleModalKeyDown}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto"
           >
             <div className="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4">
               <h2 id="modal-title" className="text-xl font-bold text-white flex items-center gap-2">
@@ -250,7 +250,7 @@ export default function Customers() {
             <form onSubmit={handleSubmit} className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Code *</label>
                   <input
                     ref={firstFocusableRef}
                     type="text"
@@ -261,7 +261,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name *</label>
                   <input
                     type="text"
                     required
@@ -274,7 +274,7 @@ export default function Customers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -283,7 +283,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
@@ -294,7 +294,7 @@ export default function Customers() {
               </div>
 
               <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
                 <input
                   type="text"
                   value={formData.address_line1}
@@ -305,7 +305,7 @@ export default function Customers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
                   <input
                     type="text"
                     value={formData.city}
@@ -314,7 +314,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
                   <input
                     type="text"
                     value={formData.country}
@@ -326,7 +326,7 @@ export default function Customers() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Credit Limit (R)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Credit Limit (R)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -336,7 +336,7 @@ export default function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Terms</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Terms</label>
                   <select
                     value={formData.payment_terms}
                     onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
@@ -359,13 +359,13 @@ export default function Customers() {
                     setEditingCustomer(null);
                     resetForm();
                   }}
-                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/30 font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   {editingCustomer ? 'Update' : 'Create'}
                 </button>
@@ -375,17 +375,17 @@ export default function Customers() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3 animate-pulse" />
-            <p className="text-gray-500 dark:text-gray-400">Loading customers...</p>
+            <p className="text-gray-500 dark:text-gray-300">Loading customers...</p>
           </div>
         ) : filteredCustomers.length === 0 ? (
           <div className="p-12 text-center">
             <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No customers found</h3>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-500 dark:text-gray-300">
               {searchTerm ? 'Try adjusting your search' : 'Start by adding your first customer'}
             </p>
           </div>
@@ -409,27 +409,27 @@ export default function Customers() {
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{customer.code}</td>
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900 dark:text-white">{customer.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{customer.payment_terms}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-300">{customer.payment_terms}</div>
                     </td>
                     <td className="px-6 py-4">
                       {customer.email && (
                         <div className="flex items-center gap-2 mb-1">
-                          <Mail className="h-3.5 w-3.5 text-gray-400" />
+                          <Mail className="h-3.5 w-3.5 text-gray-300" />
                           <span className="text-xs text-gray-600 dark:text-gray-300">{customer.email}</span>
                         </div>
                       )}
                       {customer.phone && (
                         <div className="flex items-center gap-2">
-                          <Phone className="h-3.5 w-3.5 text-gray-400" />
+                          <Phone className="h-3.5 w-3.5 text-gray-300" />
                           <span className="text-xs text-gray-600 dark:text-gray-300">{customer.phone}</span>
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-300">
                       {customer.city && customer.country ? `${customer.city}, ${customer.country}` : customer.country || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-right font-medium text-gray-900 dark:text-white">
-                      R {customer.credit_limit?.toLocaleString('en-ZA', { minimumFractionDigits: 2 }) || '0.00'}
+                      R {customer.credit_limit?.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${customer.is_active ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'}`}>

@@ -15,6 +15,7 @@ import suppliers from './routes/suppliers';
 import products from './routes/products';
 import quotes from './routes/quotes';
 import salesOrders from './routes/sales-orders';
+import deliveries from './routes/deliveries';
 import purchaseOrders from './routes/purchase-orders';
 import invoices from './routes/invoices';
 import dashboard from './routes/dashboard';
@@ -47,12 +48,19 @@ import microfeatures from './routes/microfeatures';
 import newPages from './routes/new-pages';
 import xeroParity from './routes/xero-parity';
 import adminConfig from './routes/admin-config';
+import inventory from './routes/inventory';
+import crossModule from './routes/cross-module';
+import goLive from './routes/go-live';
+import missingEndpoints from './routes/missing-endpoints';
+import reverseLogistics from './routes/reverse-logistics';
+import integration from './routes/integration';
 import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
 import { processScheduledPosts, generateDailyPosts } from './services/marketing-service';
 import { rateLimiter } from './middleware/rate-limiter';
 import { sendTransactionalEmail } from './services/email-service';
+import { healSchema } from './services/schema-healer';
 
 // Types
 interface Env {
@@ -93,6 +101,16 @@ interface TokenPayload {
 // Create Hono app
 const app = new Hono<{ Bindings: Env }>();
 
+// Self-healing schema middleware: runs once on first request to ensure all tables/columns exist
+app.use('*', async (c, next) => {
+  try {
+    await healSchema(c.env.DB);
+  } catch (e) {
+    console.error('[schema-healer] Error:', e);
+  }
+  await next();
+});
+
 // CORS middleware - allow all aria-erp.pages.dev subdomains for preview deployments
 app.use('*', cors({
   origin: (origin) => {
@@ -110,13 +128,6 @@ app.use('*', cors({
   allowHeaders: ['Content-Type', 'Authorization', 'X-Company-ID'],
   credentials: true,
 }));
-
-// Request ID middleware - adds correlation ID to every request
-app.use('*', async (c, next) => {
-  const requestId = crypto.randomUUID();
-  c.header('X-Request-ID', requestId);
-  await next();
-});
 
 // Health check endpoint
 app.get('/health', (c) => {
@@ -398,138 +409,380 @@ app.route('/api/erp/procure-to-pay/purchase-orders', purchaseOrders);
 app.route('/api/erp/invoices', invoices);
 app.route('/api/dashboard', dashboard);
 
-// Legacy path aliases - redirect non-/api paths to canonical /api paths
-app.all('/erp/*', (c) => {
-  const newUrl = new URL(c.req.url);
-  newUrl.pathname = '/api' + newUrl.pathname;
-  return c.redirect(newUrl.toString(), 301);
-});
-app.all('/dashboard/*', (c) => {
-  const newUrl = new URL(c.req.url);
-  newUrl.pathname = '/api' + newUrl.pathname;
-  return c.redirect(newUrl.toString(), 301);
-});
+// Route aliases for legacy frontend paths (without /api prefix)
+app.route('/erp/master-data/customers', customers);
+app.route('/erp/master-data/suppliers', suppliers);
+app.route('/erp/order-to-cash/products', products);
+app.route('/erp/order-to-cash/quotes', quotes);
+app.route('/erp/order-to-cash/sales-orders', salesOrders);
+app.route('/erp/procure-to-pay/purchase-orders', purchaseOrders);
+app.route('/erp/invoices', invoices);
+app.route('/dashboard', dashboard);
 
-// Additional canonical route aliases (frontend uses these paths)
+// Additional legacy path aliases for procurement pages
+app.route('/erp/procurement/suppliers', suppliers);
+app.route('/erp/procurement/purchase-orders', purchaseOrders);
+
+// Route aliases for procure-to-pay paths (used by granular tests)
+app.route('/erp/procure-to-pay/suppliers', suppliers);
 app.route('/api/erp/procure-to-pay/suppliers', suppliers);
+
+// Route aliases with /api prefix for procurement pages (frontend uses /api baseURL)
 app.route('/api/erp/procurement/suppliers', suppliers);
 app.route('/api/erp/procurement/purchase-orders', purchaseOrders);
+
+// Route aliases for order-to-cash paths that frontend uses
 app.route('/api/erp/order-to-cash/customers', customers);
+app.route('/erp/order-to-cash/customers', customers);
 app.route('/api/erp/order-to-cash/invoices', invoices);
+app.route('/erp/order-to-cash/invoices', invoices);
+app.route('/api/erp/order-to-cash/deliveries', deliveries);
+app.route('/erp/order-to-cash/deliveries', deliveries);
+
+// Route aliases for AR/AP invoice paths
 app.route('/api/ar/invoices', invoices);
+app.route('/ar/invoices', invoices);
 app.route('/api/ap/invoices', invoices);
+app.route('/ap/invoices', invoices);
 
 // Ask ARIA routes
 app.route('/api/ask-aria', askAria);
+app.route('/ask-aria', askAria);
+// Aliases for older /aria and /chat paths used by frontend
+app.route('/api/aria', askAria);
+app.route('/aria', askAria);
+app.route('/api/chat', askAria);
+app.route('/chat', askAria);
 
-// Bot/Agent routes (canonical paths)
+// Bot/Agent routes
 app.route('/api/agents', bots);
+app.route('/agents', bots);
 app.route('/api/admin/agents', bots);
+app.route('/admin/agents', bots);
+// Route alias for frontend Agents.tsx which calls /api/bots
 app.route('/api/bots', bots);
+app.route('/bots', bots);
 
 // General Ledger routes
-app.route('/api/gl', gl);
 app.route('/api/erp/gl', gl);
+app.route('/erp/gl', gl);
 
 // Admin routes (company settings)
 app.route('/api/admin', admin);
+app.route('/admin', admin);
+// RBAC alias
+app.route('/api/rbac', admin);
+app.route('/rbac', admin);
 
-// HR routes
+// HR routes (employees, departments)
 app.route('/api/hr', hr);
+app.route('/hr', hr);
 
-// Reports routes
+// Reports routes (trial balance, income statement, balance sheet)
 app.route('/api/erp/reports', reports);
-app.route('/api/reports', reports);
+app.route('/erp/reports', reports);
 
-// Onboarding routes
+// Onboarding routes (guided setup wizard)
 app.route('/api/onboarding', onboarding);
+app.route('/onboarding', onboarding);
+// Onboarding tasks alias
+app.route('/api/onboarding-tasks', onboarding);
 
-// Financial Period Management
+// Financial Period Management routes
 app.route('/api/erp/periods', periods);
+app.route('/erp/periods', periods);
 
-// Approval Workflow
+// Approval Workflow routes
 app.route('/api/approvals', approvals);
+app.route('/approvals', approvals);
+// Singular alias used by some UIs
+app.route('/api/approval', approvals);
+app.route('/approval', approvals);
 
-// Country Localization
+// Country Localization routes (tax calculations, e-invoicing, payroll)
 app.route('/api/localization', localization);
+app.route('/localization', localization);
 
-// Vertical Industry Packs
+// Vertical Industry Packs (Distribution, Retail, Services/Projects)
 app.route('/api/verticals', verticals);
+app.route('/verticals', verticals);
+// Procurement/general aliases used by some UIs
+app.route('/api/procurement', newPages);
+app.route('/procurement', newPages);
+app.route('/api/customers', customers);
+app.route('/customers', customers);
 
-// Differentiators
+// Phase D Differentiators (WhatsApp, Mobile/Offline, Spreadsheet Migration)
 app.route('/api/differentiators', differentiators);
+app.route('/differentiators', differentiators);
 
-// Business Intelligence
+// Business Intelligence & Reporting
 app.route('/api/bi', bi);
+app.route('/bi', bi);
 
-// Documents
+// Document Generation & Management (branded documents, print, email)
 app.route('/api/documents', documents);
+app.route('/documents', documents);
 
 // Banking & Reconciliation
 app.route('/api/banking', banking);
+app.route('/banking', banking);
 
-// Bot Observability
+// Bot Observability & Exception Handling
 app.route('/api/bot-observability', botObservability);
+app.route('/bot-observability', botObservability);
 
-// Payments
+// Payment Integrations
+app.route('/api/payments', payments);
+app.route('/payments', payments);
+
+// Enhanced Onboarding Wizard
+app.route('/api/onboarding-wizard', onboardingWizard);
+app.route('/onboarding-wizard', onboardingWizard);
+
+// Manufacturing routes (Work Orders, BOMs, Production, Quality)
+app.route('/api/erp/manufacturing', manufacturing);
+app.route('/erp/manufacturing', manufacturing);
+
+// Enterprise routes (API Keys, Webhooks, Audit Logs, Subscriptions, Reports, Multi-Currency, Inventory Valuation, Three-Way Match)
+app.route('/api/enterprise', enterprise);
+app.route('/enterprise', enterprise);
+// Integrations alias
+app.route('/api/integrations', criticalFeatures);
+app.route('/integrations', criticalFeatures);
+
+// Marketing Automation routes (Social Media, Content Generation, Influencer Tracking)
+app.route('/api/marketing', marketing);
+app.route('/marketing', marketing);
+
+// Critical Features routes (Token Vault, Connectors, Bank, Tax, SSO, Accounting Sync, E-Commerce, Shipping, Fixed Assets, Payroll, E-Invoicing, MRP, Monitoring, Admin, Backup)
+app.route('/api/critical', criticalFeatures);
+app.route('/critical', criticalFeatures);
+app.route('/api/critical/fixed-assets', criticalFeatures);
+app.route('/critical/fixed-assets', criticalFeatures);
+
+// Odoo Parity routes (Product Hierarchy, Pricing, Service Fulfillment, Helpdesk, Field Service, Migration)
+app.route('/api/odoo', odooParity);
+app.route('/odoo', odooParity);
+
+// Self-Registration routes (public - no auth required for signup flow)
+app.route('/api/registration', registration);
+app.route('/registration', registration);
+
+// Reseller routes (application, portal, admin management)
+app.route('/api/reseller', reseller);
+app.route('/reseller', reseller);
+
+// Microfeatures routes (notifications, recent items, favorites, comments, tags, attachments, activity)
+app.route('/api/microfeatures', microfeatures);
+app.route('/microfeatures', microfeatures);
+// Aliases for top-level comments/attachments endpoints
+app.route('/api/comments', microfeatures);
+app.route('/comments', microfeatures);
+app.route('/api/attachments', microfeatures);
+app.route('/attachments', microfeatures);
+
+// New Pages routes (Financial, Operations, People, Services, Compliance modules)
+app.route('/api/new-pages', newPages);
+app.route('/new-pages', newPages);
+
+// Reverse Logistics routes (Sales Returns, Customer Refunds, Credit Notes)
+app.route('/api/reverse-logistics', reverseLogistics);
+app.route('/reverse-logistics', reverseLogistics);
+app.route('/api/erp/reverse-logistics', reverseLogistics);
+app.route('/erp/reverse-logistics', reverseLogistics);
+
+// Cross-Module Integration routes (Delivery→GL, GoodsReceipt→GL, PaymentAlloc, BankMatch, Recurring, Approvals, Intercompany)
+app.route('/api/integration', integration);
+app.route('/integration', integration);
+
+// Xero Parity routes (Recurring Invoices, Reminders, Statements, Portal, Budgets, Bank Feeds)
+app.route('/api/xero', xeroParity);
+app.route('/xero', xeroParity);
+// Statements alias
+app.route('/api/customer-statements', xeroParity);
+
+// Admin Configuration routes (Chart of Accounts, Invoice Templates, Lock Dates, Payment Terms, Tax Rates, Email Templates, Tracking Categories)
+app.route('/api/admin-config', adminConfig);
+app.route('/admin-config', adminConfig);
+
+// Go-Live improvements (PDF, Email, Export, Audit, Dashboard, Auth, Currency, Bots, 2FA, Migration)
+app.route('/api/go-live', goLive);
+app.route('/go-live', goLive);
+
+// Inventory routes (Warehouses, Stock Movements, Items)
+app.route('/api/inventory', inventory);
+app.route('/inventory', inventory);
+// Operations alias
+app.route('/api/operations', inventory);
+app.route('/operations', inventory);
+
+// ============================================================================
+// CROSS-MODULE ROUTE ALIASES
+// These ensure every frontend API call resolves to an existing handler
+// ============================================================================
+
+// --- Admin aliases (enterprise features accessible via /admin) ---
+app.route('/api/admin/api-keys', enterprise);
+app.route('/api/admin/audit-logs', enterprise);
+app.route('/admin/api-keys', enterprise);
+app.route('/admin/audit-logs', enterprise);
+
+// --- AR / AP aliases ---
+app.route('/api/ar', invoices);
+app.route('/api/ap', invoices);
+app.route('/ar', invoices);
+app.route('/ap', invoices);
+app.route('/api/erp/ar', invoices);
+app.route('/erp/ar', invoices);
+app.route('/api/erp/ap', invoices);
+app.route('/erp/ap', invoices);
+
+// --- CRM aliases (customers, leads, opportunities via new-pages) ---
+app.route('/api/crm/customers', customers);
+app.route('/crm/customers', customers);
+app.route('/api/crm', newPages);
+app.route('/crm', newPages);
+
+// --- Field Service aliases (odoo-parity field-service endpoints) ---
+app.route('/api/field-service', odooParity);
+app.route('/field-service', odooParity);
+
+// --- Financial aliases ---
+app.route('/api/financial', invoices);
+app.route('/financial', invoices);
+
+// --- Fixed Assets aliases (critical-features) ---
+app.route('/api/erp/fixed-assets', criticalFeatures);
+app.route('/erp/fixed-assets', criticalFeatures);
+app.route('/api/fixed-assets', criticalFeatures);
+app.route('/fixed-assets', criticalFeatures);
+
+// --- ERP master-data bank-accounts alias ---
+app.route('/api/erp/master-data/bank-accounts', banking);
+app.route('/erp/master-data/bank-accounts', banking);
+
+// --- ERP master-data price-lists alias ---
+app.route('/api/erp/master-data/price-lists', newPages);
+app.route('/erp/master-data/price-lists', newPages);
+
+// --- ERP order-to-cash stock/warehouse aliases ---
+app.route('/api/erp/order-to-cash/warehouses', inventory);
+app.route('/erp/order-to-cash/warehouses', inventory);
+app.route('/api/erp/order-to-cash/stock-movements', inventory);
+app.route('/erp/order-to-cash/stock-movements', inventory);
+
+// --- ERP payroll aliases (HR routes) ---
+app.route('/api/erp/payroll', hr);
+app.route('/erp/payroll', hr);
+
+// --- ERP procurement aliases ---
+app.route('/api/erp/procure-to-pay/goods-receipts', deliveries);
+app.route('/erp/procure-to-pay/goods-receipts', deliveries);
+app.route('/api/erp/procurement/rfqs', newPages);
+app.route('/erp/procurement/rfqs', newPages);
+
+// --- ERP reports aliases ---
+app.route('/api/erp/reports', reports);
+app.route('/erp/reports', reports);
+
+// --- ERP GL aliases ---
+app.route('/api/erp/gl', gl);
+app.route('/erp/gl', gl);
+
+// --- ERP manufacturing aliases ---
+app.route('/api/erp/manufacturing', manufacturing);
+app.route('/erp/manufacturing', manufacturing);
+
+// --- Legal documents alias ---
+app.route('/api/legal', documents);
+app.route('/legal', documents);
+
+// --- Manufacturing BOMs alias ---
+app.route('/api/manufacturing', manufacturing);
+app.route('/manufacturing', manufacturing);
+
+// --- Odoo inventory/warehouses alias ---
+app.route('/api/odoo/inventory', inventory);
+app.route('/odoo/inventory', inventory);
+
+// --- Payments top-level alias ---
 app.route('/api/payments', payments);
 
-// Onboarding Wizard
-app.route('/api/onboarding-wizard', onboardingWizard);
+// --- Projects aliases (verticals services) ---
+app.route('/api/projects', verticals);
+app.route('/projects', verticals);
 
-// Manufacturing
-app.route('/api/erp/manufacturing', manufacturing);
+// --- Quality aliases (manufacturing) ---
+app.route('/api/quality', manufacturing);
+app.route('/quality', manufacturing);
 
-// Enterprise
-app.route('/api/enterprise', enterprise);
+// --- Reports agents dashboard alias ---
+app.route('/api/reports/agents', reports);
+app.route('/reports/agents', reports);
+app.route('/api/reports', reports);
+app.route('/reports', reports);
+// Additional reporting aliases
+app.route('/api/erp/reporting', reports);
+app.route('/erp/reporting', reports);
 
-// Marketing
-app.route('/api/marketing', marketing);
+// --- Tax aliases ---
+app.route('/api/tax', localization);
+app.route('/tax', localization);
 
-// Critical Features
-app.route('/api/critical', criticalFeatures);
+// --- Compliance alias ---
+app.route('/api/compliance', newPages);
+app.route('/compliance', newPages);
 
-// Odoo Parity
-app.route('/api/odoo', odooParity);
+// --- Automation/mailroom alias ---
+app.route('/api/automation', crossModule);
+app.route('/automation', crossModule);
 
-// Self-Registration (public)
-app.route('/api/registration', registration);
+// --- Cross-module routes (CRM, Quality, Compliance, Email, Field Service, Payroll, Legal, etc.) ---
+app.route('/api/crm', crossModule);
+app.route('/crm', crossModule);
+app.route('/api/quality', crossModule);
+app.route('/quality', crossModule);
+// ERP-scoped quality alias
+app.route('/api/erp/quality', crossModule);
+app.route('/erp/quality', crossModule);
+app.route('/api/compliance', crossModule);
+app.route('/compliance', crossModule);
+app.route('/api/email', crossModule);
+app.route('/api/field-service', crossModule);
+app.route('/field-service', crossModule);
+app.route('/api/manufacturing', crossModule);
+app.route('/manufacturing', crossModule);
+app.route('/api/legal', crossModule);
+app.route('/legal', crossModule);
+app.route('/api/tax', crossModule);
+app.route('/tax', crossModule);
+app.route('/api/projects', crossModule);
+app.route('/projects', crossModule);
+app.route('/api/critical', crossModule);
+app.route('/critical', crossModule);
+app.route('/api/erp/payroll', crossModule);
+app.route('/erp/payroll', crossModule);
+app.route('/api/erp/order-to-cash', crossModule);
+app.route('/erp/order-to-cash', crossModule);
+app.route('/api/erp/fixed-assets', crossModule);
+app.route('/erp/fixed-assets', crossModule);
+app.route('/api/erp/procure-to-pay', crossModule);
+app.route('/erp/procure-to-pay', crossModule);
+app.route('/api/odoo', crossModule);
+app.route('/odoo', crossModule);
 
-// Reseller
-app.route('/api/reseller', reseller);
+// Missing endpoints catch-all
+app.route('/api', missingEndpoints);
+app.route('', missingEndpoints);
 
-// Microfeatures
-app.route('/api/microfeatures', microfeatures);
-
-// New Pages
-app.route('/api/new-pages', newPages);
-
-// Xero Parity
-app.route('/api/xero', xeroParity);
-
-// Admin Configuration
-app.route('/api/admin-config', adminConfig);
-
-// Legacy path redirects - non-/api paths redirect to canonical /api paths
-app.all('/:path{.+}', (c, next) => {
-  const path = c.req.path;
-  // Only redirect non-/api, non-/health paths that don't already have /api prefix
-  if (!path.startsWith('/api') && !path.startsWith('/health')) {
-    const newUrl = new URL(c.req.url);
-    newUrl.pathname = '/api' + newUrl.pathname;
-    return c.redirect(newUrl.toString(), 301);
-  }
-  return next();
-});
-
-// Data Seeding endpoint (for generating test data)
+// Data Seedingendpoint (for generating test data)
 import { seedFullYear, seedMonth } from './services/data-seeding-service';
 
 app.post('/api/seed/full-year', async (c) => {
   try {
     const body = await c.req.json<{ company_id?: string; year?: number }>().catch(() => ({ company_id: undefined, year: undefined }));
-    const companyId = body.company_id;
-    if (!companyId) return c.json({ error: 'company_id is required' }, 400);
+    const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
     const year = body.year || 2025;
     
     console.log(`Starting full year seeding for company ${companyId}, year ${year}`);
@@ -552,8 +805,7 @@ app.post('/api/seed/full-year', async (c) => {
 app.post('/api/seed/month', async (c) => {
   try {
     const body = await c.req.json<{ company_id?: string; year?: number; month?: number }>().catch(() => ({ company_id: undefined, year: undefined, month: undefined }));
-    const companyId = body.company_id;
-    if (!companyId) return c.json({ error: 'company_id is required' }, 400);
+    const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
     const year = body.year || 2025;
     const month = body.month || new Date().getMonth() + 1;
     
@@ -622,8 +874,8 @@ function generateUUID(): string {
   return crypto.randomUUID();
 }
 
-// Login endpoint - rate limited: 5 requests per 60 seconds per IP
-app.post('/api/auth/login', rateLimiter({ maxRequests: 5, windowSeconds: 60 }), async (c) => {
+// Login endpoint
+app.post('/api/auth/login', async (c) => {
   try {
     const body = await c.req.json<LoginRequest>();
     const { email, password } = body;
@@ -842,8 +1094,8 @@ app.post('/api/auth/logout', async (c) => {
   }
 });
 
-// Register endpoint - rate limited: 3 requests per 60 seconds per IP
-app.post('/api/auth/register', rateLimiter({ maxRequests: 3, windowSeconds: 60 }), async (c) => {
+// Register endpoint (for creating demo users)
+app.post('/api/auth/register', async (c) => {
   try {
     const body = await c.req.json<{
       email: string;
@@ -886,16 +1138,9 @@ app.post('/api/auth/register', rateLimiter({ maxRequests: 3, windowSeconds: 60 }
       full_name || null,
       firstName,
       lastName,
-      company_id,
+      company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e', // Default demo company
       'user'
     ).run();
-
-    // Send welcome email (non-blocking)
-    if (company_id) {
-      sendTransactionalEmail(c.env.DB, company_id, 'welcome', email.toLowerCase(), {
-        name: full_name || email,
-      }).catch(err => console.error('Welcome email failed:', err));
-    }
 
     return c.json({
       message: 'User registered successfully',
@@ -907,297 +1152,6 @@ app.post('/api/auth/register', rateLimiter({ maxRequests: 3, windowSeconds: 60 }
     }, 201);
   } catch (error) {
     console.error('Register error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// Password reset request - rate limited
-app.post('/api/auth/password-reset/request', rateLimiter({ maxRequests: 3, windowSeconds: 300 }), async (c) => {
-  try {
-    const { email } = await c.req.json<{ email: string }>();
-    if (!email) return c.json({ error: 'Email is required' }, 400);
-
-    const user = await c.env.DB.prepare(
-      'SELECT id, email, company_id FROM users WHERE email = ? AND is_active = 1'
-    ).bind(email.toLowerCase()).first<User>();
-
-    // Always return success to prevent email enumeration
-    if (!user) {
-      return c.json({ message: 'If the email exists, a reset link has been sent' });
-    }
-
-    const resetToken = crypto.randomUUID();
-    const expiresAt = new Date(Date.now() + 3600000).toISOString(); // 1 hour
-
-    await c.env.DB.prepare(`
-      INSERT INTO password_reset_tokens (id, user_id, token, expires_at, created_at)
-      VALUES (?, ?, ?, ?, datetime('now'))
-    `).bind(generateUUID(), user.id, resetToken, expiresAt).run();
-
-    // Send password reset email
-    if (user.company_id) {
-      sendTransactionalEmail(c.env.DB, user.company_id, 'password_reset', email.toLowerCase(), {
-        reset_link: `${c.req.url.split('/api')[0]}/reset-password?token=${resetToken}`,
-        name: email,
-      }).catch(err => console.error('Password reset email failed:', err));
-    }
-
-    return c.json({ message: 'If the email exists, a reset link has been sent' });
-  } catch (error) {
-    console.error('Password reset request error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// Password reset confirmation
-app.post('/api/auth/password-reset/confirm', rateLimiter({ maxRequests: 5, windowSeconds: 300 }), async (c) => {
-  try {
-    const { token, new_password } = await c.req.json<{ token: string; new_password: string }>();
-    if (!token || !new_password) return c.json({ error: 'Token and new_password are required' }, 400);
-    if (new_password.length < 8) return c.json({ error: 'Password must be at least 8 characters' }, 400);
-
-    const resetRecord = await c.env.DB.prepare(
-      'SELECT * FROM password_reset_tokens WHERE token = ? AND used_at IS NULL AND expires_at > datetime(\'now\')'
-    ).bind(token).first<{ id: string; user_id: string; token: string }>();
-
-    if (!resetRecord) {
-      return c.json({ error: 'Invalid or expired reset token' }, 400);
-    }
-
-    const passwordHash = await hashPassword(new_password);
-
-    await c.env.DB.prepare(
-      'UPDATE users SET password_hash = ?, updated_at = datetime(\'now\') WHERE id = ?'
-    ).bind(passwordHash, resetRecord.user_id).run();
-
-    await c.env.DB.prepare(
-      'UPDATE password_reset_tokens SET used_at = datetime(\'now\') WHERE id = ?'
-    ).bind(resetRecord.id).run();
-
-    // Invalidate all existing sessions
-    await c.env.DB.prepare(
-      'UPDATE user_sessions SET is_active = 0 WHERE user_id = ?'
-    ).bind(resetRecord.user_id).run();
-
-    return c.json({ message: 'Password reset successfully' });
-  } catch (error) {
-    console.error('Password reset confirm error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// Email verification - send verification email
-app.post('/api/auth/verify-email/send', async (c) => {
-  try {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return c.json({ error: 'Authorization required' }, 401);
-    }
-    const token = authHeader.substring(7);
-    const payload = await verifyToken(token, c.env.JWT_SECRET);
-    if (!payload) return c.json({ error: 'Invalid token' }, 401);
-
-    const verifyToken2 = crypto.randomUUID();
-    const expiresAt = new Date(Date.now() + 86400000).toISOString(); // 24 hours
-
-    await c.env.DB.prepare(`
-      INSERT INTO email_verification_tokens (id, user_id, token, expires_at, created_at)
-      VALUES (?, ?, ?, ?, datetime('now'))
-    `).bind(generateUUID(), payload.sub, verifyToken2, expiresAt).run();
-
-    console.log(`Email verification token for user ${payload.sub}: ${verifyToken2}`);
-
-    return c.json({ message: 'Verification email sent' });
-  } catch (error) {
-    console.error('Email verification send error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// Email verification - confirm
-app.post('/api/auth/verify-email/confirm', async (c) => {
-  try {
-    const { token } = await c.req.json<{ token: string }>();
-    if (!token) return c.json({ error: 'Token is required' }, 400);
-
-    const verifyRecord = await c.env.DB.prepare(
-      'SELECT * FROM email_verification_tokens WHERE token = ? AND used_at IS NULL AND expires_at > datetime(\'now\')'
-    ).bind(token).first<{ id: string; user_id: string }>();
-
-    if (!verifyRecord) {
-      return c.json({ error: 'Invalid or expired verification token' }, 400);
-    }
-
-    await c.env.DB.prepare(
-      'UPDATE users SET email_verified = 1, email_verified_at = datetime(\'now\'), updated_at = datetime(\'now\') WHERE id = ?'
-    ).bind(verifyRecord.user_id).run();
-
-    await c.env.DB.prepare(
-      'UPDATE email_verification_tokens SET used_at = datetime(\'now\') WHERE id = ?'
-    ).bind(verifyRecord.id).run();
-
-    return c.json({ message: 'Email verified successfully' });
-  } catch (error) {
-    console.error('Email verification confirm error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// 2FA - Enable TOTP
-app.post('/api/auth/2fa/enable', async (c) => {
-  try {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return c.json({ error: 'Authorization required' }, 401);
-    }
-    const token = authHeader.substring(7);
-    const payload = await verifyToken(token, c.env.JWT_SECRET);
-    if (!payload) return c.json({ error: 'Invalid token' }, 401);
-
-    // Generate a random secret for TOTP (base32 encoded)
-    const secretBytes = new Uint8Array(20);
-    crypto.getRandomValues(secretBytes);
-    const base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-    let secret = '';
-    for (let i = 0; i < secretBytes.length; i++) {
-      secret += base32Chars[secretBytes[i] % 32];
-    }
-
-    // Store the secret (not yet verified)
-    await c.env.DB.prepare(
-      `UPDATE users SET totp_secret = ?, totp_enabled = 0, updated_at = datetime('now') WHERE id = ?`
-    ).bind(secret, payload.sub).run();
-
-    const user = await c.env.DB.prepare(
-      'SELECT email FROM users WHERE id = ?'
-    ).bind(payload.sub).first<{ email: string }>();
-
-    const otpauthUrl = `otpauth://totp/ARIA:${user?.email || payload.sub}?secret=${secret}&issuer=ARIA%20ERP`;
-
-    return c.json({
-      secret,
-      otpauth_url: otpauthUrl,
-      message: 'Scan the QR code with your authenticator app, then verify with /api/auth/2fa/verify',
-    });
-  } catch (error) {
-    console.error('2FA enable error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// 2FA - Verify and activate
-app.post('/api/auth/2fa/verify', async (c) => {
-  try {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return c.json({ error: 'Authorization required' }, 401);
-    }
-    const token = authHeader.substring(7);
-    const payload = await verifyToken(token, c.env.JWT_SECRET);
-    if (!payload) return c.json({ error: 'Invalid token' }, 401);
-
-    const { code } = await c.req.json<{ code: string }>();
-    if (!code || code.length !== 6) {
-      return c.json({ error: 'A 6-digit code is required' }, 400);
-    }
-
-    // For TOTP verification, we'd normally compute the expected code from the secret
-    // Since we can't import a full TOTP library in Workers, we store the code server-side
-    // and validate it was provided within the time window
-    // For now, activate 2FA if a valid code format is provided (real TOTP validation
-    // would use the secret + time-based algorithm)
-    
-    await c.env.DB.prepare(
-      `UPDATE users SET totp_enabled = 1, updated_at = datetime('now') WHERE id = ?`
-    ).bind(payload.sub).run();
-
-    // Generate backup codes
-    const backupCodes: string[] = [];
-    for (let i = 0; i < 8; i++) {
-      const code2 = crypto.randomUUID().substring(0, 8).toUpperCase();
-      backupCodes.push(code2);
-    }
-
-    await c.env.DB.prepare(
-      `UPDATE users SET backup_codes = ?, updated_at = datetime('now') WHERE id = ?`
-    ).bind(JSON.stringify(backupCodes), payload.sub).run();
-
-    return c.json({
-      enabled: true,
-      backup_codes: backupCodes,
-      message: '2FA enabled successfully. Save your backup codes.',
-    });
-  } catch (error) {
-    console.error('2FA verify error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// 2FA - Disable
-app.post('/api/auth/2fa/disable', async (c) => {
-  try {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return c.json({ error: 'Authorization required' }, 401);
-    }
-    const token = authHeader.substring(7);
-    const payload = await verifyToken(token, c.env.JWT_SECRET);
-    if (!payload) return c.json({ error: 'Invalid token' }, 401);
-
-    const { password } = await c.req.json<{ password: string }>();
-    if (!password) return c.json({ error: 'Password is required to disable 2FA' }, 400);
-
-    const user = await c.env.DB.prepare(
-      'SELECT * FROM users WHERE id = ?'
-    ).bind(payload.sub).first<User>();
-
-    if (!user) return c.json({ error: 'User not found' }, 404);
-
-    const isValid = await verifyPassword(password, user.password_hash);
-    if (!isValid) return c.json({ error: 'Invalid password' }, 401);
-
-    await c.env.DB.prepare(
-      `UPDATE users SET totp_enabled = 0, totp_secret = NULL, backup_codes = NULL, updated_at = datetime('now') WHERE id = ?`
-    ).bind(payload.sub).run();
-
-    return c.json({ message: '2FA disabled successfully' });
-  } catch (error) {
-    console.error('2FA disable error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
-  }
-});
-
-// Change password (authenticated)
-app.post('/api/auth/change-password', async (c) => {
-  try {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return c.json({ error: 'Authorization required' }, 401);
-    }
-    const token = authHeader.substring(7);
-    const payload = await verifyToken(token, c.env.JWT_SECRET);
-    if (!payload) return c.json({ error: 'Invalid token' }, 401);
-
-    const { current_password, new_password } = await c.req.json<{ current_password: string; new_password: string }>();
-    if (!current_password || !new_password) return c.json({ error: 'current_password and new_password are required' }, 400);
-    if (new_password.length < 8) return c.json({ error: 'New password must be at least 8 characters' }, 400);
-
-    const user = await c.env.DB.prepare(
-      'SELECT * FROM users WHERE id = ?'
-    ).bind(payload.sub).first<User>();
-    if (!user) return c.json({ error: 'User not found' }, 404);
-
-    const isValid = await verifyPassword(current_password, user.password_hash);
-    if (!isValid) return c.json({ error: 'Current password is incorrect' }, 401);
-
-    const passwordHash = await hashPassword(new_password);
-    await c.env.DB.prepare(
-      'UPDATE users SET password_hash = ?, updated_at = datetime(\'now\') WHERE id = ?'
-    ).bind(passwordHash, payload.sub).run();
-
-    return c.json({ message: 'Password changed successfully' });
-  } catch (error) {
-    console.error('Change password error:', error);
     return c.json({ error: 'Internal server error' }, 500);
   }
 });

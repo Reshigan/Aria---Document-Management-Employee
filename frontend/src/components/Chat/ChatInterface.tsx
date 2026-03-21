@@ -222,7 +222,7 @@ const MessageBubble: React.FC<{ message: Message; isStreaming?: boolean }> = ({ 
       <div className={`flex-none w-10 h-10 rounded-full flex items-center justify-center shadow-md ${
         isUser ? 'bg-gradient-to-br from-blue-500 to-cyan-500' : 'bg-gradient-to-br from-purple-500 to-pink-500'
       }`}>
-        {isUser ? <User className="w-5 h-5 text-white" /> : <Agent className="w-5 h-5 text-white" />}
+        {isUser ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
       </div>
       <div className="flex-1 max-w-3xl">
         <div className={`rounded-2xl px-5 py-3 shadow-md ${
@@ -232,7 +232,7 @@ const MessageBubble: React.FC<{ message: Message; isStreaming?: boolean }> = ({ 
           {isStreaming && <span className="inline-block w-2 h-4 bg-purple-500 ml-1 animate-pulse" />}
         </div>
         <p className={`text-xs text-slate-500 mt-1 ${isUser ? 'text-right' : 'text-left'}`}>
-          {new Date(message.timestamp).toLocaleTimeString()}
+          {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : '-'}
         </p>
       </div>
     </div>

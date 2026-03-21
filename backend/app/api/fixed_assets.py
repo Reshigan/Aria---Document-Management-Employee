@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.user import User
+from app.models.user import User
 from app.models.fixed_asset import FixedAsset, AssetStatus
 from app.services.fixed_assets_service import FixedAssetsService
 

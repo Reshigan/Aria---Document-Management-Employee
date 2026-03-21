@@ -5,8 +5,8 @@
 /**
  * Format a number as South African Rand currency
  */
-export const formatCurrency = (amount: number | string): string => {
-  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+export const formatCurrency = (amount: number | string | null | undefined): string => {
+  const num = typeof amount === 'string' ? parseFloat(amount) || 0 : Number(amount ?? 0);
   return new Intl.NumberFormat('en-ZA', {
     style: 'currency',
     currency: 'ZAR',
@@ -44,8 +44,8 @@ export const formatDateTime = (date: string | Date): string => {
 /**
  * Format a number with thousand separators
  */
-export const formatNumber = (num: number | string, decimals: number = 0): string => {
-  const n = typeof num === 'string' ? parseFloat(num) : num;
+export const formatNumber = (num: number | string | null | undefined, decimals: number = 0): string => {
+  const n = typeof num === 'string' ? parseFloat(num) || 0 : Number(num ?? 0);
   return new Intl.NumberFormat('en-ZA', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
@@ -55,8 +55,8 @@ export const formatNumber = (num: number | string, decimals: number = 0): string
 /**
  * Format a percentage
  */
-export const formatPercentage = (num: number | string, decimals: number = 1): string => {
-  const n = typeof num === 'string' ? parseFloat(num) : num;
+export const formatPercentage = (num: number | string | null | undefined, decimals: number = 1): string => {
+  const n = typeof num === 'string' ? parseFloat(num) || 0 : Number(num ?? 0);
   return `${formatNumber(n, decimals)}%`;
 };
 

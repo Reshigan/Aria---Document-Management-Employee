@@ -1,105 +1,136 @@
-import React, { useState, useEffect } from 'react';
-import { Workflow, Play, Clock, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Workflow, Play, Clock, RefreshCw, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
+import api from '../../services/api';
 
-interface WorkflowInstance {
+interface ApprovalWorkflow {
   id: string;
-  type: string;
-  initiator: string;
-  status: 'In Progress' | 'Pending Approval' | 'Completed' | 'Failed';
-  step: string;
-  started_at: string;
-  updated_at: string;
+  workflow_name: string;
+  document_type: string;
+  is_active: number;
+  step_count?: number;
+  created_at: string;
 }
 
-interface WorkflowType {
+interface PendingApproval {
   id: string;
-  name: string;
-  description: string;
-  steps_count: number;
+  workflow_name: string;
+  document_type: string;
+  document_id: string;
+  document_number: string;
+  amount: number;
+  status: string;
+  requested_at: string;
+  requested_by_name?: string;
+  notes?: string;
 }
+
+const DOC_TYPES = [
+  { value: 'purchase_order', label: 'Purchase Order' },
+  { value: 'payment', label: 'Payment' },
+  { value: 'journal_entry', label: 'Journal Entry' },
+  { value: 'leave_request', label: 'Leave Request' },
+  { value: 'expense', label: 'Expense' },
+  { value: 'invoice', label: 'Invoice' },
+];
 
 export default function WorkflowManagementPage() {
   const [loading, setLoading] = useState(true);
-  const [workflows, setWorkflows] = useState<WorkflowInstance[]>([]);
-  const [workflowTypes, setWorkflowTypes] = useState<WorkflowType[]>([]);
-  const [showStartModal, setShowStartModal] = useState(false);
+  const [workflows, setWorkflows] = useState<ApprovalWorkflow[]>([]);
+  const [approvals, setApprovals] = useState<PendingApproval[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newWorkflow, setNewWorkflow] = useState({ workflow_name: '', document_type: '' });
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  const fetchWorkflows = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
-      const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-      const [instancesRes, typesRes] = await Promise.all([
-        fetch(`${API_BASE}/api/workflows/instances`, { headers }),
-        fetch(`${API_BASE}/api/workflows/types`, { headers })
+      const [wfRes, apRes] = await Promise.all([
+        api.get('/approvals/workflows'),
+        api.get('/approvals/all'),
       ]);
-      if (instancesRes.ok) setWorkflows(await instancesRes.json());
-      if (typesRes.ok) setWorkflowTypes(await typesRes.json());
-    } catch (err) {
-      console.error('Error fetching workflows:', err);
-      // Fallback data
-      setWorkflows([
-        { id: 'WF-001', type: 'Procure-to-Pay', initiator: 'John Doe', status: 'In Progress', step: '3/5', started_at: '2026-01-15', updated_at: '2026-01-15' },
-        { id: 'WF-002', type: 'Order-to-Cash', initiator: 'Jane Smith', status: 'Pending Approval', step: '2/4', started_at: '2026-01-14', updated_at: '2026-01-15' }
-      ]);
-      setWorkflowTypes([
-        { id: 'p2p', name: 'Procure-to-Pay', description: 'PR → RFQ → PO → GRN → Invoice', steps_count: 5 },
-        { id: 'o2c', name: 'Order-to-Cash', description: 'Quote → Order → Delivery → Invoice', steps_count: 4 },
-        { id: 'h2r', name: 'Hire-to-Retire', description: 'Recruit → Onboard → Payroll → Exit', steps_count: 4 }
-      ]);
+      setWorkflows(wfRes.data?.workflows || wfRes.data?.data?.workflows || []);
+      setApprovals(apRes.data?.approvals || apRes.data?.data?.approvals || []);
+    } catch {
+      setWorkflows([]);
+      setApprovals([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchWorkflows();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
-  const handleStartWorkflow = async (typeId: string) => {
+  const handleCreateWorkflow = async () => {
+    if (!newWorkflow.workflow_name || !newWorkflow.document_type) return;
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev';
-      await fetch(`${API_BASE}/api/workflows/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-        body: JSON.stringify({ type_id: typeId })
-      });
-      setShowStartModal(false);
-      await fetchWorkflows();
-    } catch (err) {
-      console.error('Failed to start workflow:', err);
+      await api.post('/approvals/workflows', newWorkflow);
+      setMessage('Workflow created successfully');
+      setShowCreateModal(false);
+      setNewWorkflow({ workflow_name: '', document_type: '' });
+      fetchData();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to create workflow');
+    }
+  };
+
+  const handleApprove = async (id: string) => {
+    try {
+      await api.post(`/approvals/${id}/approve`, { notes: 'Approved' });
+      setMessage('Approved successfully');
+      fetchData();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to approve');
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    const reason = prompt('Rejection reason:');
+    if (!reason) return;
+    try {
+      await api.post(`/approvals/${id}/reject`, { reason });
+      setMessage('Rejected');
+      fetchData();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to reject');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30">
-              <Workflow className="h-7 w-7 text-white" />
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl">
+              <Workflow className="h-6 w-6 text-white" />
             </div>
-            Workflow Management
+            Approval Workflows
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 ml-14">Manage and monitor business workflows</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300 ml-14">Manage approval workflows and pending approvals</p>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={fetchWorkflows}
-            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-          >
+        <div className="flex gap-2">
+          <button onClick={fetchData} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
             <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          <button
-            onClick={() => setShowStartModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all"
-          >
-            <Play className="h-5 w-5" />
-            Start Workflow
+          <button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-medium text-sm hover:shadow-lg transition-all">
+            <Play className="h-4 w-4" />New Workflow
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-300 flex items-center gap-2">
+          <AlertCircle className="h-4 w-4" />{error}
+          <button onClick={() => setError(null)} className="ml-auto font-bold">&times;</button>
+        </div>
+      )}
+      {message && (
+        <div className="mb-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-sm text-green-700 dark:text-green-300 flex items-center gap-2">
+          <CheckCircle className="h-4 w-4" />{message}
+          <button onClick={() => setMessage(null)} className="ml-auto font-bold">&times;</button>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
@@ -107,66 +138,89 @@ export default function WorkflowManagementPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {workflowTypes.map((wf) => (
-              <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow cursor-pointer">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{wf.name}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{wf.description}</p>
-                <span className="text-xs text-indigo-600 dark:text-indigo-400">{wf.steps_count} steps</span>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+            {workflows.map((wf) => (
+              <div key={wf.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-3 hover:shadow-md transition-shadow">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">{wf.workflow_name}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-300 capitalize mb-2">{(wf.document_type || '').replace(/_/g, ' ')}</p>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${wf.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                    {wf.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                  {wf.step_count !== undefined && <span className="text-xs text-indigo-600">{wf.step_count} steps</span>}
+                </div>
               </div>
             ))}
+            {workflows.length === 0 && (
+              <div className="col-span-full text-center py-6 text-gray-500 text-sm">No workflows configured. Create one to get started.</div>
+            )}
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Active Workflows</h3>
-            <DataTable
-              data={workflows}
-              columns={[
-                { key: 'id', label: 'Workflow ID' },
-                { key: 'type', label: 'Type' },
-                { key: 'initiator', label: 'Initiated By' },
-                { key: 'step', label: 'Progress' },
-                { key: 'status', label: 'Status', render: (row: WorkflowInstance) => (
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    row.status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
-                    row.status === 'In Progress' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
-                    row.status === 'Pending Approval' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                  }`}>{row.status}</span>
-                )}
-              ]}
-              searchable={true}
-              exportable={false}
-            />
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Pending Approvals</h3>
+            {approvals.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Clock className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                <p>No pending approvals</p>
+              </div>
+            ) : (
+              <DataTable
+                data={approvals}
+                columns={[
+                  { key: 'document_number', label: 'Document' },
+                  { key: 'document_type', label: 'Type', render: (row: PendingApproval) => <span className="capitalize">{(row.document_type || '').replace(/_/g, ' ')}</span> },
+                  { key: 'amount', label: 'Amount', render: (row: PendingApproval) => `R ${Number(row.amount || 0).toFixed(2)}` },
+                  { key: 'requested_by_name', label: 'Requested By' },
+                  { key: 'status', label: 'Status', render: (row: PendingApproval) => (
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      row.status === 'approved' ? 'bg-green-100 text-green-800' :
+                      row.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>{row.status}</span>
+                  )},
+                  { key: 'requested_at', label: 'Date', render: (row: PendingApproval) => row.requested_at ? new Date(row.requested_at).toLocaleDateString() : '' },
+                  { key: 'actions', label: 'Actions', render: (row: PendingApproval) => row.status === 'pending' ? (
+                    <div className="flex gap-1">
+                      <button onClick={() => handleApprove(row.id)} className="p-1 text-green-600 hover:bg-green-50 rounded" title="Approve"><CheckCircle className="h-4 w-4" /></button>
+                      <button onClick={() => handleReject(row.id)} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Reject"><XCircle className="h-4 w-4" /></button>
+                    </div>
+                  ) : null },
+                ]}
+                searchable={true}
+                exportable={false}
+              />
+            )}
           </div>
         </>
       )}
 
-      {showStartModal && (
+      {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-indigo-500 to-purple-500">
-              <h2 className="text-xl font-bold text-white">Start New Workflow</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-indigo-500 to-purple-500">
+              <h2 className="text-lg font-bold text-white">Create Approval Workflow</h2>
             </div>
-            <div className="p-6 space-y-3">
-              {workflowTypes.map((wf) => (
-                <button
-                  key={wf.id}
-                  onClick={() => handleStartWorkflow(wf.id)}
-                  className="w-full p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-left hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors"
-                >
-                  <div className="font-medium text-gray-900 dark:text-white">{wf.name}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{wf.description}</div>
-                </button>
-              ))}
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Workflow Name</label>
+                <input type="text" value={newWorkflow.workflow_name} onChange={e => setNewWorkflow({ ...newWorkflow, workflow_name: e.target.value })}
+                  placeholder="e.g. PO Approval > R10,000"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Document Type</label>
+                <select value={newWorkflow.document_type} onChange={e => setNewWorkflow({ ...newWorkflow, document_type: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm">
+                  <option value="">Select type...</option>
+                  {DOC_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                </select>
+              </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={() => setShowStartModal(false)}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                Cancel
-              </button>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex gap-2">
+              <button onClick={handleCreateWorkflow} disabled={!newWorkflow.workflow_name || !newWorkflow.document_type}
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">Create</button>
+              <button onClick={() => setShowCreateModal(false)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
             </div>
           </div>
         </div>

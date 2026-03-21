@@ -14,7 +14,7 @@ import io
 
 from core.database import get_db
 from core.auth import get_current_user
-from models.user import User
+from app.models.user import User
 from app.models.banking import (
     BankAccount, BankTransaction, BankReconciliation, BankRule,
     BankAccountType, TransactionType, ReconciliationStatus, RuleConditionType

@@ -2,9 +2,9 @@
 ARIA ERP - User & Role Models
 """
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Text
-from app.models.types import GUID, JSONType
+from .types import GUID, JSONType
 from sqlalchemy.orm import relationship
-from app.models.base import BaseModel
+from .base import BaseModel
 
 
 class User(BaseModel):

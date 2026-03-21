@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Receipt, RefreshCw, Download, Calendar } from 'lucide-react';
 import { DataTable } from '../../components/shared/DataTable';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://aria-api.reshigan-085.workers.dev/api';
+
+
 interface ExpenseClaim {
   id: string;
   employee: string;
@@ -36,8 +39,8 @@ export default function ExpenseManagementReportPage() {
     setLoading(true);
     try {
       const [claimsRes, summaryRes] = await Promise.all([
-        fetch(`/api/reports/expenses/claims?start_date=${dateRange.start}&end_date=${dateRange.end}`),
-        fetch(`/api/reports/expenses/summary?start_date=${dateRange.start}&end_date=${dateRange.end}`)
+        fetch(`${API_BASE}/reports/expenses/claims?start_date=${dateRange.start}&end_date=${dateRange.end}`),
+        fetch(`${API_BASE}/reports/expenses/summary?start_date=${dateRange.start}&end_date=${dateRange.end}`)
       ]);
       if (claimsRes.ok) setClaims(await claimsRes.json());
       if (summaryRes.ok) setSummary(await summaryRes.json());
@@ -70,7 +73,7 @@ export default function ExpenseManagementReportPage() {
 
   const handleExport = async () => {
     try {
-      const response = await fetch(`/api/reports/expenses/export?start_date=${dateRange.start}&end_date=${dateRange.end}&format=csv`);
+      const response = await fetch(`${API_BASE}/reports/expenses/export?start_date=${dateRange.start}&end_date=${dateRange.end}&format=csv`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -91,25 +94,31 @@ export default function ExpenseManagementReportPage() {
     { label: 'Rejected', value: summary.rejected, color: 'red' }
   ] : [];
 
+  const accuracyValue = Math.round(Number(summary?.auto_coding_accuracy) || 0);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
             <Receipt className="h-8 w-8 text-indigo-600" />
             Expense Management Report
           </h1>
           <div className="flex gap-3 items-center">
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-gray-500" />
+              <label htmlFor="expense-start-date" className="sr-only">Start Date</label>
               <input
+                id="expense-start-date"
                 type="date"
                 value={dateRange.start}
                 onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               />
               <span className="text-gray-500">to</span>
+              <label htmlFor="expense-end-date" className="sr-only">End Date</label>
               <input
+                id="expense-end-date"
                 type="date"
                 value={dateRange.end}
                 onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
@@ -118,7 +127,9 @@ export default function ExpenseManagementReportPage() {
             </div>
             <button
               onClick={fetchExpenseData}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              aria-label="Refresh expense data"
+              title="Refresh expense data"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -140,9 +151,9 @@ export default function ExpenseManagementReportPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               {stats.map((stat) => (
-                <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</div>
-                  <div className={`text-3xl font-bold mt-2 ${
+                <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.label}</div>
+                  <div className={`text-2xl font-bold mt-2 ${
                     stat.color === 'indigo' ? 'text-indigo-600 dark:text-indigo-400' :
                     stat.color === 'green' ? 'text-green-600 dark:text-green-400' :
                     stat.color === 'yellow' ? 'text-yellow-600 dark:text-yellow-400' :
@@ -152,24 +163,30 @@ export default function ExpenseManagementReportPage() {
               ))}
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Auto-Coding Accuracy: {summary?.auto_coding_accuracy || 0}%</h3>
-              <p className="text-gray-600 dark:text-gray-400">{summary?.auto_coded_count || 0} of {summary?.total_claims || 0} claims auto-coded successfully</p>
+              <p className="text-gray-600 dark:text-gray-300">{summary?.auto_coded_count || 0} of {summary?.total_claims || 0} claims auto-coded successfully</p>
               <div className="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                {/* eslint-disable-next-line react/forbid-component-props */}
                 <div 
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full" 
-                  style={{ width: `${summary?.auto_coding_accuracy || 0}%` }}
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-300" 
+                  style={{ width: `${Math.min(summary?.auto_coding_accuracy || 0, 100)}%` }}
+                  role="progressbar"
+                  aria-valuenow={accuracyValue}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`Auto-coding accuracy: ${summary?.auto_coding_accuracy || 0} percent`}
                 ></div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
               <DataTable data={claims} columns={[
                 { key: 'employee', label: 'Employee' },
                 { key: 'department', label: 'Department' },
                 { key: 'category', label: 'Category' },
-                { key: 'amount', label: 'Amount', render: (r: any) => `R ${r.amount.toLocaleString()}` },
-                { key: 'submitted_date', label: 'Submitted', render: (r: any) => new Date(r.submitted_date).toLocaleDateString() },
+                { key: 'amount', label: 'Amount', render: (r: any) => `R ${Number(r.amount ?? 0).toLocaleString()}` },
+                { key: 'submitted_date', label: 'Submitted', render: (r: any) => r.submitted_date ? new Date(r.submitted_date).toLocaleDateString() : '-' },
                 { key: 'status', label: 'Status', render: (r: any) => (
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     r.status === 'Approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :

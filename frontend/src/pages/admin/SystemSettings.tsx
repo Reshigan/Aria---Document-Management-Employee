@@ -140,7 +140,7 @@ export default function SystemSettingsPage() {
   };
 
   const auditColumns = [
-    { key: 'timestamp', label: 'Date/Time', render: (log: AuditLog) => new Date(log.timestamp).toLocaleString() },
+    { key: 'timestamp', label: 'Date/Time', render: (log: AuditLog) => log.timestamp ? new Date(log.timestamp).toLocaleString() : '-' },
     { key: 'user', label: 'User', render: (log: AuditLog) => log.user_email },
     { key: 'action', label: 'Action', render: (log: AuditLog) => log.action },
     { key: 'resource', label: 'Resource', render: (log: AuditLog) => log.resource },
@@ -149,15 +149,15 @@ export default function SystemSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-6 max-w-6xl">
-      <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 flex items-center gap-3">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 container mx-auto p-4">
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6 flex items-center gap-3">
         <Settings className="h-8 w-8" />
         System Settings
       </h1>
@@ -186,17 +186,17 @@ export default function SystemSettingsPage() {
       </div>
 
       {activeTab === 'audit' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="p-4 border-b border-gray-100 dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">System Audit Logs</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Track all system activities and user actions</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Track all system activities and user actions</p>
           </div>
           <DataTable data={auditLogs} columns={auditColumns} searchable={true} exportable={true} exportFilename="audit-logs" />
         </div>
       )}
 
       {activeTab === 'security' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 space-y-3">
           <div>
             <h3 className="text-lg font-medium mb-4">Password Policy</h3>
             <div className="space-y-3">
@@ -278,7 +278,7 @@ export default function SystemSettingsPage() {
       )}
 
       {activeTab === 'notifications' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 space-y-3">
           <div>
             <h3 className="text-lg font-medium mb-4">Notification Channels</h3>
             <div className="space-y-3">
@@ -343,7 +343,7 @@ export default function SystemSettingsPage() {
       )}
 
       {activeTab === 'backup' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 space-y-3">
           <div>
             <h3 className="text-lg font-medium mb-4">Automated Backups</h3>
             <label className="flex items-center gap-3 mb-4">
@@ -402,11 +402,11 @@ export default function SystemSettingsPage() {
       )}
 
       {activeTab === 'api' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-medium">API Keys</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage API keys for external integrations</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Manage API keys for external integrations</p>
             </div>
             <Button onClick={() => setShowNewKeyModal(true)} className="bg-blue-600 dark:bg-blue-500 text-white">
               <Plus className="h-4 w-4 mr-2" />Create API Key
@@ -428,13 +428,13 @@ export default function SystemSettingsPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Key className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">No API keys created yet</p>
+              <Key className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-300">No API keys created yet</p>
             </div>
           )}
           {showNewKeyModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700-xl max-w-md w-full p-4">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">Create API Key</h2>
                 {copiedKey ? (
                   <div className="space-y-4">

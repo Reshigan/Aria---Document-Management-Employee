@@ -129,13 +129,11 @@ const Tasks: React.FC = () => {
     return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${styles[priority] || 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}>{priority}</span>;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-500"></div>
         </div>
@@ -144,16 +142,16 @@ const Tasks: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="projects-tasks">
+    <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="projects-tasks">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl ">
             <CheckSquare className="h-7 w-7 text-white" />
           </div>
           Project Tasks
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage and track project tasks</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage and track project tasks</p>
       </div>
 
       {error && (
@@ -164,7 +162,7 @@ const Tasks: React.FC = () => {
       )}
 
       {/* Filter Tabs and Action Button */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
         <div className="flex flex-wrap gap-2">
           {(['ALL', 'TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'] as const).map((f) => (
             <button
@@ -172,7 +170,7 @@ const Tasks: React.FC = () => {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 text-sm font-medium rounded-xl transition-all ${
                 filter === f
-                  ? 'bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg shadow-violet-500/30'
+                  ? 'bg-gradient-to-r from-violet-500 to-purple-500 text-white '
                   : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}
             >
@@ -182,7 +180,7 @@ const Tasks: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -192,47 +190,47 @@ const Tasks: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl shadow-lg shadow-gray-500/30">
-              <ListTodo className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl ">
+              <ListTodo className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'TODO').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">To Do</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'TODO').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">To Do</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <Clock className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'IN_PROGRESS').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'IN_PROGRESS').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Progress</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <AlertCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'REVIEW').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">In Review</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'REVIEW').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">In Review</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <CheckCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <CheckCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'DONE').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Done</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{tasks.filter(t => t.status === 'DONE').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Done</p>
             </div>
           </div>
         </div>
@@ -240,19 +238,19 @@ const Tasks: React.FC = () => {
 
       {/* Tasks Table */}
       {filtered.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
           <CheckSquare className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No tasks found</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Create your first task to get started</p>
+          <p className="text-gray-500 dark:text-gray-300 mb-6">Create your first task to get started</p>
           <button
             onClick={handleCreate}
-            className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 font-medium"
+            className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
           >
             Create Your First Task
           </button>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <table className="w-full" data-testid="tasks-table">
             <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
               <tr>
@@ -270,10 +268,10 @@ const Tasks: React.FC = () => {
                 <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{task.title}</td>
                   <td className="px-6 py-4 text-violet-600 dark:text-violet-400">{task.project_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{task.assigned_to || 'Unassigned'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{task.assigned_to || 'Unassigned'}</td>
                   <td className="px-6 py-4">{getPriorityBadge(task.priority)}</td>
                   <td className="px-6 py-4">{getStatusBadge(task.status)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(task.due_date)}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(task.due_date)}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2 justify-center">
                       <button onClick={() => handleEdit(task)} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
@@ -295,13 +293,13 @@ const Tasks: React.FC = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-violet-500 to-purple-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-violet-500 to-purple-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <CheckSquare className="h-6 w-6" />
                 {editingTask ? 'Edit Task' : 'New Task'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title *</label>
                 <input
@@ -311,7 +309,7 @@ const Tasks: React.FC = () => {
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Project ID</label>
                   <input
@@ -331,7 +329,7 @@ const Tasks: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Priority *</label>
                   <select
@@ -373,12 +371,12 @@ const Tasks: React.FC = () => {
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  rows={3}
+                  rows={2}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -387,7 +385,7 @@ const Tasks: React.FC = () => {
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl font-medium hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30"
+                className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl font-medium hover:from-violet-600 hover:to-purple-600 transition-all "
               >
                 Save
               </button>
@@ -401,7 +399,7 @@ const Tasks: React.FC = () => {
         title="Delete Task"
         message={`Are you sure you want to delete "${deleteConfirm.title}"? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, title: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, title: '' })}
       />
     </div>
   );

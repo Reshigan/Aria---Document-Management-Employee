@@ -127,25 +127,23 @@ const StockMovements: React.FC = () => {
     return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{type}</span>;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-6" data-testid="inventory-movements">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div className="bg-gradient-to-br from-gray-50 to-violet-50 dark:from-gray-900 dark:to-gray-800 p-4" data-testid="inventory-movements">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg shadow-violet-500/30">
+          <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl ">
             <ArrowLeftRight className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Stock Movements</h1>
-            <p className="text-gray-600 dark:text-gray-400">Track inventory movements and transfers</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Stock Movements</h1>
+            <p className="text-gray-600 dark:text-gray-300">Track inventory movements and transfers</p>
           </div>
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -160,53 +158,53 @@ const StockMovements: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <ArrowDownCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <ArrowDownCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'IN').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Stock In</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'IN').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Stock In</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <ArrowUpCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <ArrowUpCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'OUT').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Stock Out</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'OUT').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Stock Out</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-              <RefreshCw className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+              <RefreshCw className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'TRANSFER').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Transfers</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'TRANSFER').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Transfers</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <Settings className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <Settings className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'ADJUSTMENT').length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Adjustments</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{movements.filter(m => m.movement_type === 'ADJUSTMENT').length}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Adjustments</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <table className="w-full" data-testid="movements-table">
           <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
             <tr>
@@ -222,9 +220,9 @@ const StockMovements: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">Loading...</td></tr>
             ) : movements.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No stock movements found</td></tr>
+              <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">No stock movements found</td></tr>
             ) : (
               movements.map((movement) => (
                 <tr key={movement.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
@@ -258,17 +256,17 @@ const StockMovements: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
             <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <ArrowLeftRight className="h-5 w-5" />
                 {editingMovement ? 'Edit Stock Movement' : 'New Stock Movement'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Movement Number *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movement Number *</label>
                   <input
                     type="text"
                     value={form.movement_number}
@@ -277,7 +275,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Name *</label>
                   <input
                     type="text"
                     value={form.product_name}
@@ -288,7 +286,7 @@ const StockMovements: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse From</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse From</label>
                   <input
                     type="text"
                     value={form.warehouse_from}
@@ -297,7 +295,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse To</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Warehouse To</label>
                   <input
                     type="text"
                     value={form.warehouse_to}
@@ -308,7 +306,7 @@ const StockMovements: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quantity *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity *</label>
                   <input
                     type="number"
                     value={form.quantity}
@@ -317,7 +315,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Movement Type *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movement Type *</label>
                   <select
                     value={form.movement_type}
                     onChange={(e) => setForm({ ...form, movement_type: e.target.value as any })}
@@ -332,7 +330,7 @@ const StockMovements: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Movement Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movement Date *</label>
                   <input
                     type="date"
                     value={form.movement_date}
@@ -341,7 +339,7 @@ const StockMovements: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reference</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Reference</label>
                   <input
                     type="text"
                     value={form.reference}
@@ -353,13 +351,13 @@ const StockMovements: React.FC = () => {
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all shadow-lg shadow-violet-500/30 font-medium"
+                  className="px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl hover:from-violet-600 hover:to-purple-600 transition-all  font-medium"
                 >
                   Save
                 </button>
@@ -374,7 +372,7 @@ const StockMovements: React.FC = () => {
         title="Delete Stock Movement"
         message={`Are you sure you want to delete stock movement ${deleteConfirm.number}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, number: '' })}
       />
     </div>
   );

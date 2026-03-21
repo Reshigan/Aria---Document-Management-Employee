@@ -338,21 +338,19 @@ const PayrollDashboard: React.FC = () => {
     return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA');
-  };
+  const formatDate = (dateString: string) => { if (!dateString) return "-"; const _d = new Date(dateString); return isNaN(_d.getTime()) ? dateString : _d.toLocaleDateString("en-ZA"); };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
             <DollarSign className="h-7 w-7 text-white" />
           </div>
           Payroll
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage employees, payslips, and SA tax compliance (PAYE, UIF, SDL)</p>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">Manage employees, payslips, and SA tax compliance (PAYE, UIF, SDL)</p>
       </div>
 
       {/* Error Display */}
@@ -369,7 +367,7 @@ const PayrollDashboard: React.FC = () => {
             onClick={() => setActiveTab('employees')}
             className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${
               activeTab === 'employees'
-                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white '
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
@@ -380,7 +378,7 @@ const PayrollDashboard: React.FC = () => {
             onClick={() => setActiveTab('payslips')}
             className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${
               activeTab === 'payslips'
-                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white '
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
@@ -391,7 +389,7 @@ const PayrollDashboard: React.FC = () => {
             onClick={() => setActiveTab('tax_summary')}
             className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${
               activeTab === 'tax_summary'
-                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white '
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
@@ -405,9 +403,9 @@ const PayrollDashboard: React.FC = () => {
       {activeTab === 'employees' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search employees..."
@@ -418,7 +416,7 @@ const PayrollDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreateEmployee}
-              className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30 flex items-center gap-2 font-medium"
+              className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all  flex items-center gap-2 font-medium"
             >
               <Plus className="h-5 w-5" />
               New Employee
@@ -427,54 +425,54 @@ const PayrollDashboard: React.FC = () => {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-                  <Users className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+                  <Users className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Employees</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <Users className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <Users className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Permanent</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'PERMANENT').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Permanent</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg shadow-blue-500/30">
-                  <Users className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl ">
+                  <Users className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Contract</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{employees.filter(e => e.is_active && e.employment_type === 'CONTRACT').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Contract</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <DollarSign className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(employees.filter(e => e.is_active).reduce((sum, e) => sum + e.salary, 0))}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Payroll</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(employees.filter(e => e.is_active).reduce((sum, e) => sum + (e.salary || 0), 0))}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Payroll</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Employees Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             {employeesLoading ? (
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
@@ -482,7 +480,7 @@ const PayrollDashboard: React.FC = () => {
             ) : filteredEmployees.length === 0 ? (
               <div className="px-6 py-12 text-center">
                 <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500 dark:text-gray-400">No employees found</p>
+                <p className="text-gray-500 dark:text-gray-300">No employees found</p>
               </div>
             ) : (
               <table className="w-full">
@@ -502,8 +500,8 @@ const PayrollDashboard: React.FC = () => {
                     <tr key={employee.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-6 py-4 font-medium text-green-600 dark:text-green-400">{employee.employee_number}</td>
                       <td className="px-6 py-4 text-gray-900 dark:text-white">{employee.first_name} {employee.last_name}</td>
-                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.department}</td>
-                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{employee.position}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.department}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{employee.position}</td>
                       <td className="px-6 py-4">{getEmploymentTypeBadge(employee.employment_type)}</td>
                       <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(employee.salary)}</td>
                       <td className="px-6 py-4">
@@ -529,9 +527,9 @@ const PayrollDashboard: React.FC = () => {
       {activeTab === 'payslips' && (
         <div>
           {/* Actions Bar */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-6">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-300" />
               <input
                 type="text"
                 placeholder="Search payslips..."
@@ -542,7 +540,7 @@ const PayrollDashboard: React.FC = () => {
             </div>
             <button
               onClick={handleCreatePayslip}
-              className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30 flex items-center gap-2 font-medium"
+              className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all  flex items-center gap-2 font-medium"
             >
               <Plus className="h-5 w-5" />
               New Payslip
@@ -551,54 +549,54 @@ const PayrollDashboard: React.FC = () => {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-                  <FileText className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+                  <FileText className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{payslips.length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Payslips</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{payslips.length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Payslips</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl shadow-lg shadow-gray-500/30">
-                  <FileText className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-gray-500 to-slate-500 rounded-xl ">
+                  <FileText className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'DRAFT').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Draft</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'DRAFT').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Draft</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <Check className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <Check className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'PAID').length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Paid</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{payslips.filter(p => p.status === 'PAID').length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Paid</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                  <DollarSign className="h-6 w-6 text-white" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                  <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(payslips.reduce((sum, p) => sum + p.net_salary, 0))}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Net Pay</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(payslips.reduce((sum, p) => sum + (p.net_salary || 0), 0))}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300">Total Net Pay</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Payslips Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             {payslipsLoading ? (
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
@@ -606,7 +604,7 @@ const PayrollDashboard: React.FC = () => {
             ) : filteredPayslips.length === 0 ? (
               <div className="px-6 py-12 text-center">
                 <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500 dark:text-gray-400">No payslips found</p>
+                <p className="text-gray-500 dark:text-gray-300">No payslips found</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -629,10 +627,10 @@ const PayrollDashboard: React.FC = () => {
                       <tr key={payslip.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-6 py-4 font-medium text-green-600 dark:text-green-400">{payslip.payslip_number}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white">{payslip.employee_name || `Employee #${payslip.employee_id}`}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatDate(payslip.pay_period_start)} - {formatDate(payslip.pay_period_end)}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.gross_salary)}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.paye)}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{formatCurrency(payslip.uif)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatDate(payslip.pay_period_start)} - {formatDate(payslip.pay_period_end)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(payslip.gross_salary)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(payslip.paye)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{formatCurrency(payslip.uif)}</td>
                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(payslip.net_salary)}</td>
                         <td className="px-6 py-4">{getStatusBadge(payslip.status)}</td>
                         <td className="px-6 py-4">
@@ -676,48 +674,48 @@ const PayrollDashboard: React.FC = () => {
             <div>
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">SA Tax Compliance Summary</h2>
-                <p className="text-gray-500 dark:text-gray-400">Period: {taxSummary.period}</p>
+                <p className="text-gray-500 dark:text-gray-300">Period: {taxSummary.period}</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-                      <Calculator className="h-6 w-6 text-white" />
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+                      <Calculator className="h-5 w-5 text-white" />
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Total PAYE (Pay As You Earn)</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Total PAYE (Pay As You Earn)</div>
                   </div>
-                  <div className="text-3xl font-bold text-red-600 dark:text-red-400">{formatCurrency(taxSummary.total_paye)}</div>
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">Income tax withheld from employees</div>
+                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(taxSummary.total_paye)}</div>
+                  <div className="text-xs text-gray-300 dark:text-gray-500 mt-2">Income tax withheld from employees</div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/30">
-                      <Calculator className="h-6 w-6 text-white" />
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl ">
+                      <Calculator className="h-5 w-5 text-white" />
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Total UIF (Unemployment Insurance Fund)</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Total UIF (Unemployment Insurance Fund)</div>
                   </div>
-                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(taxSummary.total_uif)}</div>
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">1% of gross salary (max R17,712/month)</div>
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(taxSummary.total_uif)}</div>
+                  <div className="text-xs text-gray-300 dark:text-gray-500 mt-2">1% of gross salary (max R17,712/month)</div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-                      <Calculator className="h-6 w-6 text-white" />
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+                      <Calculator className="h-5 w-5 text-white" />
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Total SDL (Skills Development Levy)</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">Total SDL (Skills Development Levy)</div>
                   </div>
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">{formatCurrency(taxSummary.total_sdl)}</div>
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">1% of total payroll</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">{formatCurrency(taxSummary.total_sdl)}</div>
+                  <div className="text-xs text-gray-300 dark:text-gray-500 mt-2">1% of total payroll</div>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Total Tax Liability</h3>
                 <div className="text-5xl font-bold text-gray-900 dark:text-white">
                   {formatCurrency(taxSummary.total_paye + taxSummary.total_uif + taxSummary.total_sdl)}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                <div className="text-xs text-gray-500 dark:text-gray-300 mt-2">
                   Amount to be paid to SARS via EMP201 submission
                 </div>
               </div>
@@ -725,7 +723,7 @@ const PayrollDashboard: React.FC = () => {
           ) : (
             <div className="px-6 py-12 text-center">
               <Calculator className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-500 dark:text-gray-400">No tax summary available</p>
+              <p className="text-gray-500 dark:text-gray-300">No tax summary available</p>
             </div>
           )}
         </div>
@@ -735,14 +733,14 @@ const PayrollDashboard: React.FC = () => {
       {showEmployeeModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <Users className="h-6 w-6" />
                 {editingEmployee ? 'Edit Employee' : 'New Employee'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name *</label>
                   <input
@@ -750,6 +748,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.first_name}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, first_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="First name"
                   />
                 </div>
                 <div>
@@ -759,10 +758,11 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.last_name}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, last_name: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Last name"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
                   <input
@@ -770,6 +770,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.email}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, email: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Email address"
                   />
                 </div>
                 <div>
@@ -779,10 +780,11 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.phone}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, phone: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Phone number"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Department *</label>
                   <input
@@ -790,6 +792,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.department}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, department: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Department"
                   />
                 </div>
                 <div>
@@ -799,16 +802,18 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.position}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, position: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Position"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employment Type *</label>
                   <select
                     value={employeeForm.employment_type}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, employment_type: e.target.value as 'PERMANENT' | 'CONTRACT' | 'TEMPORARY' })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Employment type"
                   >
                     <option value="PERMANENT">Permanent</option>
                     <option value="CONTRACT">Contract</option>
@@ -823,6 +828,7 @@ const PayrollDashboard: React.FC = () => {
                     value={employeeForm.salary}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, salary: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Monthly salary in ZAR"
                   />
                 </div>
               </div>
@@ -838,7 +844,7 @@ const PayrollDashboard: React.FC = () => {
                 </label>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowEmployeeModal(false)}
                 className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -847,7 +853,7 @@ const PayrollDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSaveEmployee}
-                className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30"
+                className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-600 transition-all "
               >
                 {editingEmployee ? 'Update' : 'Create'}
               </button>
@@ -860,13 +866,13 @@ const PayrollDashboard: React.FC = () => {
       {showPayslipModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-t-2xl">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-t-2xl">
               <h2 className="text-xl font-bold text-white flex items-center gap-3">
                 <FileText className="h-6 w-6" />
                 {editingPayslip ? 'Edit Payslip' : 'New Payslip'}
               </h2>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Employee ID *</label>
                 <input
@@ -874,9 +880,10 @@ const PayrollDashboard: React.FC = () => {
                   value={payslipForm.employee_id}
                   onChange={(e) => setPayslipForm({ ...payslipForm, employee_id: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  aria-label="Employee ID"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pay Period Start *</label>
                   <input
@@ -884,6 +891,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.pay_period_start}
                     onChange={(e) => setPayslipForm({ ...payslipForm, pay_period_start: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Pay period start date"
                   />
                 </div>
                 <div>
@@ -893,6 +901,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.pay_period_end}
                     onChange={(e) => setPayslipForm({ ...payslipForm, pay_period_end: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="Pay period end date"
                   />
                 </div>
               </div>
@@ -904,9 +913,10 @@ const PayrollDashboard: React.FC = () => {
                   value={payslipForm.gross_salary}
                   onChange={(e) => setPayslipForm({ ...payslipForm, gross_salary: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  aria-label="Gross salary in ZAR"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PAYE (ZAR) *</label>
                   <input
@@ -915,6 +925,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.paye}
                     onChange={(e) => setPayslipForm({ ...payslipForm, paye: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="PAYE tax in ZAR"
                   />
                 </div>
                 <div>
@@ -925,6 +936,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.uif}
                     onChange={(e) => setPayslipForm({ ...payslipForm, uif: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="UIF contribution in ZAR"
                   />
                 </div>
                 <div>
@@ -935,6 +947,7 @@ const PayrollDashboard: React.FC = () => {
                     value={payslipForm.sdl}
                     onChange={(e) => setPayslipForm({ ...payslipForm, sdl: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    aria-label="SDL levy in ZAR"
                   />
                 </div>
               </div>
@@ -945,11 +958,12 @@ const PayrollDashboard: React.FC = () => {
                   step="0.01"
                   value={payslipForm.other_deductions}
                   onChange={(e) => setPayslipForm({ ...payslipForm, other_deductions: e.target.value })}
+                  aria-label="Other deductions in ZAR"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-800">
               <button
                 onClick={() => setShowPayslipModal(false)}
                 className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -958,7 +972,7 @@ const PayrollDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleSavePayslip}
-                className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg shadow-green-500/30"
+                className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium hover:from-green-600 hover:to-emerald-600 transition-all "
               >
                 {editingPayslip ? 'Update' : 'Create'}
               </button>
@@ -976,7 +990,7 @@ const PayrollDashboard: React.FC = () => {
           if (deleteConfirm.type === 'employee') handleDeleteEmployee(deleteConfirm.id);
           else if (deleteConfirm.type === 'payslip') handleDeletePayslip(deleteConfirm.id);
         }}
-        onCancel={() => setDeleteConfirm({ show: false, type: 'employee', id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, type: 'employee', id: 0, name: '' })}
       />
     </div>
   );

@@ -4,8 +4,8 @@ These tools allow the LLM to interact with the ERP system
 """
 import uuid
 from typing import Dict, List, Any, Optional
-import psycopg2
-import psycopg2.extras
+import pymysql
+import pymysql.cursors
 import logging
 from datetime import datetime, timedelta
 
@@ -19,20 +19,33 @@ class ERPTools:
         self.db_connection_string = db_connection_string
     
     def get_connection(self):
-        """Get database connection"""
-        return psycopg2.connect(self.db_connection_string)
+        """Get MySQL database connection"""
+        import re
+        match = re.match(r"mysql\+pymysql://(.*?):(.*?)@(.*?):(\d+)/(.*)", self.db_connection_string)
+        if not match:
+            raise RuntimeError("DATABASE_URL must be in the format mysql+pymysql://user:password@host:port/dbname")
+        user, password, host, port, db = match.groups()
+        return pymysql.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=db,
+            port=int(port),
+            cursorclass=pymysql.cursors.DictCursor,
+            autocommit=True
+        )
     
     def list_customers(self, company_id: str, search: Optional[str] = None, limit: int = 20) -> List[Dict[str, Any]]:
         """List customers for the company"""
         try:
             with self.get_connection() as conn:
-                with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                with conn.cursor() as cur:
                     if search:
                         cur.execute("""
                             SELECT id, name, email, phone, address, city, country
                             FROM customers
                             WHERE company_id = %s 
-                            AND (name ILIKE %s OR email ILIKE %s)
+                            AND (name LIKE %s OR email LIKE %s)
                             ORDER BY name
                             LIMIT %s
                         """, (company_id, f"%{search}%", f"%{search}%", limit))

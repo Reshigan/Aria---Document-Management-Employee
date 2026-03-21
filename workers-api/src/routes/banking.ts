@@ -655,4 +655,143 @@ app.post('/accounts/:accountId/apply-rules', async (c) => {
   }
 });
 
+// ============================================================================
+// TOP-LEVEL TRANSACTIONS & RECONCILIATIONS (frontend expects /banking/transactions, /banking/reconciliations)
+// ============================================================================
+
+app.get('/transactions', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const db = c.env.DB;
+    const transactions = await db.prepare(`
+      SELECT bt.*, ba.account_name FROM bank_transactions bt
+      LEFT JOIN bank_accounts ba ON bt.bank_account_id = ba.id
+      WHERE bt.company_id = ? ORDER BY bt.transaction_date DESC LIMIT 100
+    `).bind(companyId).all();
+    return c.json({ transactions: transactions.results });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to list transactions' }, 500);
+  }
+});
+
+app.post('/transactions', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const body = await c.req.json();
+    const db = c.env.DB;
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    await db.prepare(`
+      INSERT INTO bank_transactions (id, company_id, bank_account_id, transaction_date, description, reference, amount, type, category, is_reconciled, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)
+    `).bind(id, companyId, body.bank_account_id, body.transaction_date, body.description || '', body.reference || '', body.amount, body.type || 'debit', body.category || '', now, now).run();
+    return c.json({ success: true, id });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to create transaction' }, 500);
+  }
+});
+
+app.put('/transactions/:id', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const db = c.env.DB;
+    await db.prepare(`
+      UPDATE bank_transactions SET description = ?, reference = ?, amount = ?, type = ?, category = ?, updated_at = ?
+      WHERE id = ? AND company_id = ?
+    `).bind(body.description || '', body.reference || '', body.amount, body.type || 'debit', body.category || '', new Date().toISOString(), id, companyId).run();
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to update transaction' }, 500);
+  }
+});
+
+app.delete('/transactions/:id', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const id = c.req.param('id');
+    const db = c.env.DB;
+    await db.prepare('DELETE FROM bank_transactions WHERE id = ? AND company_id = ?').bind(id, companyId).run();
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to delete transaction' }, 500);
+  }
+});
+
+app.get('/reconciliations', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const db = c.env.DB;
+    const accounts = await db.prepare('SELECT * FROM bank_accounts WHERE company_id = ?').bind(companyId).all();
+    const reconciliations = (accounts.results as any[]).map((acct: any) => ({
+      id: acct.id,
+      account_name: acct.account_name,
+      last_reconciled_date: acct.last_reconciled_date,
+      balance: acct.current_balance,
+      status: acct.last_reconciled_date ? 'reconciled' : 'pending'
+    }));
+    return c.json({ reconciliations });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to list reconciliations' }, 500);
+  }
+});
+
+app.post('/reconciliations', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const body = await c.req.json();
+    const db = c.env.DB;
+    await db.prepare(`
+      UPDATE bank_accounts SET last_reconciled_date = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(body.reconciliation_date || new Date().toISOString().split('T')[0], new Date().toISOString(), body.bank_account_id, companyId).run();
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to create reconciliation' }, 500);
+  }
+});
+
+app.put('/reconciliations/:id', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const db = c.env.DB;
+    await db.prepare(`
+      UPDATE bank_accounts SET last_reconciled_date = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(body.reconciliation_date || new Date().toISOString().split('T')[0], new Date().toISOString(), id, companyId).run();
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to update reconciliation' }, 500);
+  }
+});
+
+app.delete('/reconciliations/:id', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const id = c.req.param('id');
+    const db = c.env.DB;
+    await db.prepare(`
+      UPDATE bank_accounts SET last_reconciled_date = NULL, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(new Date().toISOString(), id, companyId).run();
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to delete reconciliation' }, 500);
+  }
+});
+
+app.post('/reconciliations/:id/complete', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  try {
+    const id = c.req.param('id');
+    const db = c.env.DB;
+    await db.prepare(`
+      UPDATE bank_accounts SET last_reconciled_date = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(new Date().toISOString().split('T')[0], new Date().toISOString(), id, companyId).run();
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to complete reconciliation' }, 500);
+  }
+});
+
 export default app;

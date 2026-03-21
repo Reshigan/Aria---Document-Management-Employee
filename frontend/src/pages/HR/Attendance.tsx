@@ -45,7 +45,8 @@ const Attendance: React.FC = () => {
     setError('');
     try {
       const response = await api.get(`/hr/attendance?date=${selectedDate}`);
-      setRecords(response.data.records || []);
+      const d = response.data;
+      setRecords(d.records || d.attendance || (Array.isArray(d) ? d : []));
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load attendance records');
     } finally {
@@ -123,11 +124,11 @@ const Attendance: React.FC = () => {
   const presentCount = records.filter(r => r.status === 'PRESENT').length;
   const absentCount = records.filter(r => r.status === 'ABSENT').length;
   const lateCount = records.filter(r => r.status === 'LATE').length;
-  const attendanceRate = records.length > 0 ? ((presentCount + lateCount) / records.length * 100).toFixed(1) : '0.0';
+  const attendanceRate = records.length > 0 ? Number(((presentCount + lateCount) / records.length * 100) || 0).toFixed(1) : '0.0';
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-8">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
         </div>
@@ -136,21 +137,21 @@ const Attendance: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-attendance">
+    <div className="bg-gradient-to-br from-gray-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 p-8" data-testid="hr-attendance">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
               <Clock className="h-7 w-7 text-white" />
             </div>
             Attendance Tracking
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor employee attendance and work hours</p>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Monitor employee attendance and work hours</p>
         </div>
         <button
           onClick={handleCreate}
-          className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30 flex items-center gap-2 font-medium"
+          className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl hover:from-teal-600 hover:to-cyan-600 transition-all  flex items-center gap-2 font-medium"
           data-testid="create-button"
         >
           <Plus className="h-5 w-5" />
@@ -165,7 +166,7 @@ const Attendance: React.FC = () => {
       )}
 
       {/* Date Selector */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
         <div className="flex items-center gap-3">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Date:</label>
           <input
@@ -180,58 +181,58 @@ const Attendance: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-500/30">
-              <UserCheck className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl ">
+              <UserCheck className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{presentCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Present</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{presentCount}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Present</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl shadow-lg shadow-red-500/30">
-              <UserX className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl ">
+              <UserX className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{absentCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Absent</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{absentCount}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Absent</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/30">
-              <AlertCircle className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl ">
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{lateCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Late</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{lateCount}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Late</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg shadow-teal-500/30">
-              <TrendingUp className="h-6 w-6 text-white" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl ">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{attendanceRate}%</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Attendance Rate</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{attendanceRate}%</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Attendance Rate</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Attendance Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {records.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No attendance records for this date</p>
+            <p className="text-gray-500 dark:text-gray-300">No attendance records for this date</p>
           </div>
         ) : (
           <table className="w-full" data-testid="attendance-table">
@@ -250,11 +251,11 @@ const Attendance: React.FC = () => {
               {records.map((record) => (
                 <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{record.employee_name}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_in || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.check_out || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.hours_worked.toFixed(1)}h</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{record.check_in || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{record.check_out || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{Number(record.hours_worked ?? 0).toFixed(1)}h</td>
                   <td className="px-6 py-4">{getStatusBadge(record.status)}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{record.notes || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-300">{record.notes || '-'}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2 justify-center">
                       <button
@@ -289,7 +290,7 @@ const Attendance: React.FC = () => {
                 {editingRecord ? 'Edit Attendance Record' : 'New Attendance Record'}
               </h2>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Employee ID *</label>
                 <input
@@ -308,7 +309,7 @@ const Attendance: React.FC = () => {
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-5">
+              <div className="grid grid-cols-2 gap-3 mb-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Check In</label>
                   <input
@@ -347,7 +348,7 @@ const Attendance: React.FC = () => {
                 <textarea
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  rows={3}
+                  rows={2}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
@@ -360,7 +361,7 @@ const Attendance: React.FC = () => {
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg shadow-teal-500/30"
+                  className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-xl font-medium hover:from-teal-600 hover:to-cyan-600 transition-all "
                 >
                   Save
                 </button>
@@ -375,7 +376,7 @@ const Attendance: React.FC = () => {
         title="Delete Attendance Record"
         message={`Are you sure you want to delete the attendance record for ${deleteConfirm.name}? This action cannot be undone.`}
         onConfirm={() => handleDelete(deleteConfirm.id)}
-        onCancel={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
+        onClose={() => setDeleteConfirm({ show: false, id: 0, name: '' })}
       />
     </div>
   );

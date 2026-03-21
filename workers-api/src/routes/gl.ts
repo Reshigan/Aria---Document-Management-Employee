@@ -4,8 +4,7 @@
  */
 
 import { Hono } from 'hono';
-import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
-import { jwtVerify } from 'jose';
+import { getSecureCompanyId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
@@ -14,42 +13,13 @@ interface Env {
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Helper to verify JWT and get company_id
-async function getAuthenticatedCompanyId(c: any): Promise<string | null> {
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
-    const token = authHeader.substring(7);
-    const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secretKey);
-    return (payload as any).company_id || null;
-  } catch {
-    return null;
-  }
-}
-
-// Generate UUID
-function generateUUID(): string {
-  return crypto.randomUUID();
-}
-
 // ==================== CHART OF ACCOUNTS ====================
 
 // List all accounts
 app.get('/chart-of-accounts', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  if (!companyId) {
-    return c.json({ error: 'Authentication required' }, 401);
-  }
+  const companyId = await getSecureCompanyId(c);
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const search = c.req.query('search') || '';
     const type = c.req.query('type') || '';
     
@@ -82,14 +52,9 @@ app.get('/chart-of-accounts', async (c) => {
 
 // Create account
 app.post('/chart-of-accounts', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  if (!companyId) {
-    return c.json({ error: 'Authentication required' }, 401);
-  }
+  const companyId = await getSecureCompanyId(c);
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { account_code, account_name, account_type, account_category, is_active } = body;
     
@@ -106,7 +71,7 @@ app.post('/chart-of-accounts', async (c) => {
       return c.json({ error: 'Account code already exists' }, 409);
     }
     
-    const id = generateUUID();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
     
     await c.env.DB.prepare(`
@@ -131,14 +96,9 @@ app.post('/chart-of-accounts', async (c) => {
 
 // Update account
 app.put('/chart-of-accounts/:code', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  if (!companyId) {
-    return c.json({ error: 'Authentication required' }, 401);
-  }
+  const companyId = await getSecureCompanyId(c);
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const code = c.req.param('code');
     const body = await c.req.json();
     const { account_name, account_type, account_category, is_active } = body;
@@ -168,14 +128,9 @@ app.put('/chart-of-accounts/:code', async (c) => {
 
 // Delete account
 app.delete('/chart-of-accounts/:code', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  if (!companyId) {
-    return c.json({ error: 'Authentication required' }, 401);
-  }
+  const companyId = await getSecureCompanyId(c);
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const code = c.req.param('code');
     
     // Check if account has journal entries
@@ -205,14 +160,9 @@ app.delete('/chart-of-accounts/:code', async (c) => {
 
 // List journal entries
 app.get('/journal-entries', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  if (!companyId) {
-    return c.json({ error: 'Authentication required' }, 401);
-  }
+  const companyId = await getSecureCompanyId(c);
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const result = await c.env.DB.prepare(`
       SELECT je.*, 
         (SELECT GROUP_CONCAT(jel.account_id || ':' || jel.debit_amount || ':' || jel.credit_amount, '|')
@@ -244,14 +194,9 @@ app.get('/journal-entries', async (c) => {
 
 // Create journal entry
 app.post('/journal-entries', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  if (!companyId) {
-    return c.json({ error: 'Authentication required' }, 401);
-  }
+  const companyId = await getSecureCompanyId(c);
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { entry_date, description, reference, lines } = body;
     
@@ -278,12 +223,11 @@ app.post('/journal-entries', async (c) => {
       entryNumber = `JE-${String(lastNum + 1).padStart(4, '0')}`;
     }
     
-    const id = generateUUID();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
     
-    // Insert journal entry
     await c.env.DB.prepare(`
-      INSERT INTO journal_entries (id, company_id, entry_number, entry_date, description, reference, status, total_debit, total_credit, created_at, updated_at)
+      INSERT INTO journal_entries(id, company_id, entry_number, entry_date, description, reference, status, total_debit, total_credit, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, companyId, entryNumber, entry_date, description, reference || null, 'draft', totalDebits, totalCredits, now, now).run();
     
@@ -301,7 +245,7 @@ app.post('/journal-entries', async (c) => {
         return c.json({ error: `Account ${line.account_code} not found` }, 400);
       }
       
-      const lineId = generateUUID();
+      const lineId = crypto.randomUUID();
       await c.env.DB.prepare(`
         INSERT INTO journal_entry_lines (id, journal_entry_id, line_number, account_id, description, debit_amount, credit_amount)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -325,14 +269,9 @@ app.post('/journal-entries', async (c) => {
 
 // Post journal entry
 app.post('/journal-entries/:id/post', async (c) => {
-  const companyId = await getAuthenticatedCompanyId(c);
-  if (!companyId) {
-    return c.json({ error: 'Authentication required' }, 401);
-  }
+  const companyId = await getSecureCompanyId(c);
 
   try {
-    const companyId = await getSecureCompanyId(c);
-    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const id = c.req.param('id');
     
     const entry = await c.env.DB.prepare(

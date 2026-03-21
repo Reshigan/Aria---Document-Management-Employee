@@ -51,11 +51,11 @@ const AgedReceivablesReport: React.FC = () => {
   }), { current: 0, days_30: 0, days_60: 0, days_90: 0, days_90_plus: 0, total_outstanding: 0 });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Aged Receivables Report</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Outstanding balances by age</p>
+          <h1 className="text-2xl font-bold">Aged Receivables Report</h1>
+          <p className="text-gray-500 dark:text-gray-300 mt-1">Outstanding balances by age</p>
         </div>
         <button className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded hover:bg-blue-700 flex items-center">
           <Download className="w-4 h-4 mr-2" />
@@ -64,31 +64,31 @@ const AgedReceivablesReport: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-5 gap-3 mb-6">
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Current</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">Current</div>
           <div className="text-xl font-bold text-green-600 dark:text-green-400">{formatCurrency(totals.current)}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-          <div className="text-sm text-gray-500 dark:text-gray-400">1-30 Days</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">1-30 Days</div>
           <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{formatCurrency(totals.days_30)}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-          <div className="text-sm text-gray-500 dark:text-gray-400">31-60 Days</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">31-60 Days</div>
           <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400">{formatCurrency(totals.days_60)}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-          <div className="text-sm text-gray-500 dark:text-gray-400">61-90 Days</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">61-90 Days</div>
           <div className="text-xl font-bold text-orange-600">{formatCurrency(totals.days_90)}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-          <div className="text-sm text-gray-500 dark:text-gray-400">90+ Days</div>
+          <div className="text-xs text-gray-500 dark:text-gray-300">90+ Days</div>
           <div className="text-xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totals.days_90_plus)}</div>
         </div>
       </div>
 
       {/* Total */}
-      <div className="bg-blue-600 dark:bg-blue-500 p-6 rounded shadow mb-6 text-white">
+      <div className="bg-blue-600 dark:bg-blue-500 p-4 rounded shadow mb-6 text-white">
         <div className="flex justify-between items-center">
           <div>
             <div className="text-blue-100 text-sm">Total Outstanding</div>
@@ -103,13 +103,13 @@ const AgedReceivablesReport: React.FC = () => {
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900 border-b">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Customer</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Current</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">1-30</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">31-60</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">61-90</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">90+</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Customer</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Current</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">1-30</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">31-60</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">61-90</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">90+</th>
+              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total</th>
             </tr>
           </thead>
           <tbody className="divide-y">

@@ -360,16 +360,16 @@ const WorkOrders: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-4">
+      <div className="mx-auto">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Work Orders</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Track and manage production work orders</p>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Work Orders</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">Track and manage production work orders</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
               <input
                 type="text"
                 placeholder="Search orders..."
@@ -380,7 +380,7 @@ const WorkOrders: React.FC = () => {
             </div>
             <button 
               onClick={handleCreate}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700  transition-all"
             >
               <Plus size={20} />
               Create Work Order
@@ -414,7 +414,7 @@ const WorkOrders: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500">Total</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
               </div>
               <Layers className="text-blue-500" size={20} />
             </div>
@@ -425,7 +425,7 @@ const WorkOrders: React.FC = () => {
                 <p className="text-xs text-gray-500">Planned</p>
                 <p className="text-2xl font-bold text-gray-600">{stats.planned}</p>
               </div>
-              <Calendar className="text-gray-400" size={20} />
+              <Calendar className="text-gray-300" size={20} />
             </div>
           </button>
           <button onClick={() => setFilter('in_progress')} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${filter === 'in_progress' ? 'border-blue-500 shadow-lg' : 'border-transparent hover:border-gray-200'}`}>
@@ -472,13 +472,13 @@ const WorkOrders: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Order ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Progress</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Priority</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Due Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Order ID</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Progress</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Priority</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Due Date</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -574,12 +574,12 @@ const WorkOrders: React.FC = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {editingOrder ? 'Edit Work Order' : 'Create Work Order'}
               </h2>
-              <button onClick={() => { setShowModal(false); resetForm(); }} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => { setShowModal(false); resetForm(); }} className="text-gray-500 hover:text-gray-700" aria-label="Close modal" title="Close">
                 <X size={24} />
               </button>
             </div>
@@ -592,9 +592,10 @@ const WorkOrders: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
                   className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
                   required
+                  aria-label="Product name"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
                   <input
@@ -604,6 +605,7 @@ const WorkOrders: React.FC = () => {
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
                     min="1"
                     required
+                    aria-label="Quantity"
                   />
                 </div>
                 <div>
@@ -612,6 +614,7 @@ const WorkOrders: React.FC = () => {
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                    aria-label="Priority level"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -620,7 +623,7 @@ const WorkOrders: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
                   <input
@@ -629,6 +632,7 @@ const WorkOrders: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
                     required
+                    aria-label="Start date"
                   />
                 </div>
                 <div>
@@ -638,6 +642,7 @@ const WorkOrders: React.FC = () => {
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+                    aria-label="Due date"
                   />
                 </div>
               </div>
@@ -647,7 +652,8 @@ const WorkOrders: React.FC = () => {
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
-                  rows={3}
+                  rows={2}
+                  aria-label="Notes"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-4">
