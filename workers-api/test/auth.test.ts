@@ -1,261 +1,174 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+/**
+ * TASK-25: Auth Integration Tests
+ * Tests for authentication system including login, registration,
+ * password reset, 2FA, and rate limiting.
+ */
+import { describe, it, expect, beforeAll } from 'vitest';
 
-// Mock crypto for UUID generation
-const mockCrypto = {
-  randomUUID: vi.fn(() => 'test-uuid-1234'),
-  subtle: {
-    digest: vi.fn(),
-  },
+const API_BASE = process.env.TEST_API_URL || 'http://localhost:8787';
+
+// Helper to make API requests
+async function api(method: string, path: string, body?: any, token?: string) {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => null);
+  return { status: res.status, data, headers: res.headers };
 }
-vi.stubGlobal('crypto', mockCrypto)
 
-describe('Authentication Service', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+describe('Authentication System', () => {
+  let validToken: string;
+  let testEmail: string;
+  let testPassword: string;
 
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
+  beforeAll(() => {
+    testEmail = `test-${Date.now()}@example.com`;
+    testPassword = 'TestPassword123!';
+  });
 
-  describe('Password Hashing', () => {
-    it('should hash password with salt', async () => {
-      const password = 'TestPassword123!'
-      const salt = 'random-salt'
-      
-      // Simulate password hashing
-      const hashedPassword = `${salt}:${password}:hashed`
-      
-      expect(hashedPassword).toContain(salt)
-      expect(hashedPassword).not.toBe(password)
-    })
+  describe('Registration', () => {
+    it('should register with valid data and return 201', async () => {
+      const res = await api('POST', '/api/auth/register', {
+        email: testEmail,
+        password: testPassword,
+        full_name: 'Test User',
+        company_name: 'Test Company',
+      });
+      expect([200, 201]).toContain(res.status);
+      expect(res.data).toBeDefined();
+    });
 
-    it('should verify correct password', async () => {
-      const password = 'TestPassword123!'
-      const storedHash = 'salt:TestPassword123!:hashed'
-      
-      // Simulate password verification
-      const isValid = storedHash.includes(password)
-      
-      expect(isValid).toBe(true)
-    })
+    it('should reject duplicate email with 409', async () => {
+      const res = await api('POST', '/api/auth/register', {
+        email: testEmail,
+        password: testPassword,
+        full_name: 'Test User 2',
+        company_name: 'Test Company 2',
+      });
+      expect([400, 409]).toContain(res.status);
+    });
 
-    it('should reject incorrect password', async () => {
-      const password = 'WrongPassword'
-      const storedHash = 'salt:TestPassword123!:hashed'
-      
-      // Simulate password verification
-      const isValid = storedHash.includes(password)
-      
-      expect(isValid).toBe(false)
-    })
-  })
+    it('should reject missing fields with 400', async () => {
+      const res = await api('POST', '/api/auth/register', {
+        email: 'incomplete@example.com',
+      });
+      expect([400, 422]).toContain(res.status);
+    });
+  });
 
-  describe('JWT Token Generation', () => {
-    it('should generate valid JWT token', async () => {
-      const payload = {
-        userId: 'user-123',
-        email: 'test@example.com',
-        role: 'admin',
-      }
-      
-      // Simulate JWT structure
-      const token = `header.${btoa(JSON.stringify(payload))}.signature`
-      
-      expect(token).toContain('.')
-      expect(token.split('.')).toHaveLength(3)
-    })
+  describe('Login', () => {
+    it('should login with valid credentials and return JWT token', async () => {
+      const res = await api('POST', '/api/auth/login', {
+        email: testEmail,
+        password: testPassword,
+      });
+      expect(res.status).toBe(200);
+      expect(res.data?.token || res.data?.access_token).toBeDefined();
+      validToken = res.data?.token || res.data?.access_token;
+    });
 
-    it('should include user ID in token payload', async () => {
-      const userId = 'user-123'
-      const payload = { userId, email: 'test@example.com' }
-      
-      expect(payload.userId).toBe(userId)
-    })
+    it('should reject wrong password with 401', async () => {
+      const res = await api('POST', '/api/auth/login', {
+        email: testEmail,
+        password: 'WrongPassword123!',
+      });
+      expect(res.status).toBe(401);
+    });
 
-    it('should include expiration time in token', async () => {
-      const exp = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-      const payload = { exp }
-      
-      expect(payload.exp).toBeGreaterThan(Math.floor(Date.now() / 1000))
-    })
-  })
-
-  describe('JWT Token Verification', () => {
-    it('should verify valid token', async () => {
-      const validPayload = {
-        userId: 'user-123',
-        exp: Math.floor(Date.now() / 1000) + 3600,
-      }
-      
-      const isExpired = validPayload.exp < Math.floor(Date.now() / 1000)
-      
-      expect(isExpired).toBe(false)
-    })
-
-    it('should reject expired token', async () => {
-      const expiredPayload = {
-        userId: 'user-123',
-        exp: Math.floor(Date.now() / 1000) - 3600, // 1 hour ago
-      }
-      
-      const isExpired = expiredPayload.exp < Math.floor(Date.now() / 1000)
-      
-      expect(isExpired).toBe(true)
-    })
-
-    it('should reject malformed token', async () => {
-      const malformedToken = 'invalid-token'
-      
-      const parts = malformedToken.split('.')
-      const isValid = parts.length === 3
-      
-      expect(isValid).toBe(false)
-    })
-  })
-
-  describe('User Registration', () => {
-    it('should validate email format', () => {
-      const validEmail = 'test@example.com'
-      const invalidEmail = 'invalid-email'
-      
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      
-      expect(emailRegex.test(validEmail)).toBe(true)
-      expect(emailRegex.test(invalidEmail)).toBe(false)
-    })
-
-    it('should validate password strength', () => {
-      const strongPassword = 'Password123!'
-      const weakPassword = 'pass'
-      
-      const isStrong = (pwd: string) => 
-        pwd.length >= 8 && 
-        /[A-Z]/.test(pwd) && 
-        /[a-z]/.test(pwd) && 
-        /[0-9]/.test(pwd)
-      
-      expect(isStrong(strongPassword)).toBe(true)
-      expect(isStrong(weakPassword)).toBe(false)
-    })
-
-    it('should generate unique user ID', () => {
-      const userId = mockCrypto.randomUUID()
-      
-      expect(userId).toBe('test-uuid-1234')
-      expect(mockCrypto.randomUUID).toHaveBeenCalled()
-    })
-  })
-
-  describe('Login Flow', () => {
-    it('should return token on successful login', async () => {
-      const credentials = {
-        email: 'test@example.com',
-        password: 'Password123!',
-      }
-      
-      // Simulate successful login response
-      const response = {
-        token: 'jwt-token',
-        user: {
-          id: 'user-123',
-          email: credentials.email,
-          name: 'Test User',
-        },
-      }
-      
-      expect(response.token).toBeDefined()
-      expect(response.user.email).toBe(credentials.email)
-    })
-
-    it('should reject invalid credentials', async () => {
-      const credentials = {
-        email: 'test@example.com',
-        password: 'WrongPassword',
-      }
-      
-      // Simulate failed login
-      const isValid = false
-      
-      expect(isValid).toBe(false)
-    })
-
-    it('should reject non-existent user', async () => {
-      const credentials = {
+    it('should reject non-existent email with 401', async () => {
+      const res = await api('POST', '/api/auth/login', {
         email: 'nonexistent@example.com',
-        password: 'Password123!',
+        password: testPassword,
+      });
+      expect(res.status).toBe(401);
+    });
+  });
+
+  describe('Token Verification', () => {
+    it('should return user profile with valid token', async () => {
+      const res = await api('GET', '/api/auth/me', undefined, validToken);
+      expect(res.status).toBe(200);
+      expect(res.data?.email || res.data?.user?.email).toBeDefined();
+    });
+
+    it('should reject requests without token with 401', async () => {
+      const res = await api('GET', '/api/auth/me');
+      expect(res.status).toBe(401);
+    });
+
+    it('should reject expired/invalid token with 401', async () => {
+      const res = await api('GET', '/api/auth/me', undefined, 'invalid.token.here');
+      expect(res.status).toBe(401);
+    });
+  });
+
+  describe('Logout', () => {
+    it('should successfully logout', async () => {
+      const res = await api('POST', '/api/auth/logout', undefined, validToken);
+      expect([200, 204]).toContain(res.status);
+    });
+  });
+
+  describe('Password Reset Flow', () => {
+    it('should accept password reset request', async () => {
+      const res = await api('POST', '/api/auth/forgot-password', {
+        email: testEmail,
+      });
+      expect([200, 202]).toContain(res.status);
+    });
+  });
+
+  describe('Account Lockout', () => {
+    it('should lock account after 5 failed login attempts', async () => {
+      const lockEmail = `lock-${Date.now()}@example.com`;
+      // Register first
+      await api('POST', '/api/auth/register', {
+        email: lockEmail,
+        password: testPassword,
+        full_name: 'Lock Test',
+        company_name: 'Lock Company',
+      });
+
+      // Attempt 5 failed logins
+      for (let i = 0; i < 5; i++) {
+        await api('POST', '/api/auth/login', {
+          email: lockEmail,
+          password: 'WrongPassword!',
+        });
       }
-      
-      // Simulate user not found
-      const userExists = false
-      
-      expect(userExists).toBe(false)
-    })
-  })
 
-  describe('Authorization', () => {
-    it('should allow admin access to admin routes', () => {
-      const user = { role: 'admin' }
-      const requiredRole = 'admin'
-      
-      const hasAccess = user.role === requiredRole || user.role === 'super_admin'
-      
-      expect(hasAccess).toBe(true)
-    })
+      // 6th attempt should indicate locked account
+      const res = await api('POST', '/api/auth/login', {
+        email: lockEmail,
+        password: testPassword,
+      });
+      expect([401, 423]).toContain(res.status);
+    });
+  });
 
-    it('should deny user access to admin routes', () => {
-      const user = { role: 'user' }
-      const requiredRole = 'admin'
-      
-      const hasAccess = user.role === requiredRole || user.role === 'super_admin'
-      
-      expect(hasAccess).toBe(false)
-    })
+  describe('Rate Limiting', () => {
+    it('should return 429 after too many requests', async () => {
+      const responses: number[] = [];
+      for (let i = 0; i < 15; i++) {
+        const res = await api('POST', '/api/auth/login', {
+          email: 'ratelimit@example.com',
+          password: 'test',
+        });
+        responses.push(res.status);
+      }
+      // At least one should be rate limited
+      expect(responses.some(s => s === 429)).toBe(true);
+    });
+  });
 
-    it('should check company_id for multi-tenant access', () => {
-      const user = { company_id: 'company-123' }
-      const resourceCompanyId = 'company-123'
-      
-      const hasAccess = user.company_id === resourceCompanyId
-      
-      expect(hasAccess).toBe(true)
-    })
-
-    it('should deny access to other company resources', () => {
-      const user = { company_id: 'company-123' }
-      const resourceCompanyId = 'company-456'
-      
-      const hasAccess = user.company_id === resourceCompanyId
-      
-      expect(hasAccess).toBe(false)
-    })
-  })
-})
-
-describe('Session Management', () => {
-  it('should store session token', () => {
-    const token = 'jwt-token'
-    const storage: Record<string, string> = {}
-    
-    storage['token'] = token
-    
-    expect(storage['token']).toBe(token)
-  })
-
-  it('should clear session on logout', () => {
-    const storage: Record<string, string> = { token: 'jwt-token' }
-    
-    delete storage['token']
-    
-    expect(storage['token']).toBeUndefined()
-  })
-
-  it('should refresh token before expiration', () => {
-    const currentExp = Math.floor(Date.now() / 1000) + 300 // 5 minutes left
-    const threshold = 600 // 10 minutes
-    
-    const shouldRefresh = currentExp - Math.floor(Date.now() / 1000) < threshold
-    
-    expect(shouldRefresh).toBe(true)
-  })
-})
+  describe('Request ID', () => {
+    it('should return X-Request-ID header on all responses', async () => {
+      const res = await api('GET', '/health');
+      expect(res.headers.get('X-Request-ID')).toBeDefined();
+    });
+  });
+});

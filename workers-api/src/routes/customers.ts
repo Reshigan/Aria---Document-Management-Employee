@@ -36,6 +36,7 @@ const customers = new Hono<{ Bindings: Env }>();
 customers.get('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const search = c.req.query('search') || '';
     const page = parseInt(c.req.query('page') || '1');
     const pageSize = parseInt(c.req.query('page_size') || '50');
@@ -112,6 +113,8 @@ customers.get('/:id', async (c) => {
     const customerId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const customer = await c.env.DB.prepare(`
       SELECT c.*,
              (SELECT COUNT(*) FROM quotes WHERE customer_id = c.id) as total_quotes,
@@ -154,6 +157,7 @@ customers.get('/:id', async (c) => {
 customers.post('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<Customer>>();
 
     if (!body.customer_name) {
@@ -211,6 +215,7 @@ customers.put('/:id', async (c) => {
   try {
     const customerId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<Customer>>();
 
     const result = await c.env.DB.prepare(`
@@ -257,6 +262,8 @@ customers.delete('/:id', async (c) => {
   try {
     const customerId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     const result = await c.env.DB.prepare(
       'DELETE FROM customers WHERE id = ? AND company_id = ?'

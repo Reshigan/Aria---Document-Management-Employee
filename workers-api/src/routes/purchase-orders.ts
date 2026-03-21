@@ -53,6 +53,7 @@ const purchaseOrders = new Hono<{ Bindings: Env }>();
 purchaseOrders.get('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status') || '';
     const supplierId = c.req.query('supplier_id') || '';
     const page = parseInt(c.req.query('page') || '1');
@@ -132,6 +133,8 @@ purchaseOrders.get('/:id', async (c) => {
     const poId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const po = await c.env.DB.prepare(`
       SELECT po.*, s.supplier_name, s.supplier_code, s.email as supplier_email
       FROM purchase_orders po
@@ -177,6 +180,7 @@ purchaseOrders.get('/:id', async (c) => {
 purchaseOrders.post('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<PurchaseOrder> & { items?: Partial<PurchaseOrderItem>[] }>();
 
     const validation = validatePurchaseOrder(body as Record<string, unknown>);
@@ -263,6 +267,7 @@ purchaseOrders.put('/:id/status', async (c) => {
   try {
     const poId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ status: string }>();
 
     const existing = await c.env.DB.prepare(
@@ -295,6 +300,7 @@ purchaseOrders.post('/:id/receive', async (c) => {
   try {
     const poId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<{ items: { item_id: string; quantity_received: number }[] }>();
 
     // Get purchase order
@@ -339,6 +345,7 @@ purchaseOrders.post('/:id/receive', async (c) => {
     let integrationResult = null;
     try {
       const userId = await getSecureUserId(c);
+      if (!userId) return c.json({ error: "Authentication required" }, 401);
       integrationResult = await onGoodsReceived(c.env.DB, companyId, userId, poId, body.items);
     } catch (e) {
       console.error('Cross-module integration error (non-blocking):', e);
@@ -356,6 +363,8 @@ purchaseOrders.post('/:id/invoice', async (c) => {
   try {
     const poId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     // Get purchase order
     const po = await c.env.DB.prepare(
@@ -426,6 +435,8 @@ purchaseOrders.delete('/:id', async (c) => {
   try {
     const poId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     // Delete line items first
     await c.env.DB.prepare('DELETE FROM purchase_order_items WHERE purchase_order_id = ?').bind(poId).run();

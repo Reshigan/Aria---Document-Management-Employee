@@ -32,7 +32,9 @@ const app = new Hono<{ Bindings: Env }>();
 app.post('/delivery/:id/confirm-integrated', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const deliveryId = c.req.param('id');
 
     const result = await onDeliveryConfirmed(c.env.DB, companyId, userId, deliveryId);
@@ -52,7 +54,9 @@ app.post('/delivery/:id/confirm-integrated', async (c) => {
 app.post('/goods-receipt/:poId/receive-integrated', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const poId = c.req.param('poId');
     const body = await c.req.json<{ items: { item_id: string; quantity_received: number }[] }>();
 
@@ -75,7 +79,9 @@ app.post('/goods-receipt/:poId/receive-integrated', async (c) => {
 app.post('/credit-note/:id/post-integrated', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const creditNoteId = c.req.param('id');
 
     const result = await onCreditNoteIssued(c.env.DB, companyId, userId, creditNoteId);
@@ -97,7 +103,9 @@ app.post('/credit-note/:id/post-integrated', async (c) => {
 app.post('/payroll/:runId/finalise-integrated', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const runId = c.req.param('runId');
 
     const result = await onPayrollFinalised(c.env.DB, companyId, userId, runId);
@@ -119,7 +127,9 @@ app.post('/payroll/:runId/finalise-integrated', async (c) => {
 app.post('/payment/auto-allocate', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json<{ customer_id: string; amount: number; payment_id: string }>();
 
     if (!body.customer_id || !body.amount || !body.payment_id) {
@@ -141,6 +151,7 @@ app.post('/payment/auto-allocate', async (c) => {
 app.get('/bank/:accountId/smart-match', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const accountId = c.req.param('accountId');
 
     const result = await smartBankMatch(c.env.DB, companyId, accountId);
@@ -156,7 +167,9 @@ app.get('/bank/:accountId/smart-match', async (c) => {
 app.post('/recurring-invoices/generate', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
 
     const result = await generateRecurringInvoices(c.env.DB, companyId, userId);
 
@@ -171,6 +184,7 @@ app.post('/recurring-invoices/generate', async (c) => {
 app.get('/recurring-invoices/templates', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const templates = await c.env.DB.prepare(
       `SELECT rit.*, c.customer_name FROM recurring_invoice_templates rit
        LEFT JOIN customers c ON rit.customer_id = c.id
@@ -186,7 +200,9 @@ app.get('/recurring-invoices/templates', async (c) => {
 app.post('/recurring-invoices/templates', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json<{
       customer_id: string; frequency: string; next_invoice_date: string;
       end_date?: string; payment_terms_days?: number;
@@ -229,7 +245,9 @@ app.post('/recurring-invoices/templates', async (c) => {
 app.post('/approvals/submit', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json<{ document_type: string; document_id: string; amount: number }>();
 
     const result = await submitForApproval(
@@ -247,7 +265,9 @@ app.post('/approvals/submit', async (c) => {
 app.post('/approvals/:id/decide', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const approvalId = c.req.param('id');
     const body = await c.req.json<{ decision: 'approved' | 'rejected'; comments?: string }>();
 
@@ -266,7 +286,9 @@ app.post('/approvals/:id/decide', async (c) => {
 app.get('/approvals/pending', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
 
     const pending = await c.env.DB.prepare(
       `SELECT ar.*, ast.approver_id FROM approval_requests ar
@@ -285,7 +307,9 @@ app.get('/approvals/pending', async (c) => {
 app.post('/intercompany/elimination', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json<{
       source_company_id: string; target_company_id: string;
       amount: number; description: string;
@@ -308,6 +332,7 @@ app.post('/intercompany/elimination', async (c) => {
 app.get('/intercompany/eliminations', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const eliminations = await c.env.DB.prepare(
       'SELECT * FROM intercompany_eliminations WHERE company_id = ? ORDER BY created_at DESC'
     ).bind(companyId).all();
@@ -321,6 +346,7 @@ app.get('/intercompany/eliminations', async (c) => {
 app.get('/quote-to-cash/:soId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const soId = c.req.param('soId');
 
     const result = await getQuoteToCashStatus(c.env.DB, companyId, soId);
@@ -336,6 +362,7 @@ app.get('/quote-to-cash/:soId', async (c) => {
 app.get('/health', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const db = c.env.DB;
 
     const [deliveries, pos, invoices, payments, payroll, creditNotes] = await Promise.all([

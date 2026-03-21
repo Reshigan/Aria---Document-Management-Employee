@@ -119,104 +119,119 @@ async function createJournalEntry(
   const now = new Date().toISOString();
   
   try {
-    // Create journal entry header
-    await db.prepare(`
-      INSERT INTO journal_entries (
-        id, company_id, entry_number, entry_date, description, 
-        reference_type, reference_id, status, total_debit, total_credit,
-        posted_by, posted_at, created_by, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'posted', ?, ?, ?, ?, ?, ?)
-    `).bind(
-      journalEntryId,
-      context.companyId,
-      entryNumber,
-      context.transactionDate,
-      context.description,
-      context.transactionType,
-      context.transactionId,
-      totalDebits,
-      totalCredits,
-      context.userId,
-      now,
-      context.userId,
-      now
-    ).run();
-    
-    // Create journal entry lines
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+    // Pre-validate all account codes exist before starting any writes
+    const accountIds: Map<string, string> = new Map();
+    for (const line of lines) {
       if (line.debitAmount === 0 && line.creditAmount === 0) continue;
-      
-      const accountId = await getAccountId(db, context.companyId, line.accountCode);
-      if (!accountId) {
-        // Rollback by deleting the header
-        await db.prepare("DELETE FROM journal_entries WHERE id = ?").bind(journalEntryId).run();
-        return {
-          success: false,
-          error: `Account ${line.accountCode} not found`
-        };
+      if (!accountIds.has(line.accountCode)) {
+        const accountId = await getAccountId(db, context.companyId, line.accountCode);
+        if (!accountId) {
+          return {
+            success: false,
+            error: `Account ${line.accountCode} not found`
+          };
+        }
+        accountIds.set(line.accountCode, accountId);
       }
-      
-      const lineId = generateUUID();
-      await db.prepare(`
-        INSERT INTO journal_entry_lines (
-          id, journal_entry_id, line_number, account_id, description,
-          debit_amount, credit_amount, cost_center, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    }
+
+    // Use D1 batch() for atomic execution - all statements succeed or all fail
+    const batchStatements: D1PreparedStatement[] = [];
+
+    // 1. Insert journal entry header with status = 'pending'
+    batchStatements.push(
+      db.prepare(`
+        INSERT INTO journal_entries (
+          id, company_id, entry_number, entry_date, description, 
+          reference_type, reference_id, status, total_debit, total_credit,
+          posted_by, posted_at, created_by, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?)
       `).bind(
-        lineId,
         journalEntryId,
-        i + 1,
-        accountId,
-        line.description,
-        line.debitAmount,
-        line.creditAmount,
-        line.costCenter || null,
+        context.companyId,
+        entryNumber,
+        context.transactionDate,
+        context.description,
+        context.transactionType,
+        context.transactionId,
+        totalDebits,
+        totalCredits,
+        context.userId,
+        now,
+        context.userId,
         now
-      ).run();
+      )
+    );
+
+    // 2. Insert all journal entry lines
+    let lineNum = 0;
+    for (const line of lines) {
+      if (line.debitAmount === 0 && line.creditAmount === 0) continue;
+      lineNum++;
+      const accountId = accountIds.get(line.accountCode)!;
+      const lineId = generateUUID();
       
+      batchStatements.push(
+        db.prepare(`
+          INSERT INTO journal_entry_lines (
+            id, journal_entry_id, line_number, account_id, description,
+            debit_amount, credit_amount, cost_center, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          lineId, journalEntryId, lineNum, accountId,
+          line.description, line.debitAmount, line.creditAmount,
+          line.costCenter || null, now
+        )
+      );
+
       // Update GL account balance
       const balanceChange = line.debitAmount - line.creditAmount;
-      await db.prepare(`
-        UPDATE gl_accounts 
-        SET current_balance = current_balance + ?, updated_at = ?
-        WHERE id = ?
-      `).bind(balanceChange, now, accountId).run();
+      batchStatements.push(
+        db.prepare(`
+          UPDATE gl_accounts 
+          SET current_balance = current_balance + ?, updated_at = ?
+          WHERE id = ?
+        `).bind(balanceChange, now, accountId)
+      );
     }
-    
-    // Create subledger link
+
+    // 3. Create subledger link
     const linkId = generateUUID();
-    await db.prepare(`
-      INSERT INTO subledger_gl_links (
-        id, company_id, subledger_type, transaction_type, transaction_id, journal_entry_id, posted_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      linkId,
-      context.companyId,
-      getSubledgerType(context.transactionType),
-      context.transactionType,
-      context.transactionId,
-      journalEntryId,
-      now
-    ).run();
-    
-    // Record status change in audit trail
+    batchStatements.push(
+      db.prepare(`
+        INSERT INTO subledger_gl_links (
+          id, company_id, subledger_type, transaction_type, transaction_id, journal_entry_id, posted_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        linkId, context.companyId,
+        getSubledgerType(context.transactionType),
+        context.transactionType, context.transactionId,
+        journalEntryId, now
+      )
+    );
+
+    // 4. Record status change in audit trail
     const historyId = generateUUID();
-    await db.prepare(`
-      INSERT INTO transaction_status_history (
-        id, company_id, transaction_type, transaction_id, from_status, to_status, changed_by, changed_at, reason
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      historyId,
-      context.companyId,
-      context.transactionType,
-      context.transactionId,
-      'draft',
-      'posted',
-      context.userId,
-      now,
-      'GL posting completed'
-    ).run();
+    batchStatements.push(
+      db.prepare(`
+        INSERT INTO transaction_status_history (
+          id, company_id, transaction_type, transaction_id, from_status, to_status, changed_by, changed_at, reason
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        historyId, context.companyId,
+        context.transactionType, context.transactionId,
+        'draft', 'posted', context.userId, now,
+        'GL posting completed'
+      )
+    );
+
+    // Execute all statements atomically via D1 batch
+    await db.batch(batchStatements);
+
+    // 5. Update header status to 'posted' after successful batch
+    await db.prepare(
+      "UPDATE journal_entries SET status = 'posted' WHERE id = ?"
+    ).bind(journalEntryId).run();
     
     return {
       success: true,
@@ -225,6 +240,21 @@ async function createJournalEntry(
     };
   } catch (error) {
     console.error('GL Posting Error:', error);
+    
+    // Compensating transaction: mark header as failed if it was created
+    try {
+      await db.prepare(
+        "UPDATE journal_entries SET status = 'failed', description = description || ' [FAILED: ' || ? || ']' WHERE id = ? AND status = 'pending'"
+      ).bind(error instanceof Error ? error.message : 'Unknown error', journalEntryId).run();
+      
+      // Clean up any partial lines
+      await db.prepare(
+        "DELETE FROM journal_entry_lines WHERE journal_entry_id = ?"
+      ).bind(journalEntryId).run();
+    } catch (cleanupError) {
+      console.error('GL Posting cleanup error:', cleanupError);
+    }
+    
     return {
       success: false,
       error: `GL posting failed: ${error instanceof Error ? error.message : 'Unknown error'}`

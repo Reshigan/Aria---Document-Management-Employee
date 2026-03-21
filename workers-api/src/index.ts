@@ -58,6 +58,8 @@ import { executeScheduledBots as runScheduledBots } from './services/bot-executo
 import { processPendingDeliveries } from './services/webhook-service';
 import { processDueScheduledReports } from './services/report-builder-service';
 import { processScheduledPosts, generateDailyPosts } from './services/marketing-service';
+import { rateLimiter } from './middleware/rate-limiter';
+import { sendTransactionalEmail } from './services/email-service';
 import { healSchema } from './services/schema-healer';
 
 // Types

@@ -21,6 +21,7 @@ deliveries.get('/', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
   
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   try {
     const url = new URL(c.req.url);
     const search = url.searchParams.get('search') || '';
@@ -92,6 +93,7 @@ deliveries.get('/', async (c) => {
 deliveries.get('/:id', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   
   try {
@@ -138,6 +140,7 @@ deliveries.get('/:id', async (c) => {
 deliveries.post('/', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const body = await c.req.json();
   
   try {
@@ -219,6 +222,7 @@ deliveries.post('/', async (c) => {
 deliveries.put('/:id', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   const body = await c.req.json();
   
@@ -293,6 +297,7 @@ deliveries.put('/:id', async (c) => {
 deliveries.post('/:id/ship', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   const body = await c.req.json();
   
@@ -339,6 +344,7 @@ deliveries.post('/:id/ship', async (c) => {
 deliveries.post('/:id/complete', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   
   try {
@@ -360,6 +366,7 @@ deliveries.post('/:id/complete', async (c) => {
     let integrationResult = null;
     try {
       const userId = await getSecureUserId(c);
+      if (!userId) return c.json({ error: "Authentication required" }, 401);
       integrationResult = await onDeliveryConfirmed(db, companyId, userId, id);
     } catch (e) {
       console.error('Cross-module integration error (non-blocking):', e);
@@ -376,6 +383,7 @@ deliveries.post('/:id/complete', async (c) => {
 deliveries.post('/:id/pod', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   const body = await c.req.json();
   
@@ -388,8 +396,8 @@ deliveries.post('/:id/pod', async (c) => {
       return c.json({ error: 'Delivery not found' }, 404);
     }
     
-    let uploadedBy = 'system';
-    try { uploadedBy = await getSecureUserId(c); } catch {}
+    let uploadedBy: string = 'system';
+    try { const uid = await getSecureUserId(c); if (uid) uploadedBy = uid; } catch {}
     
     await db.prepare(`
       UPDATE deliveries SET
@@ -417,6 +425,7 @@ deliveries.post('/:id/pod', async (c) => {
 deliveries.post('/:id/picking-slip', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   
   try {
@@ -473,6 +482,7 @@ deliveries.post('/:id/picking-slip', async (c) => {
 deliveries.post('/:id/waybill', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   const body = await c.req.json();
   
@@ -509,6 +519,7 @@ deliveries.post('/:id/waybill', async (c) => {
 deliveries.delete('/:id', async (c) => {
   const db = c.env.DB;
   const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: "Authentication required" }, 401);
   const id = c.req.param('id');
   
   try {

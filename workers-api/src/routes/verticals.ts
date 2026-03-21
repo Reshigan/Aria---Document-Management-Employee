@@ -8,6 +8,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 
 interface Env {
@@ -25,6 +26,8 @@ async function getAuthContext(c: any): Promise<{ companyId: string; userId: stri
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -72,6 +75,8 @@ app.post('/distribution/warehouses', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { warehouse_code, warehouse_name, address, city, is_active = true } = body;
     
@@ -107,6 +112,8 @@ app.get('/distribution/warehouses/:warehouseId/bins', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const warehouseId = c.req.param('warehouseId');
     
     const result = await c.env.DB.prepare(`
@@ -132,6 +139,8 @@ app.post('/distribution/warehouses/:warehouseId/bins', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const warehouseId = c.req.param('warehouseId');
     const body = await c.req.json();
     const { bin_code, zone, aisle, rack, shelf, bin_type = 'storage', max_weight, max_volume } = body;
@@ -167,6 +176,8 @@ app.post('/distribution/landed-cost/calculate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       purchase_value, 
@@ -222,6 +233,8 @@ app.post('/distribution/routes/optimize', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { deliveries, start_location, vehicle_capacity } = body;
     
@@ -291,6 +304,8 @@ app.post('/retail/pos/sale', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       register_id, 
@@ -362,6 +377,8 @@ app.post('/retail/pos/refund', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { original_transaction_id, items, reason } = body;
     
@@ -404,24 +421,43 @@ app.get('/retail/loyalty/:customerId', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const customerId = c.req.param('customerId');
     
-    // In a real implementation, this would query the loyalty_points table
-    // For now, return mock data
+    // Query loyalty points from database
+    const loyalty = await c.env.DB.prepare(
+      'SELECT * FROM loyalty_points WHERE customer_id = ? AND company_id = ?'
+    ).bind(customerId, companyId).first() as Record<string, unknown> | null;
+
+    const currentPoints = loyalty ? Number(loyalty.current_points || 0) : 0;
+    const lifetimePoints = loyalty ? Number(loyalty.lifetime_points || 0) : 0;
+
+    // Determine tier based on lifetime points
+    let tier = 'Bronze';
+    let nextTier = 'Silver';
+    let tierProgress = 0;
+    let pointsToNextTier = 1000;
+    if (lifetimePoints >= 10000) { tier = 'Platinum'; nextTier = 'Platinum'; tierProgress = 100; pointsToNextTier = 0; }
+    else if (lifetimePoints >= 5000) { tier = 'Gold'; nextTier = 'Platinum'; tierProgress = Math.round(((lifetimePoints - 5000) / 5000) * 100); pointsToNextTier = 10000 - lifetimePoints; }
+    else if (lifetimePoints >= 2000) { tier = 'Silver'; nextTier = 'Gold'; tierProgress = Math.round(((lifetimePoints - 2000) / 3000) * 100); pointsToNextTier = 5000 - lifetimePoints; }
+    else { tierProgress = Math.round((lifetimePoints / 2000) * 100); pointsToNextTier = 2000 - lifetimePoints; }
+
+    // Get recent loyalty transactions
+    const recentTxns = await c.env.DB.prepare(
+      'SELECT * FROM loyalty_transactions WHERE customer_id = ? AND company_id = ? ORDER BY created_at DESC LIMIT 10'
+    ).bind(customerId, companyId).all();
+
     return c.json({
       customer_id: customerId,
-      current_points: 1500,
-      lifetime_points: 5000,
-      tier: 'Gold',
-      tier_progress: 75,
-      next_tier: 'Platinum',
-      points_to_next_tier: 500,
-      points_value: 15.00, // R1 per 100 points
-      recent_transactions: [
-        { date: '2025-12-20', description: 'Purchase', points: 150 },
-        { date: '2025-12-15', description: 'Purchase', points: 200 },
-        { date: '2025-12-10', description: 'Redemption', points: -500 }
-      ]
+      current_points: currentPoints,
+      lifetime_points: lifetimePoints,
+      tier,
+      tier_progress: tierProgress,
+      next_tier: nextTier,
+      points_to_next_tier: pointsToNextTier,
+      points_value: currentPoints / 100,
+      recent_transactions: recentTxns.results || []
     });
   } catch (error) {
     console.error('Error loading loyalty info:', error);
@@ -437,6 +473,8 @@ app.post('/retail/loyalty/:customerId/redeem', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const customerId = c.req.param('customerId');
     const body = await c.req.json();
     const { points_to_redeem, redemption_type = 'discount' } = body;
@@ -471,6 +509,8 @@ app.get('/retail/promotions', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const now = new Date().toISOString();
     
     // In a real implementation, this would query the promotions table
@@ -525,6 +565,8 @@ app.post('/retail/promotions/apply', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { promotion_code, cart_items, cart_total } = body;
     
@@ -591,6 +633,8 @@ app.post('/services/projects', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       project_code, 
@@ -640,6 +684,8 @@ app.post('/services/time-entries', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       project_id, 
@@ -692,6 +738,8 @@ app.get('/services/projects/:projectId/time-entries', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const projectId = c.req.param('projectId');
     
     const result = await c.env.DB.prepare(`
@@ -736,6 +784,8 @@ app.post('/services/projects/:projectId/invoice', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const projectId = c.req.param('projectId');
     const body = await c.req.json();
     const { from_date, to_date, include_expenses = true } = body;
@@ -823,6 +873,8 @@ app.get('/services/resources/availability', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const startDate = c.req.query('start_date') || new Date().toISOString().split('T')[0];
     const endDate = c.req.query('end_date') || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     
@@ -874,6 +926,8 @@ app.post('/services/resources/allocate', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const { 
       employee_id, 
@@ -922,6 +976,8 @@ app.get('/services/projects/:projectId/budget', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const projectId = c.req.param('projectId');
     
     // Get project

@@ -19,6 +19,8 @@ dashboard.get('/executive', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     // Get revenue metrics
     const revenueResult = await c.env.DB.prepare(`
       SELECT 
@@ -152,6 +154,7 @@ dashboard.get('/executive', async (c) => {
 dashboard.get('/sales-summary', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const period = c.req.query('period') || 'month';
 
     // Get sales by status
@@ -204,6 +207,8 @@ dashboard.get('/purchasing-summary', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     // Get PO by status
     const poByStatus = await c.env.DB.prepare(`
       SELECT status, COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total
@@ -239,6 +244,8 @@ dashboard.get('/purchasing-summary', async (c) => {
 dashboard.get('/ar-aging', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     const aging = await c.env.DB.prepare(`
       SELECT 
@@ -289,6 +296,8 @@ dashboard.get('/ap-aging', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const aging = await c.env.DB.prepare(`
       SELECT 
         s.supplier_name,
@@ -337,6 +346,8 @@ dashboard.get('/ap-aging', async (c) => {
 dashboard.get('/inventory-summary', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     // Get inventory value
     const inventoryValue = await c.env.DB.prepare(`
@@ -389,6 +400,7 @@ dashboard.get('/inventory-summary', async (c) => {
 dashboard.get('/pending-approvals', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const approvals: Array<{
       id: string;
       type: string;
@@ -514,6 +526,7 @@ dashboard.get('/pending-approvals', async (c) => {
 dashboard.get('/alerts', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const alerts: Array<{
       id: string;
       type: string;

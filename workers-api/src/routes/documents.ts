@@ -733,148 +733,169 @@ function generateDocumentHTML(
 
 // Get document types
 app.get('/types', async (c) => {
-  return c.json({
-    types: Object.entries(DOCUMENT_TYPES).map(([key, value]) => ({
-      id: key,
-      ...value
-    }))
-  });
+  try {
+    return c.json({
+      types: Object.entries(DOCUMENT_TYPES).map(([key, value]) => ({
+        id: key,
+        ...value
+      }))
+    });
+  } catch (error: any) {
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
+  }
 });
 
 // Generate document preview (HTML)
 app.post('/preview', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const body = await c.req.json();
-    const { document_type, recipient_id, recipient_type, line_items, ...documentData } = body;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const body = await c.req.json();
+      const { document_type, recipient_id, recipient_type, line_items, ...documentData } = body;
     
-    const db = c.env.DB;
+      const db = c.env.DB;
     
-    // Get company settings
-    const company = await getCompanySettings(db, companyId);
+      // Get company settings
+      const company = await getCompanySettings(db, companyId);
     
-    // Get recipient details
-    let recipient: any = {};
-    if (recipient_type === 'customer' && recipient_id) {
-      recipient = await db.prepare(`
-        SELECT name, email, phone, billing_address as address, vat_number
-        FROM customers WHERE id = ? AND company_id = ?
-      `).bind(recipient_id, companyId).first() || {};
-    } else if (recipient_type === 'supplier' && recipient_id) {
-      recipient = await db.prepare(`
-        SELECT name, email, phone, address, vat_number
-        FROM suppliers WHERE id = ? AND company_id = ?
-      `).bind(recipient_id, companyId).first() || {};
-    } else {
-      recipient = body.recipient || {};
+      // Get recipient details
+      let recipient: any = {};
+      if (recipient_type === 'customer' && recipient_id) {
+        recipient = await db.prepare(`
+          SELECT name, email, phone, billing_address as address, vat_number
+          FROM customers WHERE id = ? AND company_id = ?
+        `).bind(recipient_id, companyId).first() || {};
+      } else if (recipient_type === 'supplier' && recipient_id) {
+        recipient = await db.prepare(`
+          SELECT name, email, phone, address, vat_number
+          FROM suppliers WHERE id = ? AND company_id = ?
+        `).bind(recipient_id, companyId).first() || {};
+      } else {
+        recipient = body.recipient || {};
+      }
+    
+      // Generate document number if not provided
+      if (!documentData.document_number) {
+        documentData.document_number = await generateDocumentNumber(db, companyId, document_type);
+      }
+    
+      // Set document date if not provided
+      if (!documentData.document_date) {
+        documentData.document_date = new Date().toISOString().split('T')[0];
+      }
+    
+      // Default terms
+      if (!documentData.terms) {
+        documentData.terms = [
+          'Prices are valid for 30 days from the document date.',
+          'Payment is due within the terms specified above.',
+          'Goods remain the property of the seller until paid in full.',
+          'E&OE - Errors and Omissions Excepted.'
+        ];
+      }
+    
+      const branding: CompanyBranding = {
+        logo_url: company.logo_url,
+        primary_color: company.primary_color || '#1e40af',
+        secondary_color: company.secondary_color || '#64748b',
+        font_family: company.font_family || 'Inter'
+      };
+    
+      const html = generateDocumentHTML(
+        document_type,
+        company,
+        recipient,
+        documentData,
+        line_items || [],
+        branding
+      );
+    
+      return c.html(html);
+    } catch (error: any) {
+      console.error('Document preview error:', error);
+      return c.json({ error: error.message || 'Failed to generate preview' }, 500);
     }
-    
-    // Generate document number if not provided
-    if (!documentData.document_number) {
-      documentData.document_number = await generateDocumentNumber(db, companyId, document_type);
-    }
-    
-    // Set document date if not provided
-    if (!documentData.document_date) {
-      documentData.document_date = new Date().toISOString().split('T')[0];
-    }
-    
-    // Default terms
-    if (!documentData.terms) {
-      documentData.terms = [
-        'Prices are valid for 30 days from the document date.',
-        'Payment is due within the terms specified above.',
-        'Goods remain the property of the seller until paid in full.',
-        'E&OE - Errors and Omissions Excepted.'
-      ];
-    }
-    
-    const branding: CompanyBranding = {
-      logo_url: company.logo_url,
-      primary_color: company.primary_color || '#1e40af',
-      secondary_color: company.secondary_color || '#64748b',
-      font_family: company.font_family || 'Inter'
-    };
-    
-    const html = generateDocumentHTML(
-      document_type,
-      company,
-      recipient,
-      documentData,
-      line_items || [],
-      branding
-    );
-    
-    return c.html(html);
   } catch (error: any) {
-    console.error('Document preview error:', error);
-    return c.json({ error: error.message || 'Failed to generate preview' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Save document
 app.post('/save', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const body = await c.req.json();
-    const { document_type, recipient_id, recipient_type, line_items, ...documentData } = body;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const body = await c.req.json();
+      const { document_type, recipient_id, recipient_type, line_items, ...documentData } = body;
     
-    const db = c.env.DB;
-    const userId = 'system';
+      const db = c.env.DB;
+      const userId = 'system';
     
-    // Generate document number
-    const documentNumber = documentData.document_number || await generateDocumentNumber(db, companyId, document_type);
+      // Generate document number
+      const documentNumber = documentData.document_number || await generateDocumentNumber(db, companyId, document_type);
     
-    // Calculate totals
-    const subtotal = (line_items || []).reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0);
-    const vatRate = documentData.vat_rate || 15;
-    const vatAmount = subtotal * (vatRate / 100);
-    const total = subtotal + vatAmount;
+      // Calculate totals
+      const subtotal = (line_items || []).reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0);
+      const vatRate = documentData.vat_rate || 15;
+      const vatAmount = subtotal * (vatRate / 100);
+      const total = subtotal + vatAmount;
     
-    // Save document
-    const docId = crypto.randomUUID();
-    await db.prepare(`
-      INSERT INTO documents (
-        id, company_id, document_type, document_number, document_date,
-        recipient_id, recipient_type, recipient_name,
-        subtotal, vat_amount, total_amount, currency, status,
-        line_items_json, metadata_json,
-        created_by, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      docId,
-      companyId,
-      document_type,
-      documentNumber,
-      documentData.document_date || new Date().toISOString().split('T')[0],
-      recipient_id || null,
-      recipient_type || null,
-      documentData.recipient_name || null,
-      subtotal,
-      vatAmount,
-      total,
-      documentData.currency || 'ZAR',
-      documentData.status || 'draft',
-      JSON.stringify(line_items || []),
-      JSON.stringify(documentData),
-      userId,
-      new Date().toISOString(),
-      new Date().toISOString()
-    ).run();
+      // Save document
+      const docId = crypto.randomUUID();
+      await db.prepare(`
+        INSERT INTO documents (
+          id, company_id, document_type, document_number, document_date,
+          recipient_id, recipient_type, recipient_name,
+          subtotal, vat_amount, total_amount, currency, status,
+          line_items_json, metadata_json,
+          created_by, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        docId,
+        companyId,
+        document_type,
+        documentNumber,
+        documentData.document_date || new Date().toISOString().split('T')[0],
+        recipient_id || null,
+        recipient_type || null,
+        documentData.recipient_name || null,
+        subtotal,
+        vatAmount,
+        total,
+        documentData.currency || 'ZAR',
+        documentData.status || 'draft',
+        JSON.stringify(line_items || []),
+        JSON.stringify(documentData),
+        userId,
+        new Date().toISOString(),
+        new Date().toISOString()
+      ).run();
     
-    return c.json({
-      success: true,
-      document_id: docId,
-      document_number: documentNumber,
-      total_amount: total
-    });
+      return c.json({
+        success: true,
+        document_id: docId,
+        document_number: documentNumber,
+        total_amount: total
+      });
+    } catch (error: any) {
+      console.error('Document save error:', error);
+      return c.json({ error: error.message || 'Failed to save document' }, 500);
+    }
   } catch (error: any) {
-    console.error('Document save error:', error);
-    return c.json({ error: error.message || 'Failed to save document' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
@@ -918,443 +939,499 @@ app.delete('/contracts/:id', async (c) => {
 
 // Get document by ID
 app.get('/:id', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const docId = c.req.param('id');
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const docId = c.req.param('id');
+      const db = c.env.DB;
     
-    const doc = await db.prepare(`
-      SELECT * FROM documents WHERE id = ? AND company_id = ?
-    `).bind(docId, companyId).first();
+      const doc = await db.prepare(`
+        SELECT * FROM documents WHERE id = ? AND company_id = ?
+      `).bind(docId, companyId).first();
     
-    if (!doc) {
-      return c.json({ error: 'Document not found' }, 404);
+      if (!doc) {
+        return c.json({ error: 'Document not found' }, 404);
+      }
+    
+      return c.json({
+        ...doc,
+        line_items: JSON.parse((doc as any).line_items_json || '[]'),
+        metadata: JSON.parse((doc as any).metadata_json || '{}')
+      });
+    } catch (error: any) {
+      console.error('Document fetch error:', error);
+      return c.json({ error: error.message || 'Failed to fetch document' }, 500);
     }
-    
-    return c.json({
-      ...doc,
-      line_items: JSON.parse((doc as any).line_items_json || '[]'),
-      metadata: JSON.parse((doc as any).metadata_json || '{}')
-    });
   } catch (error: any) {
-    console.error('Document fetch error:', error);
-    return c.json({ error: error.message || 'Failed to fetch document' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Get document HTML for printing
 app.get('/:id/html', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const docId = c.req.param('id');
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const docId = c.req.param('id');
+      const db = c.env.DB;
     
-    // Get document
-    const doc = await db.prepare(`
-      SELECT * FROM documents WHERE id = ? AND company_id = ?
-    `).bind(docId, companyId).first<any>();
+      // Get document
+      const doc = await db.prepare(`
+        SELECT * FROM documents WHERE id = ? AND company_id = ?
+      `).bind(docId, companyId).first<any>();
     
-    if (!doc) {
-      return c.json({ error: 'Document not found' }, 404);
+      if (!doc) {
+        return c.json({ error: 'Document not found' }, 404);
+      }
+    
+      // Get company settings
+      const company = await getCompanySettings(db, companyId);
+    
+      // Get recipient details
+      let recipient: any = {};
+      if (doc.recipient_type === 'customer' && doc.recipient_id) {
+        recipient = await db.prepare(`
+          SELECT name, email, phone, billing_address as address, vat_number
+          FROM customers WHERE id = ? AND company_id = ?
+        `).bind(doc.recipient_id, companyId).first() || {};
+      } else if (doc.recipient_type === 'supplier' && doc.recipient_id) {
+        recipient = await db.prepare(`
+          SELECT name, email, phone, address, vat_number
+          FROM suppliers WHERE id = ? AND company_id = ?
+        `).bind(doc.recipient_id, companyId).first() || {};
+      }
+      recipient.name = recipient.name || doc.recipient_name;
+    
+      const lineItems = JSON.parse(doc.line_items_json || '[]');
+      const metadata = JSON.parse(doc.metadata_json || '{}');
+    
+      const branding: CompanyBranding = {
+        logo_url: company.logo_url,
+        primary_color: company.primary_color || '#1e40af',
+        secondary_color: company.secondary_color || '#64748b',
+        font_family: company.font_family || 'Inter'
+      };
+    
+      const documentData = {
+        document_number: doc.document_number,
+        document_date: doc.document_date,
+        status: doc.status,
+        ...metadata
+      };
+    
+      const html = generateDocumentHTML(
+        doc.document_type,
+        company,
+        recipient,
+        documentData,
+        lineItems,
+        branding
+      );
+    
+      return c.html(html);
+    } catch (error: any) {
+      console.error('Document HTML error:', error);
+      return c.json({ error: error.message || 'Failed to generate document HTML' }, 500);
     }
-    
-    // Get company settings
-    const company = await getCompanySettings(db, companyId);
-    
-    // Get recipient details
-    let recipient: any = {};
-    if (doc.recipient_type === 'customer' && doc.recipient_id) {
-      recipient = await db.prepare(`
-        SELECT name, email, phone, billing_address as address, vat_number
-        FROM customers WHERE id = ? AND company_id = ?
-      `).bind(doc.recipient_id, companyId).first() || {};
-    } else if (doc.recipient_type === 'supplier' && doc.recipient_id) {
-      recipient = await db.prepare(`
-        SELECT name, email, phone, address, vat_number
-        FROM suppliers WHERE id = ? AND company_id = ?
-      `).bind(doc.recipient_id, companyId).first() || {};
-    }
-    recipient.name = recipient.name || doc.recipient_name;
-    
-    const lineItems = JSON.parse(doc.line_items_json || '[]');
-    const metadata = JSON.parse(doc.metadata_json || '{}');
-    
-    const branding: CompanyBranding = {
-      logo_url: company.logo_url,
-      primary_color: company.primary_color || '#1e40af',
-      secondary_color: company.secondary_color || '#64748b',
-      font_family: company.font_family || 'Inter'
-    };
-    
-    const documentData = {
-      document_number: doc.document_number,
-      document_date: doc.document_date,
-      status: doc.status,
-      ...metadata
-    };
-    
-    const html = generateDocumentHTML(
-      doc.document_type,
-      company,
-      recipient,
-      documentData,
-      lineItems,
-      branding
-    );
-    
-    return c.html(html);
   } catch (error: any) {
-    console.error('Document HTML error:', error);
-    return c.json({ error: error.message || 'Failed to generate document HTML' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // List documents
 app.get('/', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const db = c.env.DB;
     
-    const docType = c.req.query('type');
-    const status = c.req.query('status');
-    const limit = parseInt(c.req.query('limit') || '50');
-    const offset = parseInt(c.req.query('offset') || '0');
+      const docType = c.req.query('type');
+      const status = c.req.query('status');
+      const limit = parseInt(c.req.query('limit') || '50');
+      const offset = parseInt(c.req.query('offset') || '0');
     
-    let query = `
-      SELECT id, document_type, document_number, document_date,
-             recipient_name, total_amount, currency, status, created_at
-      FROM documents
-      WHERE company_id = ?
-    `;
-    const params: any[] = [companyId];
+      let query = `
+        SELECT id, document_type, document_number, document_date,
+               recipient_name, total_amount, currency, status, created_at
+        FROM documents
+        WHERE company_id = ?
+      `;
+      const params: any[] = [companyId];
     
-    if (docType) {
-      query += ' AND document_type = ?';
-      params.push(docType);
+      if (docType) {
+        query += ' AND document_type = ?';
+        params.push(docType);
+      }
+    
+      if (status) {
+        query += ' AND status = ?';
+        params.push(status);
+      }
+    
+      query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+      params.push(limit, offset);
+    
+      const docs = await db.prepare(query).bind(...params).all();
+    
+      // Get total count
+      let countQuery = 'SELECT COUNT(*) as count FROM documents WHERE company_id = ?';
+      const countParams: any[] = [companyId];
+      if (docType) {
+        countQuery += ' AND document_type = ?';
+        countParams.push(docType);
+      }
+      if (status) {
+        countQuery += ' AND status = ?';
+        countParams.push(status);
+      }
+      const countResult = await db.prepare(countQuery).bind(...countParams).first<{ count: number }>();
+    
+      return c.json({
+        documents: docs.results,
+        total: countResult?.count || 0,
+        limit,
+        offset
+      });
+    } catch (error: any) {
+      console.error('Document list error:', error);
+      return c.json({ error: error.message || 'Failed to list documents' }, 500);
     }
-    
-    if (status) {
-      query += ' AND status = ?';
-      params.push(status);
-    }
-    
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-    params.push(limit, offset);
-    
-    const docs = await db.prepare(query).bind(...params).all();
-    
-    // Get total count
-    let countQuery = 'SELECT COUNT(*) as count FROM documents WHERE company_id = ?';
-    const countParams: any[] = [companyId];
-    if (docType) {
-      countQuery += ' AND document_type = ?';
-      countParams.push(docType);
-    }
-    if (status) {
-      countQuery += ' AND status = ?';
-      countParams.push(status);
-    }
-    const countResult = await db.prepare(countQuery).bind(...countParams).first<{ count: number }>();
-    
-    return c.json({
-      documents: docs.results,
-      total: countResult?.count || 0,
-      limit,
-      offset
-    });
   } catch (error: any) {
-    console.error('Document list error:', error);
-    return c.json({ error: error.message || 'Failed to list documents' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Update document status
 app.patch('/:id/status', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const docId = c.req.param('id');
-    const { status } = await c.req.json();
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const docId = c.req.param('id');
+      const { status } = await c.req.json();
+      const db = c.env.DB;
     
-    const validStatuses = ['draft', 'sent', 'approved', 'paid', 'cancelled', 'void'];
-    if (!validStatuses.includes(status)) {
-      return c.json({ error: 'Invalid status' }, 400);
+      const validStatuses = ['draft', 'sent', 'approved', 'paid', 'cancelled', 'void'];
+      if (!validStatuses.includes(status)) {
+        return c.json({ error: 'Invalid status' }, 400);
+      }
+    
+      await db.prepare(`
+        UPDATE documents SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?
+      `).bind(status, new Date().toISOString(), docId, companyId).run();
+    
+      return c.json({ success: true, status });
+    } catch (error: any) {
+      console.error('Document status update error:', error);
+      return c.json({ error: error.message || 'Failed to update status' }, 500);
     }
-    
-    await db.prepare(`
-      UPDATE documents SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?
-    `).bind(status, new Date().toISOString(), docId, companyId).run();
-    
-    return c.json({ success: true, status });
   } catch (error: any) {
-    console.error('Document status update error:', error);
-    return c.json({ error: error.message || 'Failed to update status' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Send document via email
 app.post('/:id/send', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const docId = c.req.param('id');
-    const { to_email, cc_email, subject, message, recipient_name } = await c.req.json();
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const docId = c.req.param('id');
+      const { to_email, cc_email, subject, message, recipient_name } = await c.req.json();
+      const db = c.env.DB;
     
-    // Get document
-    const doc = await db.prepare(`
-      SELECT * FROM documents WHERE id = ? AND company_id = ?
-    `).bind(docId, companyId).first<any>();
+      // Get document
+      const doc = await db.prepare(`
+        SELECT * FROM documents WHERE id = ? AND company_id = ?
+      `).bind(docId, companyId).first<any>();
     
-    if (!doc) {
-      return c.json({ error: 'Document not found' }, 404);
-    }
+      if (!doc) {
+        return c.json({ error: 'Document not found' }, 404);
+      }
     
-    // Get company settings
-    const company = await getCompanySettings(db, companyId);
+      // Get company settings
+      const company = await getCompanySettings(db, companyId);
     
-    // Get document HTML content
-    const documentHtml = doc.html_content || '';
+      // Get document HTML content
+      const documentHtml = doc.html_content || '';
     
-    // Prepare email record
-    const emailId = crypto.randomUUID();
-    const emailSubject = subject || `${DOCUMENT_TYPES[doc.document_type as keyof typeof DOCUMENT_TYPES]?.title || 'Document'} ${doc.document_number} from ${company.name}`;
-    const sentAt = new Date().toISOString();
+      // Prepare email record
+      const emailId = crypto.randomUUID();
+      const emailSubject = subject || `${DOCUMENT_TYPES[doc.document_type as keyof typeof DOCUMENT_TYPES]?.title || 'Document'} ${doc.document_number} from ${company.name}`;
+      const sentAt = new Date().toISOString();
     
-    // Send email using the email service
-    const emailResult = await sendDocumentEmail(
-      db,
-      companyId,
-      documentHtml,
-      {
-        email: to_email,
-        name: recipient_name || to_email.split('@')[0]
-      },
-      {
-        type: DOCUMENT_TYPES[doc.document_type as keyof typeof DOCUMENT_TYPES]?.title || 'Document',
-        number: doc.document_number,
-        companyName: company.name
-      },
-      message
-    );
+      // Send email using the email service
+      const emailResult = await sendDocumentEmail(
+        db,
+        companyId,
+        documentHtml,
+        {
+          email: to_email,
+          name: recipient_name || to_email.split('@')[0]
+        },
+        {
+          type: DOCUMENT_TYPES[doc.document_type as keyof typeof DOCUMENT_TYPES]?.title || 'Document',
+          number: doc.document_number,
+          companyName: company.name
+        },
+        message
+      );
     
-    // Determine email status based on result
-    const emailStatus = emailResult.success ? 'sent' : 'failed';
+      // Determine email status based on result
+      const emailStatus = emailResult.success ? 'sent' : 'failed';
     
-    // Save email record
-    await db.prepare(`
-      INSERT INTO document_emails (id, document_id, company_id, to_email, cc_email, subject, message, sent_at, status, provider_message_id, error_message)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      emailId,
-      docId,
-      companyId,
-      to_email,
-      cc_email || null,
-      emailSubject,
-      message || null,
-      sentAt,
-      emailStatus,
-      emailResult.messageId || null,
-      emailResult.error || null
-    ).run();
-    
-    // Update document status to sent if email was successful
-    if (emailResult.success && doc.status === 'draft') {
+      // Save email record
       await db.prepare(`
-        UPDATE documents SET status = 'sent', updated_at = ? WHERE id = ?
-      `).bind(sentAt, docId).run();
-    }
+        INSERT INTO document_emails (id, document_id, company_id, to_email, cc_email, subject, message, sent_at, status, provider_message_id, error_message)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        emailId,
+        docId,
+        companyId,
+        to_email,
+        cc_email || null,
+        emailSubject,
+        message || null,
+        sentAt,
+        emailStatus,
+        emailResult.messageId || null,
+        emailResult.error || null
+      ).run();
     
-    if (!emailResult.success) {
+      // Update document status to sent if email was successful
+      if (emailResult.success && doc.status === 'draft') {
+        await db.prepare(`
+          UPDATE documents SET status = 'sent', updated_at = ? WHERE id = ?
+        `).bind(sentAt, docId).run();
+      }
+    
+      if (!emailResult.success) {
+        return c.json({
+          success: false,
+          message: 'Failed to send email',
+          error: emailResult.error,
+          email_id: emailId
+        }, 500);
+      }
+    
       return c.json({
-        success: false,
-        message: 'Failed to send email',
-        error: emailResult.error,
-        email_id: emailId
-      }, 500);
+        success: true,
+        message: 'Document sent successfully',
+        email_id: emailId,
+        provider: emailResult.provider,
+        message_id: emailResult.messageId
+      });
+    } catch (error: any) {
+      console.error('Document send error:', error);
+      return c.json({ error: error.message || 'Failed to send document' }, 500);
     }
-    
-    return c.json({
-      success: true,
-      message: 'Document sent successfully',
-      email_id: emailId,
-      provider: emailResult.provider,
-      message_id: emailResult.messageId
-    });
   } catch (error: any) {
-    console.error('Document send error:', error);
-    return c.json({ error: error.message || 'Failed to send document' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Get email history for a document
 app.get('/:id/emails', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const docId = c.req.param('id');
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const docId = c.req.param('id');
+      const db = c.env.DB;
     
-    const emails = await db.prepare(`
-      SELECT * FROM document_emails
-      WHERE document_id = ? AND company_id = ?
-      ORDER BY sent_at DESC
-    `).bind(docId, companyId).all();
+      const emails = await db.prepare(`
+        SELECT * FROM document_emails
+        WHERE document_id = ? AND company_id = ?
+        ORDER BY sent_at DESC
+      `).bind(docId, companyId).all();
     
-    return c.json({ emails: emails.results });
+      return c.json({ emails: emails.results });
+    } catch (error: any) {
+      console.error('Email history error:', error);
+      return c.json({ error: error.message || 'Failed to fetch email history' }, 500);
+    }
   } catch (error: any) {
-    console.error('Email history error:', error);
-    return c.json({ error: error.message || 'Failed to fetch email history' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Generate document from existing transaction
 app.post('/from-transaction', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const { transaction_type, transaction_id, document_type } = await c.req.json();
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const { transaction_type, transaction_id, document_type } = await c.req.json();
+      const db = c.env.DB;
     
-    let transaction: any = null;
-    let lineItems: any[] = [];
-    let recipient: any = {};
+      let transaction: any = null;
+      let lineItems: any[] = [];
+      let recipient: any = {};
     
-    // Fetch transaction based on type
-    switch (transaction_type) {
-      case 'quote':
-        transaction = await db.prepare(`
-          SELECT q.*, c.name as customer_name, c.email as customer_email,
-                 c.phone as customer_phone, c.billing_address as customer_address,
-                 c.vat_number as customer_vat
-          FROM quotes q
-          LEFT JOIN customers c ON c.id = q.customer_id
-          WHERE q.id = ? AND q.company_id = ?
-        `).bind(transaction_id, companyId).first();
+      // Fetch transaction based on type
+      switch (transaction_type) {
+        case 'quote':
+          transaction = await db.prepare(`
+            SELECT q.*, c.name as customer_name, c.email as customer_email,
+                   c.phone as customer_phone, c.billing_address as customer_address,
+                   c.vat_number as customer_vat
+            FROM quotes q
+            LEFT JOIN customers c ON c.id = q.customer_id
+            WHERE q.id = ? AND q.company_id = ?
+          `).bind(transaction_id, companyId).first();
         
-        if (transaction) {
-          lineItems = JSON.parse(transaction.line_items_json || '[]');
-          recipient = {
-            id: transaction.customer_id,
-            type: 'customer',
-            name: transaction.customer_name,
-            email: transaction.customer_email,
-            phone: transaction.customer_phone,
-            address: transaction.customer_address,
-            vat_number: transaction.customer_vat
-          };
-        }
-        break;
+          if (transaction) {
+            lineItems = JSON.parse(transaction.line_items_json || '[]');
+            recipient = {
+              id: transaction.customer_id,
+              type: 'customer',
+              name: transaction.customer_name,
+              email: transaction.customer_email,
+              phone: transaction.customer_phone,
+              address: transaction.customer_address,
+              vat_number: transaction.customer_vat
+            };
+          }
+          break;
         
-      case 'sales_order':
-        transaction = await db.prepare(`
-          SELECT so.*, c.name as customer_name, c.email as customer_email,
-                 c.phone as customer_phone, c.billing_address as customer_address,
-                 c.vat_number as customer_vat
-          FROM sales_orders so
-          LEFT JOIN customers c ON c.id = so.customer_id
-          WHERE so.id = ? AND so.company_id = ?
-        `).bind(transaction_id, companyId).first();
+        case 'sales_order':
+          transaction = await db.prepare(`
+            SELECT so.*, c.name as customer_name, c.email as customer_email,
+                   c.phone as customer_phone, c.billing_address as customer_address,
+                   c.vat_number as customer_vat
+            FROM sales_orders so
+            LEFT JOIN customers c ON c.id = so.customer_id
+            WHERE so.id = ? AND so.company_id = ?
+          `).bind(transaction_id, companyId).first();
         
-        if (transaction) {
-          lineItems = JSON.parse(transaction.line_items_json || '[]');
-          recipient = {
-            id: transaction.customer_id,
-            type: 'customer',
-            name: transaction.customer_name,
-            email: transaction.customer_email,
-            phone: transaction.customer_phone,
-            address: transaction.customer_address,
-            vat_number: transaction.customer_vat
-          };
-        }
-        break;
+          if (transaction) {
+            lineItems = JSON.parse(transaction.line_items_json || '[]');
+            recipient = {
+              id: transaction.customer_id,
+              type: 'customer',
+              name: transaction.customer_name,
+              email: transaction.customer_email,
+              phone: transaction.customer_phone,
+              address: transaction.customer_address,
+              vat_number: transaction.customer_vat
+            };
+          }
+          break;
         
-      case 'purchase_order':
-        transaction = await db.prepare(`
-          SELECT po.*, s.name as supplier_name, s.email as supplier_email,
-                 s.phone as supplier_phone, s.address as supplier_address,
-                 s.vat_number as supplier_vat
-          FROM purchase_orders po
-          LEFT JOIN suppliers s ON s.id = po.supplier_id
-          WHERE po.id = ? AND po.company_id = ?
-        `).bind(transaction_id, companyId).first();
+        case 'purchase_order':
+          transaction = await db.prepare(`
+            SELECT po.*, s.name as supplier_name, s.email as supplier_email,
+                   s.phone as supplier_phone, s.address as supplier_address,
+                   s.vat_number as supplier_vat
+            FROM purchase_orders po
+            LEFT JOIN suppliers s ON s.id = po.supplier_id
+            WHERE po.id = ? AND po.company_id = ?
+          `).bind(transaction_id, companyId).first();
         
-        if (transaction) {
-          lineItems = JSON.parse(transaction.line_items_json || '[]');
-          recipient = {
-            id: transaction.supplier_id,
-            type: 'supplier',
-            name: transaction.supplier_name,
-            email: transaction.supplier_email,
-            phone: transaction.supplier_phone,
-            address: transaction.supplier_address,
-            vat_number: transaction.supplier_vat
-          };
-        }
-        break;
+          if (transaction) {
+            lineItems = JSON.parse(transaction.line_items_json || '[]');
+            recipient = {
+              id: transaction.supplier_id,
+              type: 'supplier',
+              name: transaction.supplier_name,
+              email: transaction.supplier_email,
+              phone: transaction.supplier_phone,
+              address: transaction.supplier_address,
+              vat_number: transaction.supplier_vat
+            };
+          }
+          break;
         
-      case 'customer_invoice':
-        transaction = await db.prepare(`
-          SELECT ci.*, c.name as customer_name, c.email as customer_email,
-                 c.phone as customer_phone, c.billing_address as customer_address,
-                 c.vat_number as customer_vat
-          FROM customer_invoices ci
-          LEFT JOIN customers c ON c.id = ci.customer_id
-          WHERE ci.id = ? AND ci.company_id = ?
-        `).bind(transaction_id, companyId).first();
+        case 'customer_invoice':
+          transaction = await db.prepare(`
+            SELECT ci.*, c.name as customer_name, c.email as customer_email,
+                   c.phone as customer_phone, c.billing_address as customer_address,
+                   c.vat_number as customer_vat
+            FROM customer_invoices ci
+            LEFT JOIN customers c ON c.id = ci.customer_id
+            WHERE ci.id = ? AND ci.company_id = ?
+          `).bind(transaction_id, companyId).first();
         
-        if (transaction) {
-          lineItems = JSON.parse(transaction.line_items_json || '[]');
-          recipient = {
-            id: transaction.customer_id,
-            type: 'customer',
-            name: transaction.customer_name,
-            email: transaction.customer_email,
-            phone: transaction.customer_phone,
-            address: transaction.customer_address,
-            vat_number: transaction.customer_vat
-          };
-        }
-        break;
-    }
-    
-    if (!transaction) {
-      return c.json({ error: 'Transaction not found' }, 404);
-    }
-    
-    // Generate document number
-    const documentNumber = await generateDocumentNumber(db, companyId, document_type);
-    
-    return c.json({
-      document_type,
-      document_number: documentNumber,
-      document_date: new Date().toISOString().split('T')[0],
-      recipient,
-      line_items: lineItems,
-      reference: transaction.order_number || transaction.quote_number || transaction.invoice_number,
-      currency: transaction.currency || 'ZAR',
-      vat_rate: 15,
-      source_transaction: {
-        type: transaction_type,
-        id: transaction_id
+          if (transaction) {
+            lineItems = JSON.parse(transaction.line_items_json || '[]');
+            recipient = {
+              id: transaction.customer_id,
+              type: 'customer',
+              name: transaction.customer_name,
+              email: transaction.customer_email,
+              phone: transaction.customer_phone,
+              address: transaction.customer_address,
+              vat_number: transaction.customer_vat
+            };
+          }
+          break;
       }
-    });
+    
+      if (!transaction) {
+        return c.json({ error: 'Transaction not found' }, 404);
+      }
+    
+      // Generate document number
+      const documentNumber = await generateDocumentNumber(db, companyId, document_type);
+    
+      return c.json({
+        document_type,
+        document_number: documentNumber,
+        document_date: new Date().toISOString().split('T')[0],
+        recipient,
+        line_items: lineItems,
+        reference: transaction.order_number || transaction.quote_number || transaction.invoice_number,
+        currency: transaction.currency || 'ZAR',
+        vat_rate: 15,
+        source_transaction: {
+          type: transaction_type,
+          id: transaction_id
+        }
+      });
+    } catch (error: any) {
+      console.error('Document from transaction error:', error);
+      return c.json({ error: error.message || 'Failed to generate document from transaction' }, 500);
+    }
   } catch (error: any) {
-    console.error('Document from transaction error:', error);
-    return c.json({ error: error.message || 'Failed to generate document from transaction' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
@@ -1439,6 +1516,134 @@ app.get('/history', async (c) => {
   } catch (error: any) {
     console.error('Document history error:', error);
     return c.json({ error: error.message || 'Failed to fetch document history' }, 500);
+  }
+});
+
+// ============================================================================
+// R2 DOCUMENT UPLOAD & DOWNLOAD
+// ============================================================================
+
+const ALLOWED_FILE_TYPES = new Set([
+  'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv',
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp'
+]);
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+// Upload a document to R2
+app.post('/upload', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'system';
+
+    const formData = await c.req.formData();
+    const fileEntry = formData.get('file');
+    if (!fileEntry || typeof fileEntry === 'string') {
+      return c.json({ error: 'No file provided' }, 400);
+    }
+    const file = fileEntry as unknown as { name: string; type: string; size: number; stream(): ReadableStream; arrayBuffer(): Promise<ArrayBuffer> };
+
+    if (file.size > MAX_FILE_SIZE) {
+      return c.json({ error: 'File size exceeds 10MB limit' }, 400);
+    }
+
+    if (!ALLOWED_FILE_TYPES.has(file.type)) {
+      return c.json({ error: `File type ${file.type} not supported. Allowed: PDF, DOCX, XLSX, CSV, JPG, PNG` }, 400);
+    }
+
+    const documentType = (formData.get('document_type') as string) || 'general';
+    const documentId = crypto.randomUUID();
+    const r2Key = `${companyId}/${documentType}/${documentId}/${file.name}`;
+
+    // Upload to R2
+    await c.env.DOCUMENTS.put(r2Key, file.stream(), {
+      httpMetadata: { contentType: file.type },
+      customMetadata: { companyId, userId, documentType, originalName: file.name }
+    });
+
+    // Create database record
+    const now = new Date().toISOString();
+    await c.env.DB.prepare(`
+      INSERT INTO documents (id, company_id, filename, original_filename, mime_type, size, r2_key, document_type, uploaded_by, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'uploaded', ?, ?)
+    `).bind(documentId, companyId, file.name, file.name, file.type, file.size, r2Key, documentType, userId, now, now).run();
+
+    return c.json({
+      id: documentId,
+      filename: file.name,
+      mime_type: file.type,
+      size: file.size,
+      document_type: documentType,
+      status: 'uploaded',
+      created_at: now
+    }, 201);
+  } catch (error) {
+    console.error('Upload error:', error);
+    return c.json({ error: 'Failed to upload document' }, 500);
+  }
+});
+
+// Download a document from R2
+app.get('/:id/download', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const documentId = c.req.param('id');
+
+    const doc = await c.env.DB.prepare(
+      'SELECT * FROM documents WHERE id = ? AND company_id = ?'
+    ).bind(documentId, companyId).first<{ r2_key: string; filename: string; mime_type: string }>();
+
+    if (!doc) {
+      return c.json({ error: 'Document not found' }, 404);
+    }
+
+    const r2Object = await c.env.DOCUMENTS.get(doc.r2_key);
+    if (!r2Object) {
+      return c.json({ error: 'File not found in storage' }, 404);
+    }
+
+    return new Response(r2Object.body, {
+      headers: {
+        'Content-Type': doc.mime_type || 'application/octet-stream',
+        'Content-Disposition': `attachment; filename="${doc.filename}"`,
+        'Cache-Control': 'private, max-age=3600'
+      }
+    });
+  } catch (error) {
+    console.error('Download error:', error);
+    return c.json({ error: 'Failed to download document' }, 500);
+  }
+});
+
+// Delete a document from R2
+app.delete('/:id', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const documentId = c.req.param('id');
+
+    const doc = await c.env.DB.prepare(
+      'SELECT r2_key FROM documents WHERE id = ? AND company_id = ?'
+    ).bind(documentId, companyId).first<{ r2_key: string }>();
+
+    if (!doc) {
+      return c.json({ error: 'Document not found' }, 404);
+    }
+
+    // Delete from R2
+    await c.env.DOCUMENTS.delete(doc.r2_key);
+
+    // Delete from database
+    await c.env.DB.prepare(
+      'DELETE FROM documents WHERE id = ? AND company_id = ?'
+    ).bind(documentId, companyId).run();
+
+    return c.json({ message: 'Document deleted successfully' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    return c.json({ error: 'Failed to delete document' }, 500);
   }
 });
 

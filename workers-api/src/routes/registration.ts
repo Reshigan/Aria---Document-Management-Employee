@@ -9,6 +9,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import Stripe from 'stripe';
 import {
   getPlans,
@@ -41,6 +42,8 @@ const app = new Hono<{ Bindings: Env }>();
  */
 app.get('/plans', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const plans = await getPlans(c.env.DB);
     
     // Filter out enterprise (custom pricing) for public display
@@ -73,6 +76,8 @@ app.get('/plans', async (c) => {
  */
 app.get('/validate-referral/:code', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const code = c.req.param('code');
     const result = await validateReferralCode(c.env.DB, code);
     
@@ -91,6 +96,8 @@ app.get('/validate-referral/:code', async (c) => {
  */
 app.get('/validate-promo/:code', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const code = c.req.param('code');
     const result = await validatePromoCode(c.env.DB, code);
     
@@ -111,6 +118,8 @@ app.get('/validate-promo/:code', async (c) => {
  */
 app.post('/start', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     // Validate required fields
@@ -202,6 +211,8 @@ app.post('/start', async (c) => {
  */
 app.get('/status/:registrationId', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const registrationId = c.req.param('registrationId');
     
     const result = await c.env.DB.prepare(`
@@ -232,6 +243,8 @@ app.get('/status/:registrationId', async (c) => {
  */
 app.post('/webhook/stripe', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const signature = c.req.header('stripe-signature');
     const rawBody = await c.req.text();
 
@@ -244,6 +257,8 @@ app.post('/webhook/stripe', async (c) => {
 
     let event: Stripe.Event;
     try {
+      const companyId = await getSecureCompanyId(c);
+      if (!companyId) return c.json({ error: 'Authentication required' }, 401);
       event = stripe.webhooks.constructEvent(
         rawBody,
         signature || '',
@@ -272,6 +287,8 @@ app.post('/webhook/stripe', async (c) => {
     `).bind(eventId, event.id, event.type, JSON.stringify(event.data)).run();
 
     try {
+      const companyId = await getSecureCompanyId(c);
+      if (!companyId) return c.json({ error: 'Authentication required' }, 401);
       // Handle different event types
       switch (event.type) {
         case 'checkout.session.completed': {

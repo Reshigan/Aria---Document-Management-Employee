@@ -37,6 +37,7 @@ const suppliers = new Hono<{ Bindings: Env }>();
 suppliers.get('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const search = c.req.query('search') || '';
     const page = parseInt(c.req.query('page') || '1');
     const pageSize = parseInt(c.req.query('page_size') || '50');
@@ -117,6 +118,8 @@ suppliers.get('/:id', async (c) => {
     const supplierId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
 
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
     const supplier = await c.env.DB.prepare(`
       SELECT s.*,
              (SELECT COUNT(*) FROM purchase_orders WHERE supplier_id = s.id) as total_orders,
@@ -158,6 +161,7 @@ suppliers.get('/:id', async (c) => {
 suppliers.post('/', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<Supplier>>();
 
     if (!body.supplier_name) {
@@ -215,6 +219,7 @@ suppliers.put('/:id', async (c) => {
   try {
     const supplierId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json<Partial<Supplier>>();
 
     const result = await c.env.DB.prepare(`
@@ -263,6 +268,8 @@ suppliers.delete('/:id', async (c) => {
   try {
     const supplierId = c.req.param('id');
     const companyId = await getSecureCompanyId(c);
+
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
 
     const result = await c.env.DB.prepare(
       'DELETE FROM suppliers WHERE id = ? AND company_id = ?'

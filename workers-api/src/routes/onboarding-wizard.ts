@@ -211,210 +211,239 @@ const COA_TEMPLATES = {
 
 // Get onboarding steps
 app.get('/steps', async (c) => {
-  return c.json({ steps: ONBOARDING_STEPS });
+  try {
+    return c.json({ steps: ONBOARDING_STEPS });
+  } catch (error: any) {
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
+  }
 });
 
 // Get onboarding progress
 app.get('/progress', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const db = c.env.DB;
     
-    let progress = await db.prepare(`
-      SELECT * FROM onboarding_progress WHERE company_id = ?
-    `).bind(companyId).first<any>();
+      let progress = await db.prepare(`
+        SELECT * FROM onboarding_progress WHERE company_id = ?
+      `).bind(companyId).first<any>();
     
-    if (!progress) {
-      // Create initial progress record
-      const progressId = crypto.randomUUID();
-      await db.prepare(`
-        INSERT INTO onboarding_progress (id, company_id, current_step, completed_steps, skipped_steps)
-        VALUES (?, ?, 'company_profile', '[]', '[]')
-      `).bind(progressId, companyId).run();
+      if (!progress) {
+        // Create initial progress record
+        const progressId = crypto.randomUUID();
+        await db.prepare(`
+          INSERT INTO onboarding_progress (id, company_id, current_step, completed_steps, skipped_steps)
+          VALUES (?, ?, 'company_profile', '[]', '[]')
+        `).bind(progressId, companyId).run();
       
-      progress = {
-        id: progressId,
-        company_id: companyId,
-        current_step: 'company_profile',
-        completed_steps: '[]',
-        skipped_steps: '[]'
-      };
+        progress = {
+          id: progressId,
+          company_id: companyId,
+          current_step: 'company_profile',
+          completed_steps: '[]',
+          skipped_steps: '[]'
+        };
+      }
+    
+      const completedSteps = JSON.parse(progress.completed_steps || '[]');
+      const skippedSteps = JSON.parse(progress.skipped_steps || '[]');
+    
+      // Calculate completion percentage
+      const requiredSteps = ONBOARDING_STEPS.filter(s => s.required);
+      const completedRequired = requiredSteps.filter(s => completedSteps.includes(s.id));
+      const completionPercent = Math.round((completedRequired.length / requiredSteps.length) * 100);
+    
+      return c.json({
+        current_step: progress.current_step,
+        completed_steps: completedSteps,
+        skipped_steps: skippedSteps,
+        completion_percent: completionPercent,
+        is_complete: progress.onboarding_completed_at !== null,
+        go_live_date: progress.go_live_date,
+        steps: ONBOARDING_STEPS.map(step => ({
+          ...step,
+          status: completedSteps.includes(step.id) ? 'completed' :
+                  skippedSteps.includes(step.id) ? 'skipped' :
+                  step.id === progress.current_step ? 'current' : 'pending'
+        }))
+      });
+    } catch (error: any) {
+      console.error('Onboarding progress error:', error);
+      return c.json({ error: error.message || 'Failed to get progress' }, 500);
     }
-    
-    const completedSteps = JSON.parse(progress.completed_steps || '[]');
-    const skippedSteps = JSON.parse(progress.skipped_steps || '[]');
-    
-    // Calculate completion percentage
-    const requiredSteps = ONBOARDING_STEPS.filter(s => s.required);
-    const completedRequired = requiredSteps.filter(s => completedSteps.includes(s.id));
-    const completionPercent = Math.round((completedRequired.length / requiredSteps.length) * 100);
-    
-    return c.json({
-      current_step: progress.current_step,
-      completed_steps: completedSteps,
-      skipped_steps: skippedSteps,
-      completion_percent: completionPercent,
-      is_complete: progress.onboarding_completed_at !== null,
-      go_live_date: progress.go_live_date,
-      steps: ONBOARDING_STEPS.map(step => ({
-        ...step,
-        status: completedSteps.includes(step.id) ? 'completed' :
-                skippedSteps.includes(step.id) ? 'skipped' :
-                step.id === progress.current_step ? 'current' : 'pending'
-      }))
-    });
   } catch (error: any) {
-    console.error('Onboarding progress error:', error);
-    return c.json({ error: error.message || 'Failed to get progress' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Complete a step
 app.post('/steps/:stepId/complete', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const stepId = c.req.param('stepId');
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const stepId = c.req.param('stepId');
+      const db = c.env.DB;
     
-    const progress = await db.prepare(`
-      SELECT * FROM onboarding_progress WHERE company_id = ?
-    `).bind(companyId).first<any>();
+      const progress = await db.prepare(`
+        SELECT * FROM onboarding_progress WHERE company_id = ?
+      `).bind(companyId).first<any>();
     
-    if (!progress) {
-      return c.json({ error: 'Onboarding not started' }, 400);
+      if (!progress) {
+        return c.json({ error: 'Onboarding not started' }, 400);
+      }
+    
+      const completedSteps = JSON.parse(progress.completed_steps || '[]');
+      if (!completedSteps.includes(stepId)) {
+        completedSteps.push(stepId);
+      }
+    
+      // Find next step
+      const currentIndex = ONBOARDING_STEPS.findIndex(s => s.id === stepId);
+      const nextStep = ONBOARDING_STEPS[currentIndex + 1];
+    
+      // Update specific completion flags
+      const updates: string[] = ['completed_steps = ?', 'updated_at = ?'];
+      const params: any[] = [JSON.stringify(completedSteps), new Date().toISOString()];
+    
+      if (nextStep) {
+        updates.push('current_step = ?');
+        params.push(nextStep.id);
+      }
+    
+      // Set specific flags based on step
+      switch (stepId) {
+        case 'company_profile':
+          updates.push('company_profile_complete = 1');
+          break;
+        case 'branding':
+          updates.push('branding_complete = 1');
+          break;
+        case 'chart_of_accounts':
+          updates.push('chart_of_accounts_complete = 1');
+          break;
+        case 'bank_accounts':
+          updates.push('bank_accounts_complete = 1');
+          break;
+        case 'opening_balances':
+          updates.push('opening_balances_complete = 1');
+          break;
+        case 'customers':
+          updates.push('customers_imported = 1');
+          break;
+        case 'suppliers':
+          updates.push('suppliers_imported = 1');
+          break;
+        case 'products':
+          updates.push('products_imported = 1');
+          break;
+        case 'users':
+          updates.push('users_invited = 1');
+          break;
+        case 'payment_gateway':
+          updates.push('payment_gateway_connected = 1');
+          break;
+        case 'first_invoice':
+          updates.push('first_invoice_created = 1');
+          break;
+        case 'go_live':
+          updates.push('onboarding_completed_at = ?');
+          params.push(new Date().toISOString());
+          break;
+      }
+    
+      params.push(companyId);
+    
+      await db.prepare(`
+        UPDATE onboarding_progress SET ${updates.join(', ')} WHERE company_id = ?
+      `).bind(...params).run();
+    
+      return c.json({
+        success: true,
+        next_step: nextStep?.id || null,
+        is_complete: stepId === 'go_live'
+      });
+    } catch (error: any) {
+      console.error('Complete step error:', error);
+      return c.json({ error: error.message || 'Failed to complete step' }, 500);
     }
-    
-    const completedSteps = JSON.parse(progress.completed_steps || '[]');
-    if (!completedSteps.includes(stepId)) {
-      completedSteps.push(stepId);
-    }
-    
-    // Find next step
-    const currentIndex = ONBOARDING_STEPS.findIndex(s => s.id === stepId);
-    const nextStep = ONBOARDING_STEPS[currentIndex + 1];
-    
-    // Update specific completion flags
-    const updates: string[] = ['completed_steps = ?', 'updated_at = ?'];
-    const params: any[] = [JSON.stringify(completedSteps), new Date().toISOString()];
-    
-    if (nextStep) {
-      updates.push('current_step = ?');
-      params.push(nextStep.id);
-    }
-    
-    // Set specific flags based on step
-    switch (stepId) {
-      case 'company_profile':
-        updates.push('company_profile_complete = 1');
-        break;
-      case 'branding':
-        updates.push('branding_complete = 1');
-        break;
-      case 'chart_of_accounts':
-        updates.push('chart_of_accounts_complete = 1');
-        break;
-      case 'bank_accounts':
-        updates.push('bank_accounts_complete = 1');
-        break;
-      case 'opening_balances':
-        updates.push('opening_balances_complete = 1');
-        break;
-      case 'customers':
-        updates.push('customers_imported = 1');
-        break;
-      case 'suppliers':
-        updates.push('suppliers_imported = 1');
-        break;
-      case 'products':
-        updates.push('products_imported = 1');
-        break;
-      case 'users':
-        updates.push('users_invited = 1');
-        break;
-      case 'payment_gateway':
-        updates.push('payment_gateway_connected = 1');
-        break;
-      case 'first_invoice':
-        updates.push('first_invoice_created = 1');
-        break;
-      case 'go_live':
-        updates.push('onboarding_completed_at = ?');
-        params.push(new Date().toISOString());
-        break;
-    }
-    
-    params.push(companyId);
-    
-    await db.prepare(`
-      UPDATE onboarding_progress SET ${updates.join(', ')} WHERE company_id = ?
-    `).bind(...params).run();
-    
-    return c.json({
-      success: true,
-      next_step: nextStep?.id || null,
-      is_complete: stepId === 'go_live'
-    });
   } catch (error: any) {
-    console.error('Complete step error:', error);
-    return c.json({ error: error.message || 'Failed to complete step' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Skip a step
 app.post('/steps/:stepId/skip', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const stepId = c.req.param('stepId');
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const stepId = c.req.param('stepId');
+      const db = c.env.DB;
     
-    const step = ONBOARDING_STEPS.find(s => s.id === stepId);
-    if (step?.required) {
-      return c.json({ error: 'Cannot skip required step' }, 400);
+      const step = ONBOARDING_STEPS.find(s => s.id === stepId);
+      if (step?.required) {
+        return c.json({ error: 'Cannot skip required step' }, 400);
+      }
+    
+      const progress = await db.prepare(`
+        SELECT * FROM onboarding_progress WHERE company_id = ?
+      `).bind(companyId).first<any>();
+    
+      if (!progress) {
+        return c.json({ error: 'Onboarding not started' }, 400);
+      }
+    
+      const skippedSteps = JSON.parse(progress.skipped_steps || '[]');
+      if (!skippedSteps.includes(stepId)) {
+        skippedSteps.push(stepId);
+      }
+    
+      // Find next step
+      const currentIndex = ONBOARDING_STEPS.findIndex(s => s.id === stepId);
+      const nextStep = ONBOARDING_STEPS[currentIndex + 1];
+    
+      await db.prepare(`
+        UPDATE onboarding_progress SET
+          skipped_steps = ?,
+          current_step = ?,
+          updated_at = ?
+        WHERE company_id = ?
+      `).bind(
+        JSON.stringify(skippedSteps),
+        nextStep?.id || progress.current_step,
+        new Date().toISOString(),
+        companyId
+      ).run();
+    
+      return c.json({
+        success: true,
+        next_step: nextStep?.id || null
+      });
+    } catch (error: any) {
+      console.error('Skip step error:', error);
+      return c.json({ error: error.message || 'Failed to skip step' }, 500);
     }
-    
-    const progress = await db.prepare(`
-      SELECT * FROM onboarding_progress WHERE company_id = ?
-    `).bind(companyId).first<any>();
-    
-    if (!progress) {
-      return c.json({ error: 'Onboarding not started' }, 400);
-    }
-    
-    const skippedSteps = JSON.parse(progress.skipped_steps || '[]');
-    if (!skippedSteps.includes(stepId)) {
-      skippedSteps.push(stepId);
-    }
-    
-    // Find next step
-    const currentIndex = ONBOARDING_STEPS.findIndex(s => s.id === stepId);
-    const nextStep = ONBOARDING_STEPS[currentIndex + 1];
-    
-    await db.prepare(`
-      UPDATE onboarding_progress SET
-        skipped_steps = ?,
-        current_step = ?,
-        updated_at = ?
-      WHERE company_id = ?
-    `).bind(
-      JSON.stringify(skippedSteps),
-      nextStep?.id || progress.current_step,
-      new Date().toISOString(),
-      companyId
-    ).run();
-    
-    return c.json({
-      success: true,
-      next_step: nextStep?.id || null
-    });
   } catch (error: any) {
-    console.error('Skip step error:', error);
-    return c.json({ error: error.message || 'Failed to skip step' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
@@ -424,78 +453,96 @@ app.post('/steps/:stepId/skip', async (c) => {
 
 // Get COA templates
 app.get('/coa-templates', async (c) => {
-  return c.json({
-    templates: Object.entries(COA_TEMPLATES).map(([id, template]) => ({
-      id,
-      name: template.name,
-      description: template.description,
-      account_count: template.accounts.length
-    }))
-  });
+  try {
+    return c.json({
+      templates: Object.entries(COA_TEMPLATES).map(([id, template]) => ({
+        id,
+        name: template.name,
+        description: template.description,
+        account_count: template.accounts.length
+      }))
+    });
+  } catch (error: any) {
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
+  }
 });
 
 // Get COA template details
 app.get('/coa-templates/:templateId', async (c) => {
-  const templateId = c.req.param('templateId');
-  const template = COA_TEMPLATES[templateId as keyof typeof COA_TEMPLATES];
+  try {
+    const templateId = c.req.param('templateId');
+    const template = COA_TEMPLATES[templateId as keyof typeof COA_TEMPLATES];
   
-  if (!template) {
-    return c.json({ error: 'Template not found' }, 404);
+    if (!template) {
+      return c.json({ error: 'Template not found' }, 404);
+    }
+  
+    return c.json(template);
+  } catch (error: any) {
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
-  
-  return c.json(template);
 });
 
 // Apply COA template
 app.post('/coa-templates/:templateId/apply', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const templateId = c.req.param('templateId');
-    const template = COA_TEMPLATES[templateId as keyof typeof COA_TEMPLATES];
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const templateId = c.req.param('templateId');
+      const template = COA_TEMPLATES[templateId as keyof typeof COA_TEMPLATES];
     
-    if (!template) {
-      return c.json({ error: 'Template not found' }, 404);
+      if (!template) {
+        return c.json({ error: 'Template not found' }, 404);
+      }
+    
+      const db = c.env.DB;
+    
+      // Check if company already has accounts
+      const existing = await db.prepare(`
+        SELECT COUNT(*) as count FROM gl_accounts WHERE company_id = ?
+      `).bind(companyId).first<{ count: number }>();
+    
+      if ((existing?.count || 0) > 0) {
+        return c.json({ error: 'Company already has GL accounts. Delete existing accounts first or merge manually.' }, 400);
+      }
+    
+      // Insert accounts
+      let created = 0;
+      for (const account of template.accounts) {
+        const accountId = crypto.randomUUID();
+        await db.prepare(`
+          INSERT INTO gl_accounts (id, company_id, account_code, account_name, account_type, category, is_active)
+          VALUES (?, ?, ?, ?, ?, ?, 1)
+        `).bind(
+          accountId,
+          companyId,
+          account.code,
+          account.name,
+          account.type,
+          account.category
+        ).run();
+        created++;
+      }
+    
+      return c.json({
+        success: true,
+        accounts_created: created,
+        template_name: template.name
+      });
+    } catch (error: any) {
+      console.error('Apply COA template error:', error);
+      return c.json({ error: error.message || 'Failed to apply template' }, 500);
     }
-    
-    const db = c.env.DB;
-    
-    // Check if company already has accounts
-    const existing = await db.prepare(`
-      SELECT COUNT(*) as count FROM gl_accounts WHERE company_id = ?
-    `).bind(companyId).first<{ count: number }>();
-    
-    if ((existing?.count || 0) > 0) {
-      return c.json({ error: 'Company already has GL accounts. Delete existing accounts first or merge manually.' }, 400);
-    }
-    
-    // Insert accounts
-    let created = 0;
-    for (const account of template.accounts) {
-      const accountId = crypto.randomUUID();
-      await db.prepare(`
-        INSERT INTO gl_accounts (id, company_id, account_code, account_name, account_type, category, is_active)
-        VALUES (?, ?, ?, ?, ?, ?, 1)
-      `).bind(
-        accountId,
-        companyId,
-        account.code,
-        account.name,
-        account.type,
-        account.category
-      ).run();
-      created++;
-    }
-    
-    return c.json({
-      success: true,
-      accounts_created: created,
-      template_name: template.name
-    });
   } catch (error: any) {
-    console.error('Apply COA template error:', error);
-    return c.json({ error: error.message || 'Failed to apply template' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
@@ -505,274 +552,295 @@ app.post('/coa-templates/:templateId/apply', async (c) => {
 
 // Get import templates (CSV column mappings)
 app.get('/import/templates/:type', async (c) => {
-  const importType = c.req.param('type');
+  try {
+    const importType = c.req.param('type');
   
-  const templates: Record<string, any> = {
-    customers: {
-      required_columns: ['name'],
-      optional_columns: ['email', 'phone', 'billing_address', 'shipping_address', 'vat_number', 'credit_limit', 'payment_terms'],
-      sample_data: [
-        { name: 'ABC Company', email: 'info@abc.com', phone: '+27 11 123 4567', billing_address: '123 Main St, Johannesburg', vat_number: '4123456789' }
-      ]
-    },
-    suppliers: {
-      required_columns: ['name'],
-      optional_columns: ['email', 'phone', 'address', 'vat_number', 'payment_terms', 'bank_name', 'bank_account', 'bank_branch'],
-      sample_data: [
-        { name: 'XYZ Suppliers', email: 'orders@xyz.com', phone: '+27 11 987 6543', address: '456 Industrial Rd, Pretoria' }
-      ]
-    },
-    products: {
-      required_columns: ['name', 'sku'],
-      optional_columns: ['description', 'category', 'unit_price', 'cost_price', 'quantity_on_hand', 'reorder_level', 'unit_of_measure', 'barcode'],
-      sample_data: [
-        { name: 'Widget A', sku: 'WGT-001', unit_price: 99.99, cost_price: 50.00, quantity_on_hand: 100 }
-      ]
-    },
-    opening_balances: {
-      required_columns: ['account_code', 'debit', 'credit'],
-      optional_columns: ['description'],
-      sample_data: [
-        { account_code: '1000', debit: 100000, credit: 0, description: 'Cash opening balance' },
-        { account_code: '3100', debit: 0, credit: 100000, description: 'Retained earnings opening' }
-      ]
+    const templates: Record<string, any> = {
+      customers: {
+        required_columns: ['name'],
+        optional_columns: ['email', 'phone', 'billing_address', 'shipping_address', 'vat_number', 'credit_limit', 'payment_terms'],
+        sample_data: [
+          { name: 'ABC Company', email: 'info@abc.com', phone: '+27 11 123 4567', billing_address: '123 Main St, Johannesburg', vat_number: '4123456789' }
+        ]
+      },
+      suppliers: {
+        required_columns: ['name'],
+        optional_columns: ['email', 'phone', 'address', 'vat_number', 'payment_terms', 'bank_name', 'bank_account', 'bank_branch'],
+        sample_data: [
+          { name: 'XYZ Suppliers', email: 'orders@xyz.com', phone: '+27 11 987 6543', address: '456 Industrial Rd, Pretoria' }
+        ]
+      },
+      products: {
+        required_columns: ['name', 'sku'],
+        optional_columns: ['description', 'category', 'unit_price', 'cost_price', 'quantity_on_hand', 'reorder_level', 'unit_of_measure', 'barcode'],
+        sample_data: [
+          { name: 'Widget A', sku: 'WGT-001', unit_price: 99.99, cost_price: 50.00, quantity_on_hand: 100 }
+        ]
+      },
+      opening_balances: {
+        required_columns: ['account_code', 'debit', 'credit'],
+        optional_columns: ['description'],
+        sample_data: [
+          { account_code: '1000', debit: 100000, credit: 0, description: 'Cash opening balance' },
+          { account_code: '3100', debit: 0, credit: 100000, description: 'Retained earnings opening' }
+        ]
+      }
+    };
+  
+    const template = templates[importType];
+    if (!template) {
+      return c.json({ error: 'Unknown import type' }, 404);
     }
-  };
   
-  const template = templates[importType];
-  if (!template) {
-    return c.json({ error: 'Unknown import type' }, 404);
+    return c.json(template);
+  } catch (error: any) {
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
-  
-  return c.json(template);
 });
 
 // Validate import data
 app.post('/import/validate', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const body = await c.req.json();
-    const { import_type, data, column_mapping } = body;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const body = await c.req.json();
+      const { import_type, data, column_mapping } = body;
     
-    const errors: any[] = [];
-    const warnings: any[] = [];
-    let validRows = 0;
+      const errors: any[] = [];
+      const warnings: any[] = [];
+      let validRows = 0;
     
-    const requiredColumns: Record<string, string[]> = {
-      customers: ['name'],
-      suppliers: ['name'],
-      products: ['name', 'sku'],
-      opening_balances: ['account_code']
-    };
+      const requiredColumns: Record<string, string[]> = {
+        customers: ['name'],
+        suppliers: ['name'],
+        products: ['name', 'sku'],
+        opening_balances: ['account_code']
+      };
     
-    const required = requiredColumns[import_type] || [];
+      const required = requiredColumns[import_type] || [];
     
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i];
-      const rowNum = i + 2; // Account for header row
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i];
+        const rowNum = i + 2; // Account for header row
       
-      // Check required fields
-      for (const field of required) {
-        const mappedColumn = column_mapping[field];
-        if (!mappedColumn || !row[mappedColumn]) {
-          errors.push({
-            row: rowNum,
-            field,
-            message: `Missing required field: ${field}`
-          });
+        // Check required fields
+        for (const field of required) {
+          const mappedColumn = column_mapping[field];
+          if (!mappedColumn || !row[mappedColumn]) {
+            errors.push({
+              row: rowNum,
+              field,
+              message: `Missing required field: ${field}`
+            });
+          }
+        }
+      
+        // Type-specific validation
+        if (import_type === 'products') {
+          const price = parseFloat(row[column_mapping.unit_price]);
+          if (column_mapping.unit_price && isNaN(price)) {
+            warnings.push({
+              row: rowNum,
+              field: 'unit_price',
+              message: 'Invalid price format'
+            });
+          }
+        }
+      
+        if (import_type === 'opening_balances') {
+          const debit = parseFloat(row[column_mapping.debit] || '0');
+          const credit = parseFloat(row[column_mapping.credit] || '0');
+          if (isNaN(debit) || isNaN(credit)) {
+            errors.push({
+              row: rowNum,
+              field: 'debit/credit',
+              message: 'Invalid amount format'
+            });
+          }
+        }
+      
+        if (errors.filter(e => e.row === rowNum).length === 0) {
+          validRows++;
         }
       }
-      
-      // Type-specific validation
-      if (import_type === 'products') {
-        const price = parseFloat(row[column_mapping.unit_price]);
-        if (column_mapping.unit_price && isNaN(price)) {
-          warnings.push({
-            row: rowNum,
-            field: 'unit_price',
-            message: 'Invalid price format'
-          });
-        }
-      }
-      
+    
+      // Check opening balances total
       if (import_type === 'opening_balances') {
-        const debit = parseFloat(row[column_mapping.debit] || '0');
-        const credit = parseFloat(row[column_mapping.credit] || '0');
-        if (isNaN(debit) || isNaN(credit)) {
-          errors.push({
-            row: rowNum,
-            field: 'debit/credit',
-            message: 'Invalid amount format'
+        let totalDebit = 0;
+        let totalCredit = 0;
+        for (const row of data) {
+          totalDebit += parseFloat(row[column_mapping.debit] || '0') || 0;
+          totalCredit += parseFloat(row[column_mapping.credit] || '0') || 0;
+        }
+        if (Math.abs(totalDebit - totalCredit) > 0.01) {
+          warnings.push({
+            row: null,
+            field: null,
+            message: `Opening balances don't balance. Debits: ${totalDebit.toFixed(2)}, Credits: ${totalCredit.toFixed(2)}, Difference: ${(totalDebit - totalCredit).toFixed(2)}`
           });
         }
       }
-      
-      if (errors.filter(e => e.row === rowNum).length === 0) {
-        validRows++;
-      }
-    }
     
-    // Check opening balances total
-    if (import_type === 'opening_balances') {
-      let totalDebit = 0;
-      let totalCredit = 0;
-      for (const row of data) {
-        totalDebit += parseFloat(row[column_mapping.debit] || '0') || 0;
-        totalCredit += parseFloat(row[column_mapping.credit] || '0') || 0;
-      }
-      if (Math.abs(totalDebit - totalCredit) > 0.01) {
-        warnings.push({
-          row: null,
-          field: null,
-          message: `Opening balances don't balance. Debits: ${totalDebit.toFixed(2)}, Credits: ${totalCredit.toFixed(2)}, Difference: ${(totalDebit - totalCredit).toFixed(2)}`
-        });
-      }
+      return c.json({
+        valid: errors.length === 0,
+        total_rows: data.length,
+        valid_rows: validRows,
+        error_rows: data.length - validRows,
+        errors,
+        warnings
+      });
+    } catch (error: any) {
+      console.error('Validate import error:', error);
+      return c.json({ error: error.message || 'Failed to validate import' }, 500);
     }
-    
-    return c.json({
-      valid: errors.length === 0,
-      total_rows: data.length,
-      valid_rows: validRows,
-      error_rows: data.length - validRows,
-      errors,
-      warnings
-    });
   } catch (error: any) {
-    console.error('Validate import error:', error);
-    return c.json({ error: error.message || 'Failed to validate import' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
 // Execute import
 app.post('/import/execute', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const body = await c.req.json();
-    const { import_type, data, column_mapping } = body;
-    const db = c.env.DB;
-    const userId = 'system';
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const body = await c.req.json();
+      const { import_type, data, column_mapping } = body;
+      const db = c.env.DB;
+      const userId = 'system';
     
-    const batchId = crypto.randomUUID();
-    let imported = 0;
-    let failed = 0;
-    const errors: any[] = [];
+      const batchId = crypto.randomUUID();
+      let imported = 0;
+      let failed = 0;
+      const errors: any[] = [];
     
-    // Create import batch record
-    await db.prepare(`
-      INSERT INTO import_batches (id, company_id, import_type, total_rows, status, created_by, started_at)
-      VALUES (?, ?, ?, ?, 'processing', ?, ?)
-    `).bind(batchId, companyId, import_type, data.length, userId, new Date().toISOString()).run();
+      // Create import batch record
+      await db.prepare(`
+        INSERT INTO import_batches (id, company_id, import_type, total_rows, status, created_by, started_at)
+        VALUES (?, ?, ?, ?, 'processing', ?, ?)
+      `).bind(batchId, companyId, import_type, data.length, userId, new Date().toISOString()).run();
     
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i];
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i];
       
-      try {
-        switch (import_type) {
-          case 'customers':
-            const customerId = crypto.randomUUID();
-            await db.prepare(`
-              INSERT INTO customers (id, company_id, name, email, phone, billing_address, shipping_address, vat_number, credit_limit, payment_terms, created_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `).bind(
-              customerId,
-              companyId,
-              row[column_mapping.name],
-              row[column_mapping.email] || null,
-              row[column_mapping.phone] || null,
-              row[column_mapping.billing_address] || null,
-              row[column_mapping.shipping_address] || null,
-              row[column_mapping.vat_number] || null,
-              parseFloat(row[column_mapping.credit_limit]) || null,
-              row[column_mapping.payment_terms] || null,
-              new Date().toISOString()
-            ).run();
-            imported++;
-            break;
+        try {
+          switch (import_type) {
+            case 'customers':
+              const customerId = crypto.randomUUID();
+              await db.prepare(`
+                INSERT INTO customers (id, company_id, name, email, phone, billing_address, shipping_address, vat_number, credit_limit, payment_terms, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              `).bind(
+                customerId,
+                companyId,
+                row[column_mapping.name],
+                row[column_mapping.email] || null,
+                row[column_mapping.phone] || null,
+                row[column_mapping.billing_address] || null,
+                row[column_mapping.shipping_address] || null,
+                row[column_mapping.vat_number] || null,
+                parseFloat(row[column_mapping.credit_limit]) || null,
+                row[column_mapping.payment_terms] || null,
+                new Date().toISOString()
+              ).run();
+              imported++;
+              break;
             
-          case 'suppliers':
-            const supplierId = crypto.randomUUID();
-            await db.prepare(`
-              INSERT INTO suppliers (id, company_id, name, email, phone, address, vat_number, payment_terms, bank_name, bank_account, bank_branch, created_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `).bind(
-              supplierId,
-              companyId,
-              row[column_mapping.name],
-              row[column_mapping.email] || null,
-              row[column_mapping.phone] || null,
-              row[column_mapping.address] || null,
-              row[column_mapping.vat_number] || null,
-              row[column_mapping.payment_terms] || null,
-              row[column_mapping.bank_name] || null,
-              row[column_mapping.bank_account] || null,
-              row[column_mapping.bank_branch] || null,
-              new Date().toISOString()
-            ).run();
-            imported++;
-            break;
+            case 'suppliers':
+              const supplierId = crypto.randomUUID();
+              await db.prepare(`
+                INSERT INTO suppliers (id, company_id, name, email, phone, address, vat_number, payment_terms, bank_name, bank_account, bank_branch, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              `).bind(
+                supplierId,
+                companyId,
+                row[column_mapping.name],
+                row[column_mapping.email] || null,
+                row[column_mapping.phone] || null,
+                row[column_mapping.address] || null,
+                row[column_mapping.vat_number] || null,
+                row[column_mapping.payment_terms] || null,
+                row[column_mapping.bank_name] || null,
+                row[column_mapping.bank_account] || null,
+                row[column_mapping.bank_branch] || null,
+                new Date().toISOString()
+              ).run();
+              imported++;
+              break;
             
-          case 'products':
-            const productId = crypto.randomUUID();
-            await db.prepare(`
-              INSERT INTO products (id, company_id, name, sku, description, category, unit_price, cost_price, quantity_on_hand, reorder_level, unit_of_measure, barcode, created_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `).bind(
-              productId,
-              companyId,
-              row[column_mapping.name],
-              row[column_mapping.sku],
-              row[column_mapping.description] || null,
-              row[column_mapping.category] || null,
-              parseFloat(row[column_mapping.unit_price]) || 0,
-              parseFloat(row[column_mapping.cost_price]) || 0,
-              parseInt(row[column_mapping.quantity_on_hand]) || 0,
-              parseInt(row[column_mapping.reorder_level]) || 0,
-              row[column_mapping.unit_of_measure] || 'each',
-              row[column_mapping.barcode] || null,
-              new Date().toISOString()
-            ).run();
-            imported++;
-            break;
+            case 'products':
+              const productId = crypto.randomUUID();
+              await db.prepare(`
+                INSERT INTO products (id, company_id, name, sku, description, category, unit_price, cost_price, quantity_on_hand, reorder_level, unit_of_measure, barcode, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              `).bind(
+                productId,
+                companyId,
+                row[column_mapping.name],
+                row[column_mapping.sku],
+                row[column_mapping.description] || null,
+                row[column_mapping.category] || null,
+                parseFloat(row[column_mapping.unit_price]) || 0,
+                parseFloat(row[column_mapping.cost_price]) || 0,
+                parseInt(row[column_mapping.quantity_on_hand]) || 0,
+                parseInt(row[column_mapping.reorder_level]) || 0,
+                row[column_mapping.unit_of_measure] || 'each',
+                row[column_mapping.barcode] || null,
+                new Date().toISOString()
+              ).run();
+              imported++;
+              break;
+          }
+        } catch (err: any) {
+          failed++;
+          errors.push({ row: i + 2, error: err.message });
         }
-      } catch (err: any) {
-        failed++;
-        errors.push({ row: i + 2, error: err.message });
       }
+    
+      // Update batch record
+      await db.prepare(`
+        UPDATE import_batches SET
+          processed_rows = ?,
+          success_rows = ?,
+          error_rows = ?,
+          status = 'completed',
+          errors_json = ?,
+          completed_at = ?
+        WHERE id = ?
+      `).bind(
+        data.length,
+        imported,
+        failed,
+        JSON.stringify(errors),
+        new Date().toISOString(),
+        batchId
+      ).run();
+    
+      return c.json({
+        success: true,
+        batch_id: batchId,
+        imported,
+        failed,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error: any) {
+      console.error('Execute import error:', error);
+      return c.json({ error: error.message || 'Failed to execute import' }, 500);
     }
-    
-    // Update batch record
-    await db.prepare(`
-      UPDATE import_batches SET
-        processed_rows = ?,
-        success_rows = ?,
-        error_rows = ?,
-        status = 'completed',
-        errors_json = ?,
-        completed_at = ?
-      WHERE id = ?
-    `).bind(
-      data.length,
-      imported,
-      failed,
-      JSON.stringify(errors),
-      new Date().toISOString(),
-      batchId
-    ).run();
-    
-    return c.json({
-      success: true,
-      batch_id: batchId,
-      imported,
-      failed,
-      errors: errors.length > 0 ? errors : undefined
-    });
   } catch (error: any) {
-    console.error('Execute import error:', error);
-    return c.json({ error: error.message || 'Failed to execute import' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 
@@ -782,61 +850,69 @@ app.post('/import/execute', async (c) => {
 
 // Set go-live date
 app.post('/go-live', async (c) => {
-  const companyId = await getSecureCompanyId(c);
+  try {
+    const companyId = await getSecureCompanyId(c);
   
 
-  try {
-    const body = await c.req.json();
-    const db = c.env.DB;
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+  
+
+    try {
+      const body = await c.req.json();
+      const db = c.env.DB;
     
-    // Validate required steps are complete
-    const progress = await db.prepare(`
-      SELECT * FROM onboarding_progress WHERE company_id = ?
-    `).bind(companyId).first<any>();
+      // Validate required steps are complete
+      const progress = await db.prepare(`
+        SELECT * FROM onboarding_progress WHERE company_id = ?
+      `).bind(companyId).first<any>();
     
-    if (!progress) {
-      return c.json({ error: 'Onboarding not started' }, 400);
-    }
+      if (!progress) {
+        return c.json({ error: 'Onboarding not started' }, 400);
+      }
     
-    const completedSteps = JSON.parse(progress.completed_steps || '[]');
-    const requiredSteps = ONBOARDING_STEPS.filter(s => s.required && s.id !== 'go_live');
-    const missingSteps = requiredSteps.filter(s => !completedSteps.includes(s.id));
+      const completedSteps = JSON.parse(progress.completed_steps || '[]');
+      const requiredSteps = ONBOARDING_STEPS.filter(s => s.required && s.id !== 'go_live');
+      const missingSteps = requiredSteps.filter(s => !completedSteps.includes(s.id));
     
-    if (missingSteps.length > 0) {
+      if (missingSteps.length > 0) {
+        return c.json({
+          error: 'Required steps not complete',
+          missing_steps: missingSteps.map(s => ({ id: s.id, title: s.title }))
+        }, 400);
+      }
+    
+      // Set go-live date and mark complete
+      await db.prepare(`
+        UPDATE onboarding_progress SET
+          go_live_date = ?,
+          onboarding_completed_at = ?,
+          current_step = 'complete',
+          updated_at = ?
+        WHERE company_id = ?
+      `).bind(
+        body.go_live_date || new Date().toISOString().split('T')[0],
+        new Date().toISOString(),
+        new Date().toISOString(),
+        companyId
+      ).run();
+    
+      // Update company status
+      await db.prepare(`
+        UPDATE companies SET status = 'active', updated_at = ? WHERE id = ?
+      `).bind(new Date().toISOString(), companyId).run();
+    
       return c.json({
-        error: 'Required steps not complete',
-        missing_steps: missingSteps.map(s => ({ id: s.id, title: s.title }))
-      }, 400);
+        success: true,
+        go_live_date: body.go_live_date || new Date().toISOString().split('T')[0],
+        message: 'Congratulations! Your ARIA ERP is now live.'
+      });
+    } catch (error: any) {
+      console.error('Go live error:', error);
+      return c.json({ error: error.message || 'Failed to go live' }, 500);
     }
-    
-    // Set go-live date and mark complete
-    await db.prepare(`
-      UPDATE onboarding_progress SET
-        go_live_date = ?,
-        onboarding_completed_at = ?,
-        current_step = 'complete',
-        updated_at = ?
-      WHERE company_id = ?
-    `).bind(
-      body.go_live_date || new Date().toISOString().split('T')[0],
-      new Date().toISOString(),
-      new Date().toISOString(),
-      companyId
-    ).run();
-    
-    // Update company status
-    await db.prepare(`
-      UPDATE companies SET status = 'active', updated_at = ? WHERE id = ?
-    `).bind(new Date().toISOString(), companyId).run();
-    
-    return c.json({
-      success: true,
-      go_live_date: body.go_live_date || new Date().toISOString().split('T')[0],
-      message: 'Congratulations! Your ARIA ERP is now live.'
-    });
   } catch (error: any) {
-    console.error('Go live error:', error);
-    return c.json({ error: error.message || 'Failed to go live' }, 500);
+    console.error('Route error:', error);
+    return c.json({ error: error.message || 'Internal server error' }, 500);
   }
 });
 

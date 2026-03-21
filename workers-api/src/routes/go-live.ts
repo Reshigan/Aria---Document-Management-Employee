@@ -159,7 +159,9 @@ async function getDocumentData(db: D1Database, companyId: string, docType: strin
 app.get('/pdf/:docType/:docId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const docType = c.req.param('docType');
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const docId = c.req.param('docId');
     
     const { doc, lines, customerName } = await getDocumentData(c.env.DB, companyId, docType, docId);
@@ -220,6 +222,7 @@ app.get('/pdf/:docType/:docId', async (c) => {
 app.get('/pdf/statement/:customerId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const customerId = c.req.param('customerId');
     
     const customer = await c.env.DB.prepare('SELECT * FROM customers WHERE id = ? AND company_id = ?').bind(customerId, companyId).first();
@@ -271,7 +274,9 @@ app.get('/pdf/statement/:customerId', async (c) => {
 app.post('/email/send-document', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json();
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const { doc_type, doc_id, recipient_email, subject, message } = body;
 
     if (!doc_type || !doc_id || !recipient_email) {
@@ -314,6 +319,7 @@ app.post('/email/send-document', async (c) => {
 app.post('/email/send-reminder', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json();
     const { invoice_id, recipient_email } = body;
 
@@ -366,6 +372,7 @@ function toCsv(rows: any[], columns?: string[]): string {
 app.get('/export/:entity', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const entity = c.req.param('entity');
     const format = c.req.query('format') || 'csv';
     
@@ -416,6 +423,7 @@ app.get('/export/:entity', async (c) => {
 app.get('/audit-trail', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const page = parseInt(c.req.query('page') || '1');
     const pageSize = parseInt(c.req.query('page_size') || '50');
     const eventType = c.req.query('event_type');
@@ -463,6 +471,7 @@ app.get('/audit-trail', async (c) => {
 app.get('/dashboard/live', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     
     const [customers, suppliers, products, invoices, quotes, salesOrders, purchaseOrders, employees] = await Promise.all([
       c.env.DB.prepare('SELECT COUNT(*) as count FROM customers WHERE company_id = ?').bind(companyId).first(),
@@ -511,6 +520,7 @@ app.get('/dashboard/live', async (c) => {
 app.get('/auth/sessions', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
 
     const sessions = await c.env.DB.prepare(
@@ -577,6 +587,7 @@ app.post('/auth/change-password', async (c) => {
 app.post('/currency/convert-invoice', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json();
     const { invoice_id, target_currency } = body;
 
@@ -618,6 +629,7 @@ app.post('/currency/convert-invoice', async (c) => {
 app.get('/bot-schedules', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     
     const schedules = await c.env.DB.prepare(
       'SELECT * FROM bot_configs WHERE company_id = ? ORDER BY bot_id'
@@ -632,6 +644,7 @@ app.get('/bot-schedules', async (c) => {
 app.post('/bot-schedules', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json();
     const { bot_id, schedule, enabled } = body;
 
@@ -662,6 +675,7 @@ app.post('/bot-schedules', async (c) => {
 app.delete('/bot-schedules/:botId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const botId = c.req.param('botId');
 
     await c.env.DB.prepare('DELETE FROM bot_configs WHERE company_id = ? AND bot_id = ?').bind(companyId, botId).run();
@@ -797,6 +811,7 @@ app.get('/auth/2fa/status', async (c) => {
 app.post('/migration/import', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json();
     const { entity, data } = body;
 
@@ -858,6 +873,7 @@ app.post('/migration/import', async (c) => {
 app.get('/migration/status', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     
     const [customers, suppliers, products, invoices, quotes, salesOrders] = await Promise.all([
       c.env.DB.prepare('SELECT COUNT(*) as count FROM customers WHERE company_id = ?').bind(companyId).first(),

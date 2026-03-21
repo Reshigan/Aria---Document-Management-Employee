@@ -8,6 +8,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { jwtVerify } from 'jose';
 import {
   submitResellerApplication,
@@ -48,6 +49,8 @@ async function getAuthenticatedUser(c: any): Promise<{ user_id: string; email: s
   }
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const token = authHeader.substring(7);
     const secretKey = new TextEncoder().encode(c.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secretKey);
@@ -76,6 +79,8 @@ function isPlatformAdmin(user: { role: string } | null): boolean {
  */
 app.post('/apply', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     // Validate required fields
@@ -123,6 +128,8 @@ app.post('/apply', async (c) => {
  */
 app.get('/application-status', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const email = c.req.query('email');
     if (!email) {
       return c.json({ error: 'Email is required' }, 400);
@@ -157,6 +164,8 @@ app.get('/application-status', async (c) => {
  */
 app.post('/application/:applicationId/documents', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const applicationId = c.req.param('applicationId');
     
     // Verify application exists and is in valid state
@@ -229,6 +238,8 @@ app.get('/portal/dashboard', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     // Get reseller by email
     const reseller = await getResellerByEmail(c.env.DB, user.email);
     if (!reseller) {
@@ -277,6 +288,8 @@ app.get('/portal/commissions', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const reseller = await getResellerByEmail(c.env.DB, user.email);
     if (!reseller) {
       return c.json({ error: 'Reseller account not found' }, 404);
@@ -309,6 +322,8 @@ app.get('/portal/payouts', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const reseller = await getResellerByEmail(c.env.DB, user.email);
     if (!reseller) {
       return c.json({ error: 'Reseller account not found' }, 404);
@@ -332,6 +347,8 @@ app.post('/portal/referral-codes', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const reseller = await getResellerByEmail(c.env.DB, user.email);
     if (!reseller) {
       return c.json({ error: 'Reseller account not found' }, 404);
@@ -363,6 +380,8 @@ app.put('/portal/bank-details', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const reseller = await getResellerByEmail(c.env.DB, user.email);
     if (!reseller) {
       return c.json({ error: 'Reseller account not found' }, 404);
@@ -397,6 +416,8 @@ app.get('/admin/applications', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status');
     const limit = parseInt(c.req.query('limit') || '50');
     const offset = parseInt(c.req.query('offset') || '0');
@@ -424,6 +445,8 @@ app.get('/admin/applications/:applicationId', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const applicationId = c.req.param('applicationId');
     const application = await getResellerApplication(c.env.DB, applicationId);
     
@@ -450,6 +473,8 @@ app.post('/admin/applications/:applicationId/approve', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const applicationId = c.req.param('applicationId');
     const reseller = await approveResellerApplication(c.env.DB, applicationId, user!.user_id);
 
@@ -474,6 +499,8 @@ app.post('/admin/applications/:applicationId/reject', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const applicationId = c.req.param('applicationId');
     const body = await c.req.json();
 
@@ -500,6 +527,8 @@ app.get('/admin/resellers', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status');
     const limit = parseInt(c.req.query('limit') || '50');
     const offset = parseInt(c.req.query('offset') || '0');
@@ -531,6 +560,8 @@ app.get('/admin/resellers/:resellerId', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const resellerId = c.req.param('resellerId');
     const reseller = await getReseller(c.env.DB, resellerId);
     
@@ -568,6 +599,8 @@ app.get('/admin/payouts', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const status = c.req.query('status');
     const limit = parseInt(c.req.query('limit') || '50');
     const offset = parseInt(c.req.query('offset') || '0');
@@ -591,6 +624,8 @@ app.post('/admin/resellers/:resellerId/payouts', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const resellerId = c.req.param('resellerId');
     const body = await c.req.json();
 
@@ -620,6 +655,8 @@ app.post('/admin/payouts/:payoutId/mark-paid', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const payoutId = c.req.param('payoutId');
     const body = await c.req.json();
 
@@ -651,6 +688,8 @@ app.get('/admin/stats', async (c) => {
   }
 
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const stats = await c.env.DB.prepare(`
       SELECT
         (SELECT COUNT(*) FROM resellers WHERE status = 'active') as active_resellers,

@@ -3074,7 +3074,10 @@ app.post('/marketplace/:botId/execute', async (c) => {
   try {
     // Require authentication
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     
     const botId = c.req.param('botId');
     const body = await c.req.json().catch(() => ({}));
@@ -3129,8 +3132,11 @@ app.post('/execute', async (c) => {
   try {
     // Require authentication
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: "Authentication required" }, 401);
     
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json().catch(() => ({}));
     const botId = body.bot_id;
     const config = body.data || body.config || {};
@@ -3377,8 +3383,10 @@ app.get('/workflows/:workflowId', async (c) => {
 app.post('/workflows/:workflowId/execute', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     
     const workflowId = c.req.param('workflowId');
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const body = await c.req.json<{ dry_run?: boolean; config?: Record<string, any> }>().catch(() => ({ dry_run: false, config: {} }));
     const dryRun = body.dry_run === true;
     const config = body.config || {};
@@ -3415,8 +3423,10 @@ app.post('/workflows/:workflowId/execute', async (c) => {
 app.post('/execute-dry-run', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     
     const body = await c.req.json<{ bot_id: string; config?: Record<string, any>; dry_run?: boolean }>();
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const { bot_id: botId, config = {}, dry_run = true } = body;
     
     if (!botId) {
@@ -3448,6 +3458,7 @@ app.post('/execute-dry-run', async (c) => {
 app.get('/workflows/runs', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: "Authentication required" }, 401);
     const limit = parseInt(c.req.query('limit') || '50');
     
     const runs = await c.env.DB.prepare(`

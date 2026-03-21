@@ -40,6 +40,7 @@ const app = new Hono<{ Bindings: Env }>();
 app.get('/api-keys', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const keys = await apiKeysService.listApiKeys(c.env.DB, companyId);
     return c.json({ success: true, data: keys });
   } catch (error) {
@@ -51,7 +52,9 @@ app.get('/api-keys', async (c) => {
 app.post('/api-keys', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const { key, keyData } = await apiKeysService.createApiKey(
@@ -69,7 +72,9 @@ app.post('/api-keys', async (c) => {
 app.delete('/api-keys/:keyId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const keyId = c.req.param('keyId');
     
     const success = await apiKeysService.revokeApiKey(c.env.DB, companyId, keyId, userId);
@@ -83,6 +88,7 @@ app.delete('/api-keys/:keyId', async (c) => {
 app.get('/api-keys/stats', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const keyId = c.req.query('key_id') || null;
     const days = parseInt(c.req.query('days') || '30');
     
@@ -101,6 +107,7 @@ app.get('/api-keys/stats', async (c) => {
 app.get('/webhooks', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const webhooks = await webhookService.listWebhooks(c.env.DB, companyId);
     return c.json({ success: true, data: webhooks });
   } catch (error) {
@@ -112,7 +119,9 @@ app.get('/webhooks', async (c) => {
 app.post('/webhooks', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const webhook = await webhookService.createWebhook(
@@ -129,6 +138,7 @@ app.post('/webhooks', async (c) => {
 app.put('/webhooks/:webhookId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const webhookId = c.req.param('webhookId');
     const body = await c.req.json();
     
@@ -143,6 +153,7 @@ app.put('/webhooks/:webhookId', async (c) => {
 app.delete('/webhooks/:webhookId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const webhookId = c.req.param('webhookId');
     
     const success = await webhookService.deleteWebhook(c.env.DB, companyId, webhookId);
@@ -156,6 +167,7 @@ app.delete('/webhooks/:webhookId', async (c) => {
 app.post('/webhooks/:webhookId/regenerate-secret', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const webhookId = c.req.param('webhookId');
     
     const secret = await webhookService.regenerateSecret(c.env.DB, companyId, webhookId);
@@ -169,6 +181,7 @@ app.post('/webhooks/:webhookId/regenerate-secret', async (c) => {
 app.get('/webhooks/deliveries', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const webhookId = c.req.query('webhook_id') || null;
     const limit = parseInt(c.req.query('limit') || '50');
     
@@ -183,6 +196,7 @@ app.get('/webhooks/deliveries', async (c) => {
 app.get('/webhooks/stats', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const days = parseInt(c.req.query('days') || '30');
     
     const stats = await webhookService.getWebhookStats(c.env.DB, companyId, days);
@@ -200,6 +214,7 @@ app.get('/webhooks/stats', async (c) => {
 app.get('/audit-logs', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const filters = {
       eventType: c.req.query('event_type') as any,
       resourceType: c.req.query('resource_type'),
@@ -224,6 +239,7 @@ app.get('/audit-logs', async (c) => {
 app.get('/audit-logs/resource/:resourceType/:resourceId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const resourceType = c.req.param('resourceType');
     const resourceId = c.req.param('resourceId');
     
@@ -252,6 +268,7 @@ app.get('/subscription/plans', async (c) => {
 app.get('/subscription', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const subscription = await subscriptionService.getSubscription(c.env.DB, companyId);
     return c.json({ success: true, data: subscription });
   } catch (error) {
@@ -263,6 +280,7 @@ app.get('/subscription', async (c) => {
 app.get('/subscription/usage', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const usage = await subscriptionService.getCurrentUsage(c.env.DB, companyId);
     return c.json({ success: true, data: usage });
   } catch (error) {
@@ -274,6 +292,7 @@ app.get('/subscription/usage', async (c) => {
 app.get('/subscription/usage/history', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const months = parseInt(c.req.query('months') || '6');
     
     const history = await subscriptionService.getUsageHistory(c.env.DB, companyId, months);
@@ -287,6 +306,7 @@ app.get('/subscription/usage/history', async (c) => {
 app.get('/subscription/features/:feature', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const feature = c.req.param('feature') as any;
     
     const hasAccess = await subscriptionService.hasFeature(c.env.DB, companyId, feature);
@@ -300,6 +320,7 @@ app.get('/subscription/features/:feature', async (c) => {
 app.get('/subscription/limits/:limit', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const limit = c.req.param('limit') as any;
     
     const check = await subscriptionService.checkLimit(c.env.DB, companyId, limit);
@@ -313,6 +334,7 @@ app.get('/subscription/limits/:limit', async (c) => {
 app.get('/subscription/export-data', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const data = await subscriptionService.exportCompanyData(c.env.DB, companyId);
     return c.json({ success: true, data });
   } catch (error) {
@@ -338,7 +360,9 @@ app.get('/reports/templates', async (c) => {
 app.get('/reports', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     
     const reports = await reportBuilderService.listReports(c.env.DB, companyId, userId);
     return c.json({ success: true, data: reports });
@@ -351,7 +375,9 @@ app.get('/reports', async (c) => {
 app.post('/reports/from-template/:templateId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const templateId = c.req.param('templateId');
     
     const report = await reportBuilderService.createFromTemplate(c.env.DB, companyId, userId, templateId);
@@ -365,6 +391,7 @@ app.post('/reports/from-template/:templateId', async (c) => {
 app.post('/reports/:reportId/execute', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const reportId = c.req.param('reportId');
     const body = await c.req.json().catch(() => ({}));
     
@@ -383,6 +410,7 @@ app.post('/reports/:reportId/execute', async (c) => {
 app.get('/reports/:reportId/export/csv', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const reportId = c.req.param('reportId');
     
     const result = await reportBuilderService.executeReport(c.env.DB, companyId, reportId, [], { page: 1, pageSize: 10000 });
@@ -403,6 +431,7 @@ app.get('/reports/:reportId/export/csv', async (c) => {
 app.get('/reports/scheduled', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const scheduled = await reportBuilderService.listScheduledReports(c.env.DB, companyId);
     return c.json({ success: true, data: scheduled });
   } catch (error) {
@@ -414,7 +443,9 @@ app.get('/reports/scheduled', async (c) => {
 app.post('/reports/:reportId/schedule', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const reportId = c.req.param('reportId');
     const body = await c.req.json();
     
@@ -446,6 +477,7 @@ app.get('/currencies', async (c) => {
 app.get('/exchange-rates', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const fromDate = c.req.query('from_date');
     const toDate = c.req.query('to_date');
     
@@ -460,6 +492,7 @@ app.get('/exchange-rates', async (c) => {
 app.post('/exchange-rates', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const rate = await multiCurrencyService.setExchangeRate(
@@ -477,6 +510,7 @@ app.post('/exchange-rates', async (c) => {
 app.post('/currencies/convert', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const result = await multiCurrencyService.convertCurrency(
@@ -498,7 +532,9 @@ app.post('/currencies/convert', async (c) => {
 app.post('/currencies/revaluation', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const revaluations = await multiCurrencyService.performRevaluation(
@@ -514,6 +550,7 @@ app.post('/currencies/revaluation', async (c) => {
 app.get('/currencies/unrealized-gain-loss', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const baseCurrency = c.req.query('base_currency') || 'USD';
     const asOfDate = c.req.query('as_of_date');
     
@@ -534,6 +571,7 @@ app.get('/currencies/unrealized-gain-loss', async (c) => {
 app.get('/inventory/valuation', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const warehouseId = c.req.query('warehouse_id');
     const asOfDate = c.req.query('as_of_date');
     
@@ -550,6 +588,7 @@ app.get('/inventory/valuation', async (c) => {
 app.get('/inventory/products/:productId/layers', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const productId = c.req.param('productId');
     
     const layers = await inventoryValuationService.getFifoLayers(c.env.DB, companyId, productId);
@@ -563,6 +602,7 @@ app.get('/inventory/products/:productId/layers', async (c) => {
 app.get('/inventory/movements', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const productId = c.req.query('product_id');
     const startDate = c.req.query('start_date');
     const endDate = c.req.query('end_date');
@@ -581,6 +621,7 @@ app.get('/inventory/movements', async (c) => {
 app.get('/inventory/cogs', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const startDate = c.req.query('start_date') || new Date(new Date().getFullYear(), 0, 1).toISOString();
     const endDate = c.req.query('end_date') || new Date().toISOString();
     
@@ -595,7 +636,9 @@ app.get('/inventory/cogs', async (c) => {
 app.post('/inventory/adjustments', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     await inventoryValuationService.recordAdjustment(
@@ -616,6 +659,7 @@ app.post('/inventory/adjustments', async (c) => {
 app.get('/matching/config', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const config = await threeWayMatchService.getMatchingConfig(c.env.DB, companyId);
     return c.json({ success: true, data: config });
   } catch (error) {
@@ -627,6 +671,7 @@ app.get('/matching/config', async (c) => {
 app.put('/matching/config', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     
     const config = await threeWayMatchService.updateMatchingConfig(c.env.DB, companyId, body);
@@ -640,7 +685,9 @@ app.put('/matching/config', async (c) => {
 app.post('/matching/invoices/:invoiceId/match', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const invoiceId = c.req.param('invoiceId');
     
     const result = await threeWayMatchService.performMatch(c.env.DB, companyId, invoiceId, userId);
@@ -654,6 +701,7 @@ app.post('/matching/invoices/:invoiceId/match', async (c) => {
 app.get('/matching/results', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const filters = {
       status: c.req.query('status') as any,
       supplierId: c.req.query('supplier_id'),
@@ -676,6 +724,7 @@ app.get('/matching/results', async (c) => {
 app.get('/matching/results/:matchId', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const matchId = c.req.param('matchId');
     
     const details = await threeWayMatchService.getMatchDetails(c.env.DB, companyId, matchId);
@@ -692,7 +741,9 @@ app.get('/matching/results/:matchId', async (c) => {
 app.post('/matching/results/:matchId/approve', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const matchId = c.req.param('matchId');
     const body = await c.req.json().catch(() => ({}));
     
@@ -709,7 +760,9 @@ app.post('/matching/results/:matchId/approve', async (c) => {
 app.post('/matching/results/:matchId/reject', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const userId = await getSecureUserId(c);
+    if (!userId) return c.json({ error: 'Authentication required' }, 401);
     const matchId = c.req.param('matchId');
     const body = await c.req.json();
     
@@ -726,6 +779,7 @@ app.post('/matching/results/:matchId/reject', async (c) => {
 app.get('/matching/stats', async (c) => {
   try {
     const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const days = parseInt(c.req.query('days') || '30');
     
     const stats = await threeWayMatchService.getMatchingStats(c.env.DB, companyId, days);

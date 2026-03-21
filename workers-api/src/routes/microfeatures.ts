@@ -4,6 +4,7 @@
  */
 
 import { Hono } from 'hono';
+import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 
 interface Env {
   DB: D1Database;
@@ -16,65 +17,22 @@ const app = new Hono<{ Bindings: Env }>();
 
 // Get all notifications for the current user
 app.get('/notifications', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'demo-company-001';
-  const userId = c.req.header('X-User-ID') || 'demo-user';
-  
   try {
-    // Return mock notifications for now - in production, these would come from the database
-    const notifications = [
-      {
-        id: '1',
-        type: 'alert',
-        title: 'Overdue Invoice',
-        message: 'Invoice INV-2026-000045 is 15 days overdue (R 12,500)',
-        timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-        read: false,
-        link: '/ar/invoices/INV-2026-000045',
-        category: 'invoice'
-      },
-      {
-        id: '2',
-        type: 'warning',
-        title: 'Low Stock Alert',
-        message: 'Widget A is below reorder point (5 units remaining)',
-        timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-        read: false,
-        link: '/inventory/items',
-        category: 'inventory'
-      },
-      {
-        id: '3',
-        type: 'bot',
-        title: 'Bot Execution Complete',
-        message: 'AR Collections Bot processed 12 invoices, sent 5 reminders',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        read: false,
-        link: '/agents',
-        category: 'bot'
-      },
-      {
-        id: '4',
-        type: 'success',
-        title: 'Payment Received',
-        message: 'Payment of R 8,750 received from ABC Company',
-        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-        read: true,
-        link: '/ar/receipts',
-        category: 'payment'
-      },
-      {
-        id: '5',
-        type: 'info',
-        title: 'Approval Required',
-        message: 'Purchase Order PO-2026-000089 requires your approval',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        read: true,
-        link: '/procurement/purchase-orders/PO-2026-000089',
-        category: 'approval'
-      },
-    ];
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'anonymous';
     
-    return c.json({ notifications, unread_count: notifications.filter(n => !n.read).length });
+    // Query notifications from database
+    const result = await c.env.DB.prepare(
+      `SELECT * FROM notifications 
+       WHERE company_id = ? AND (user_id = ? OR user_id IS NULL)
+       ORDER BY created_at DESC LIMIT 50`
+    ).bind(companyId, userId).all();
+
+    const notifications = result.results || [];
+    const unreadCount = notifications.filter((n: Record<string, unknown>) => !n.is_read).length;
+    
+    return c.json({ notifications, unread_count: unreadCount });
   } catch (error) {
     return c.json({ error: 'Failed to fetch notifications' }, 500);
   }
@@ -85,6 +43,8 @@ app.post('/notifications/:id/read', async (c) => {
   const notificationId = c.req.param('id');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     // In production, update the database
     return c.json({ success: true, message: `Notification ${notificationId} marked as read` });
   } catch (error) {
@@ -95,6 +55,8 @@ app.post('/notifications/:id/read', async (c) => {
 // Mark all notifications as read
 app.post('/notifications/read-all', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     return c.json({ success: true, message: 'All notifications marked as read' });
   } catch (error) {
     return c.json({ error: 'Failed to mark all notifications as read' }, 500);
@@ -106,6 +68,8 @@ app.delete('/notifications/:id', async (c) => {
   const notificationId = c.req.param('id');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     return c.json({ success: true, message: `Notification ${notificationId} deleted` });
   } catch (error) {
     return c.json({ error: 'Failed to delete notification' }, 500);
@@ -116,59 +80,18 @@ app.delete('/notifications/:id', async (c) => {
 
 // Get recent items for the current user
 app.get('/recent-items', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'demo-company-001';
-  const userId = c.req.header('X-User-ID') || 'demo-user';
-  
   try {
-    const recentItems = [
-      {
-        id: '1',
-        type: 'invoice',
-        title: 'INV-2026-000089',
-        subtitle: 'ABC Company - R 12,500',
-        path: '/ar/invoices/INV-2026-000089',
-        timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-        isFavorite: false
-      },
-      {
-        id: '2',
-        type: 'customer',
-        title: 'XYZ Corporation',
-        subtitle: 'Customer since 2024',
-        path: '/crm/customers/xyz-corp',
-        timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-        isFavorite: true
-      },
-      {
-        id: '3',
-        type: 'quote',
-        title: 'QT-2026-000156',
-        subtitle: 'Tech Solutions - R 45,000',
-        path: '/quotes/QT-2026-000156',
-        timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-        isFavorite: false
-      },
-      {
-        id: '4',
-        type: 'po',
-        title: 'PO-2026-000078',
-        subtitle: 'Office Supplies Ltd',
-        path: '/procurement/purchase-orders/PO-2026-000078',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        isFavorite: false
-      },
-      {
-        id: '5',
-        type: 'product',
-        title: 'Widget Pro X',
-        subtitle: 'SKU: WPX-001 - 150 in stock',
-        path: '/inventory/items/widget-pro-x',
-        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-        isFavorite: true
-      },
-    ];
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'anonymous';
     
-    return c.json({ recent_items: recentItems });
+    const result = await c.env.DB.prepare(
+      `SELECT * FROM recent_items 
+       WHERE company_id = ? AND user_id = ?
+       ORDER BY accessed_at DESC LIMIT 20`
+    ).bind(companyId, userId).all();
+
+    return c.json({ recent_items: result.results || [] });
   } catch (error) {
     return c.json({ error: 'Failed to fetch recent items' }, 500);
   }
@@ -177,8 +100,17 @@ app.get('/recent-items', async (c) => {
 // Add item to recent items
 app.post('/recent-items', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'anonymous';
     const body = await c.req.json();
-    // In production, save to database
+    const id = crypto.randomUUID();
+    
+    await c.env.DB.prepare(
+      `INSERT OR REPLACE INTO recent_items (id, company_id, user_id, item_type, item_id, title, subtitle, path, accessed_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+    ).bind(id, companyId, userId, body.type, body.item_id, body.title, body.subtitle, body.path).run();
+
     return c.json({ success: true, message: 'Item added to recent items' });
   } catch (error) {
     return c.json({ error: 'Failed to add recent item' }, 500);
@@ -190,6 +122,12 @@ app.delete('/recent-items/:id', async (c) => {
   const itemId = c.req.param('id');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'anonymous';
+    await c.env.DB.prepare(
+      'DELETE FROM recent_items WHERE id = ? AND company_id = ? AND user_id = ?'
+    ).bind(itemId, companyId, userId).run();
     return c.json({ success: true, message: `Item ${itemId} removed from recent items` });
   } catch (error) {
     return c.json({ error: 'Failed to remove recent item' }, 500);
@@ -200,30 +138,18 @@ app.delete('/recent-items/:id', async (c) => {
 
 // Get all favorites for the current user
 app.get('/favorites', async (c) => {
-  const companyId = c.req.header('X-Company-ID') || 'demo-company-001';
-  const userId = c.req.header('X-User-ID') || 'demo-user';
-  
   try {
-    const favorites = [
-      {
-        id: '1',
-        type: 'customer',
-        title: 'XYZ Corporation',
-        subtitle: 'Customer since 2024',
-        path: '/crm/customers/xyz-corp',
-        addedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: '2',
-        type: 'product',
-        title: 'Widget Pro X',
-        subtitle: 'SKU: WPX-001',
-        path: '/inventory/items/widget-pro-x',
-        addedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-      },
-    ];
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'anonymous';
     
-    return c.json({ favorites });
+    const result = await c.env.DB.prepare(
+      `SELECT * FROM favorites 
+       WHERE company_id = ? AND user_id = ?
+       ORDER BY created_at DESC`
+    ).bind(companyId, userId).all();
+
+    return c.json({ favorites: result.results || [] });
   } catch (error) {
     return c.json({ error: 'Failed to fetch favorites' }, 500);
   }
@@ -232,6 +158,8 @@ app.get('/favorites', async (c) => {
 // Add item to favorites
 app.post('/favorites', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     return c.json({ success: true, message: 'Item added to favorites', item: body });
   } catch (error) {
@@ -244,6 +172,8 @@ app.delete('/favorites/:id', async (c) => {
   const itemId = c.req.param('id');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     return c.json({ success: true, message: `Item ${itemId} removed from favorites` });
   } catch (error) {
     return c.json({ error: 'Failed to remove favorite' }, 500);
@@ -258,6 +188,8 @@ app.get('/comments/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const comments = [
       {
         id: '1',
@@ -289,6 +221,8 @@ app.post('/comments/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     const comment = {
       id: crypto.randomUUID(),
@@ -310,6 +244,8 @@ app.delete('/comments/:commentId', async (c) => {
   const commentId = c.req.param('commentId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     return c.json({ success: true, message: `Comment ${commentId} deleted` });
   } catch (error) {
     return c.json({ error: 'Failed to delete comment' }, 500);
@@ -321,6 +257,8 @@ app.delete('/comments/:commentId', async (c) => {
 // Get available tags
 app.get('/tags', async (c) => {
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const tags = [
       { id: '1', name: 'Priority', color: '#ef4444' },
       { id: '2', name: 'VIP Customer', color: '#8b5cf6' },
@@ -342,6 +280,8 @@ app.get('/tags/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const tags = [
       { id: '1', name: 'Priority', color: '#ef4444' },
       { id: '2', name: 'VIP Customer', color: '#8b5cf6' },
@@ -359,6 +299,8 @@ app.post('/tags/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const body = await c.req.json();
     return c.json({ success: true, message: `Tag ${body.tagId} added to ${transactionType} ${transactionId}` });
   } catch (error) {
@@ -373,6 +315,8 @@ app.delete('/tags/:transactionType/:transactionId/:tagId', async (c) => {
   const tagId = c.req.param('tagId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     return c.json({ success: true, message: `Tag ${tagId} removed from ${transactionType} ${transactionId}` });
   } catch (error) {
     return c.json({ error: 'Failed to remove tag' }, 500);
@@ -387,6 +331,8 @@ app.get('/activity/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const activities = [
       {
         id: '1',
@@ -441,6 +387,8 @@ app.get('/attachments/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const attachments = [
       {
         id: '1',
@@ -474,6 +422,8 @@ app.post('/attachments/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     // In production, handle file upload to R2
     const attachment = {
       id: crypto.randomUUID(),
@@ -495,6 +445,8 @@ app.delete('/attachments/:attachmentId', async (c) => {
   const attachmentId = c.req.param('attachmentId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     return c.json({ success: true, message: `Attachment ${attachmentId} deleted` });
   } catch (error) {
     return c.json({ error: 'Failed to delete attachment' }, 500);
@@ -509,6 +461,8 @@ app.get('/related/:transactionType/:transactionId', async (c) => {
   const transactionId = c.req.param('transactionId');
   
   try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
     const relatedDocuments = [
       {
         id: '1',
