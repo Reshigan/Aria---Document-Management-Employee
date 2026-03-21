@@ -748,4 +748,54 @@ app.get('/analytics', async (c) => {
   }
 });
 
+// ============================================================================
+// RECEIPTS (AR receipts - frontend calls /api/ar/receipts)
+// ============================================================================
+app.get('/receipts', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+  try {
+    const db = c.env.DB;
+    const result = await db.prepare(`
+      SELECT pt.*, pi.provider
+      FROM payment_transactions pt
+      LEFT JOIN payment_integrations pi ON pi.id = pt.integration_id
+      WHERE pt.company_id = ? AND pt.payment_type IN ('receipt', 'invoice')
+      ORDER BY pt.created_at DESC
+      LIMIT 100
+    `).bind(companyId).all();
+
+    return c.json(result.results || []);
+  } catch (error: any) {
+    console.error('Receipts list error:', error);
+    return c.json([]);
+  }
+});
+
+// ============================================================================
+// PAYMENTS LIST (AP payments - frontend calls /api/ap/payments)
+// ============================================================================
+app.get('/payments', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+  try {
+    const db = c.env.DB;
+    const result = await db.prepare(`
+      SELECT pt.*, pi.provider
+      FROM payment_transactions pt
+      LEFT JOIN payment_integrations pi ON pi.id = pt.integration_id
+      WHERE pt.company_id = ? AND pt.payment_type IN ('payment', 'bill_payment', 'manual')
+      ORDER BY pt.created_at DESC
+      LIMIT 100
+    `).bind(companyId).all();
+
+    return c.json(result.results || []);
+  } catch (error: any) {
+    console.error('Payments list error:', error);
+    return c.json([]);
+  }
+});
+
 export default app;

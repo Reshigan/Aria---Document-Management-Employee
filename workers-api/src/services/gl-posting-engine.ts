@@ -76,14 +76,57 @@ async function isPeriodOpen(db: D1Database, companyId: string, date: string, mod
 }
 
 /**
- * Get GL account ID by account code
+ * Default GL account definitions for auto-provisioning
+ */
+const DEFAULT_GL_ACCOUNTS: Record<string, { name: string; type: string; category: string }> = {
+  '1000': { name: 'Cash and Bank', type: 'asset', category: 'Current Assets' },
+  '1200': { name: 'Accounts Receivable', type: 'asset', category: 'Current Assets' },
+  '1300': { name: 'Inventory', type: 'asset', category: 'Current Assets' },
+  '2000': { name: 'Accounts Payable', type: 'liability', category: 'Current Liabilities' },
+  '2050': { name: 'Goods Received Not Invoiced', type: 'liability', category: 'Current Liabilities' },
+  '2100': { name: 'VAT Output', type: 'liability', category: 'Current Liabilities' },
+  '2110': { name: 'VAT Input', type: 'asset', category: 'Current Assets' },
+  '2200': { name: 'PAYE Payable', type: 'liability', category: 'Current Liabilities' },
+  '2210': { name: 'UIF Payable', type: 'liability', category: 'Current Liabilities' },
+  '2220': { name: 'Pension Payable', type: 'liability', category: 'Current Liabilities' },
+  '2230': { name: 'Net Salaries Payable', type: 'liability', category: 'Current Liabilities' },
+  '3000': { name: 'Share Capital', type: 'equity', category: 'Equity' },
+  '3100': { name: 'Retained Earnings', type: 'equity', category: 'Equity' },
+  '4000': { name: 'Sales Revenue', type: 'revenue', category: 'Revenue' },
+  '5000': { name: 'Cost of Goods Sold', type: 'expense', category: 'Cost of Sales' },
+  '6000': { name: 'Salaries & Wages', type: 'expense', category: 'Operating Expenses' },
+  '6010': { name: 'Employer Contributions', type: 'expense', category: 'Operating Expenses' },
+};
+
+/**
+ * Get GL account ID by account code, auto-creating if missing
  */
 async function getAccountId(db: D1Database, companyId: string, accountCode: string): Promise<string | null> {
   const account = await db.prepare(
     "SELECT id FROM gl_accounts WHERE company_id = ? AND account_code = ?"
   ).bind(companyId, accountCode).first();
   
-  return account ? (account as any).id : null;
+  if (account) return (account as any).id;
+
+  // Auto-create missing GL account if it's a known system account
+  const defaultDef = DEFAULT_GL_ACCOUNTS[accountCode];
+  if (!defaultDef) return null;
+
+  const newId = generateUUID();
+  const now = new Date().toISOString();
+  try {
+    await db.prepare(`
+      INSERT INTO gl_accounts (id, company_id, account_code, account_name, account_type, account_category, is_active, is_system, current_balance, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, 1, 1, 0, ?, ?)
+    `).bind(newId, companyId, accountCode, defaultDef.name, defaultDef.type, defaultDef.category, now, now).run();
+    return newId;
+  } catch (e) {
+    // Race condition: another request may have created it
+    const retry = await db.prepare(
+      "SELECT id FROM gl_accounts WHERE company_id = ? AND account_code = ?"
+    ).bind(companyId, accountCode).first();
+    return retry ? (retry as any).id : null;
+  }
 }
 
 /**

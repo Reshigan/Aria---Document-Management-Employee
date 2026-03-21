@@ -31,7 +31,7 @@ const columns: ColumnDef<AttendanceRecord, unknown>[] = [
 export default function Attendance() {
   const { data = [], isLoading } = useQuery({
     queryKey: ['attendance'],
-    queryFn: () => api.get<AttendanceRecord[]>('/erp/hr/attendance').catch(() => []),
+    queryFn: () => api.getList<AttendanceRecord>('/erp/hr/attendance').catch(() => []),
   })
 
   return (

@@ -35,7 +35,7 @@ export default function Products() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['products'],
-    queryFn: () => api.get<Product[]>('/erp/order-to-cash/products').catch(() => []),
+    queryFn: () => api.getList<Product>('/erp/order-to-cash/products').catch(() => []),
   })
 
   return (

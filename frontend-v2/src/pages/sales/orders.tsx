@@ -34,7 +34,7 @@ export default function SalesOrders() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['sales-orders'],
-    queryFn: () => api.get<SalesOrder[]>('/erp/order-to-cash/sales-orders').catch(() => []),
+    queryFn: () => api.getList<SalesOrder>('/erp/order-to-cash/sales-orders').catch(() => []),
   })
 
   return (

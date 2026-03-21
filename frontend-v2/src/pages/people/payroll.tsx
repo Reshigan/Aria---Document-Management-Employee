@@ -38,7 +38,7 @@ export default function Payroll() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['payroll-runs'],
-    queryFn: () => api.get<PayrollRun[]>('/erp/payroll/runs').catch(() => []),
+    queryFn: () => api.getList<PayrollRun>('/erp/payroll/runs').catch(() => []),
   })
 
   return (

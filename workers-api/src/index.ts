@@ -121,6 +121,8 @@ app.use('*', cors({
     if (origin === 'https://aria-erp.pages.dev') return origin;
     // Allow all Cloudflare Pages preview subdomains
     if (origin?.endsWith('.aria-erp.pages.dev')) return origin;
+    // Allow Devin Apps deployment domains
+    if (origin?.endsWith('.devinapps.com')) return origin;
     // Reject unknown origins
     return null;
   },
@@ -618,6 +620,30 @@ app.route('/api/operations', inventory);
 app.route('/operations', inventory);
 
 // ============================================================================
+// FRONTEND-V2 ROUTE ALIASES
+// These ensure every frontend-v2 API call resolves to an existing handler.
+// Frontend-v2 uses baseURL = /api, so paths like '/erp/hr/employees' become
+// '/api/erp/hr/employees' after the client prepends baseURL.
+// ============================================================================
+
+// --- ERP HR aliases (frontend uses /api/erp/hr/*) ---
+app.route('/api/erp/hr', hr);
+app.route('/erp/hr', hr);
+
+// --- ERP-level route aliases for frontend-v2 paths ---
+// GL: /api/erp/chart-of-accounts, /api/erp/journal-entries, /api/erp/general-ledger
+app.route('/api/erp', gl);
+
+// Inventory: /api/erp/warehouses, /api/erp/stock-movements
+app.route('/api/erp', inventory);
+
+// Manufacturing: /api/erp/work-orders, /api/erp/boms
+app.route('/api/erp', manufacturing);
+
+// Localization: /api/erp/tax-rates
+app.route('/api/erp', localization);
+
+// ============================================================================
 // CROSS-MODULE ROUTE ALIASES
 // These ensure every frontend API call resolves to an existing handler
 // ============================================================================
@@ -637,6 +663,10 @@ app.route('/api/erp/ar', invoices);
 app.route('/erp/ar', invoices);
 app.route('/api/erp/ap', invoices);
 app.route('/erp/ap', invoices);
+
+// --- AR receipts / AP payments aliases (handlers live in payments router) ---
+app.route('/api/ar', payments);
+app.route('/api/ap', payments);
 
 // --- CRM aliases (customers, leads, opportunities via new-pages) ---
 app.route('/api/crm/customers', customers);

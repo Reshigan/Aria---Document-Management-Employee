@@ -894,4 +894,31 @@ app.get('/settings', async (c) => {
   return c.json({ default_currency: 'ZAR', tax_year_start: '03-01', vat_rate: 15, income_tax_enabled: true, provisional_tax_enabled: true });
 });
 
+// ==================== TAX RATES ====================
+// Frontend-v2 calls /api/erp/tax-rates (mounted at /api/erp → localization)
+app.get('/tax-rates', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+    const result = await c.env.DB.prepare(
+      'SELECT * FROM tax_rates WHERE company_id = ? ORDER BY name'
+    ).bind(companyId).all();
+
+    // If no company-specific rates, return country defaults
+    if (!result.results || result.results.length === 0) {
+      const defaults = await c.env.DB.prepare(
+        'SELECT * FROM country_tax_configs ORDER BY country_code, tax_code'
+      ).all();
+      return c.json(defaults.results || []);
+    }
+
+    return c.json(result.results);
+  } catch (error) {
+    console.error('Error loading tax rates:', error);
+    // Return empty array on table-not-found errors for graceful degradation
+    return c.json([]);
+  }
+});
+
 export default app;

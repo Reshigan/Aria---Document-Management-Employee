@@ -31,7 +31,7 @@ export default function Employees() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['employees'],
-    queryFn: () => api.get<Employee[]>('/erp/hr/employees').catch(() => []),
+    queryFn: () => api.getList<Employee>('/erp/hr/employees').catch(() => []),
   })
 
   return (

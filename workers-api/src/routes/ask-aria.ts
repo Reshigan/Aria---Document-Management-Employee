@@ -7,6 +7,7 @@
 import { Hono } from 'hono';
 import { getSecureCompanyId, getSecureUserId } from '../middleware/auth';
 import { orchestrate, classifyIntent, BOT_CATALOG } from '../services/ai-orchestrator';
+import { processAgentMessage, ExecutionPlan } from '../services/aria-agent';
 
 interface Env {
   DB: D1Database;
@@ -66,6 +67,8 @@ interface ConversationState {
   supplierName?: string;
   // For create_product flow
   productName?: string;
+  // For multi-step agent
+  pendingPlan?: ExecutionPlan;
 }
 
 interface Message {
@@ -3193,6 +3196,107 @@ app.post('/sap/reclassify', async (c) => {
   } catch (error) {
     console.error('Reclassify error:', error);
     return c.json({ error: 'Failed to reclassify document' }, 500);
+  }
+});
+
+// ─── ARIA Multi-Step Agent Chat Endpoint ──────────────────────────────────────
+// POST /chat - Intelligent multi-step agent that decomposes natural language
+// requests into multi-bot workflows with planning and orchestration
+app.post('/chat', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c) || 'anonymous';
+
+    const body = await c.req.json<{ message: string; conversation_id?: string }>();
+    const { message } = body;
+
+    if (!message) {
+      return c.json({ error: 'message is required' }, 400);
+    }
+
+    // Get or create conversation
+    let conversationId = body.conversation_id;
+    let pendingPlan: ExecutionPlan | undefined;
+
+    if (conversationId) {
+      // Load existing conversation + pending plan from state
+      const conversation = await c.env.DB.prepare(
+        'SELECT * FROM aria_conversations WHERE id = ? AND company_id = ?'
+      ).bind(conversationId, companyId).first<Conversation>();
+
+      if (conversation?.context) {
+        try {
+          const state = JSON.parse(conversation.context) as ConversationState;
+          pendingPlan = state.pendingPlan;
+        } catch {
+          // fresh state
+        }
+      }
+    } else {
+      // Create new conversation
+      conversationId = generateUUID();
+      await c.env.DB.prepare(`
+        INSERT INTO aria_conversations (id, user_id, company_id, status, created_at)
+        VALUES (?, ?, ?, 'active', datetime('now'))
+      `).bind(conversationId, userId, companyId).run();
+    }
+
+    // Store user message
+    await c.env.DB.prepare(`
+      INSERT INTO aria_messages (id, conversation_id, role, content, created_at)
+      VALUES (?, ?, 'user', ?, datetime('now'))
+    `).bind(generateUUID(), conversationId, message).run();
+
+    // Get conversation history for context
+    const historyResult = await c.env.DB.prepare(
+      'SELECT role, content FROM aria_messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 10'
+    ).bind(conversationId).all();
+    const conversationHistory = (historyResult.results || [])
+      .reverse()
+      .map((m: Record<string, unknown>) => ({ role: m.role as string, content: m.content as string }));
+
+    // Process through the multi-step agent
+    const agentResponse = await processAgentMessage(
+      message,
+      conversationHistory,
+      companyId,
+      userId,
+      { DB: c.env.DB, AI: c.env.AI },
+      pendingPlan || null,
+    );
+
+    // Save pending plan to conversation state if confirmation is needed
+    if (agentResponse.needs_confirmation && agentResponse.plan) {
+      await c.env.DB.prepare(
+        'UPDATE aria_conversations SET context = ? WHERE id = ?'
+      ).bind(JSON.stringify({ pendingPlan: agentResponse.plan }), conversationId).run();
+    } else {
+      // Clear pending plan after execution or cancellation
+      await c.env.DB.prepare(
+        'UPDATE aria_conversations SET context = ? WHERE id = ?'
+      ).bind(JSON.stringify({}), conversationId).run();
+    }
+
+    // Store assistant response
+    await c.env.DB.prepare(`
+      INSERT INTO aria_messages (id, conversation_id, role, content, created_at)
+      VALUES (?, ?, 'assistant', ?, datetime('now'))
+    `).bind(generateUUID(), conversationId, agentResponse.message).run();
+
+    return c.json({
+      conversation_id: conversationId,
+      type: agentResponse.type,
+      reply: agentResponse.message,
+      plan: agentResponse.plan || null,
+      step_results: agentResponse.step_results || null,
+      needs_confirmation: agentResponse.needs_confirmation || false,
+      needs_clarification: agentResponse.needs_clarification || false,
+      data: agentResponse.data || null,
+    });
+  } catch (error) {
+    console.error('Agent chat error:', error);
+    return c.json({ error: 'Failed to process agent request' }, 500);
   }
 });
 

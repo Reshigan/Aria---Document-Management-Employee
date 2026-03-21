@@ -34,7 +34,7 @@ export default function Suppliers() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['suppliers'],
-    queryFn: () => api.get<Supplier[]>('/erp/master-data/suppliers').catch(() => []),
+    queryFn: () => api.getList<Supplier>('/erp/master-data/suppliers').catch(() => []),
   })
 
   return (

@@ -455,4 +455,20 @@ app.get('/leave-balances', async (c) => {
   } catch { return c.json({ data: [] }); }
 });
 
+// ==================== PAYROLL RUNS ====================
+// Frontend-v2 calls /api/erp/payroll/runs (HR mounted at /api/erp/payroll)
+app.get('/runs', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+  if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT * FROM payroll_runs WHERE company_id = ? ORDER BY pay_period_end DESC'
+    ).bind(companyId).all();
+    return c.json(result.results || []);
+  } catch {
+    return c.json([]);
+  }
+});
+
 export default app;

@@ -32,7 +32,7 @@ export default function Customers() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['customers'],
-    queryFn: () => api.get<Customer[]>('/erp/master-data/customers').catch(() => []),
+    queryFn: () => api.getList<Customer>('/erp/master-data/customers').catch(() => []),
   })
 
   return (

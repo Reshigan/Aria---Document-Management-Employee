@@ -26,7 +26,7 @@ const columns: ColumnDef<Account, unknown>[] = [
 export default function ChartOfAccounts() {
   const { data = [], isLoading } = useQuery({
     queryKey: ['chart-of-accounts'],
-    queryFn: () => api.get<Account[]>('/erp/chart-of-accounts').catch(() => []),
+    queryFn: () => api.getList<Account>('/erp/chart-of-accounts').catch(() => []),
   })
 
   return (

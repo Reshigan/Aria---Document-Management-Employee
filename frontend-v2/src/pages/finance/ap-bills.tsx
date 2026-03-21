@@ -36,7 +36,7 @@ export default function APBills() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['ap-bills'],
-    queryFn: () => api.get<Bill[]>('/ap/invoices').catch(() => []),
+    queryFn: () => api.getList<Bill>('/ap/invoices').catch(() => []),
   })
 
   return (
