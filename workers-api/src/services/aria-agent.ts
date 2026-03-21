@@ -706,7 +706,7 @@ const SEMANTIC_BOT_REGISTRY: SemanticBot[] = [
     name: 'Employee Self-Service Bot',
     category: 'HR',
     description: 'Handles employee self-service requests (leave, expenses, info updates)',
-    triggers: ['self service', 'employee request', 'leave request', 'update my details'],
+    triggers: ['self service', 'employee request', 'update my details', 'employee portal'],
     required_params: [],
     optional_params: [],
     produces: ['request_status'],
