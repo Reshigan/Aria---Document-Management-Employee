@@ -22,7 +22,7 @@ export default function BankAccounts() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['bank-accounts'],
-    queryFn: () => api.get<BankAccount[]>('/banking/accounts').catch(() => []),
+    queryFn: () => api.getList<BankAccount>('/banking/accounts').catch(() => []),
   })
 
   if (isLoading) {

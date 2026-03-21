@@ -33,7 +33,7 @@ const columns: ColumnDef<LeaveRequest, unknown>[] = [
 export default function Leave() {
   const { data = [], isLoading } = useQuery({
     queryKey: ['leave-requests'],
-    queryFn: () => api.get<LeaveRequest[]>('/erp/hr/leave-requests').catch(() => []),
+    queryFn: () => api.getList<LeaveRequest>('/erp/hr/leave-requests').catch(() => []),
   })
 
   return (

@@ -31,7 +31,7 @@ const columns: ColumnDef<StockMovement, unknown>[] = [
 export default function StockMovements() {
   const { data = [], isLoading } = useQuery({
     queryKey: ['stock-movements'],
-    queryFn: () => api.get<StockMovement[]>('/erp/stock-movements').catch(() => []),
+    queryFn: () => api.getList<StockMovement>('/erp/stock-movements').catch(() => []),
   })
 
   return (

@@ -35,7 +35,7 @@ export default function WorkOrders() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['work-orders'],
-    queryFn: () => api.get<WorkOrder[]>('/erp/work-orders').catch(() => []),
+    queryFn: () => api.getList<WorkOrder>('/erp/work-orders').catch(() => []),
   })
 
   return (

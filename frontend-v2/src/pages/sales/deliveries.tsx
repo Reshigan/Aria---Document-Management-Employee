@@ -33,7 +33,7 @@ export default function Deliveries() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['deliveries'],
-    queryFn: () => api.get<Delivery[]>('/erp/order-to-cash/deliveries').catch(() => []),
+    queryFn: () => api.getList<Delivery>('/erp/order-to-cash/deliveries').catch(() => []),
   })
 
   return (

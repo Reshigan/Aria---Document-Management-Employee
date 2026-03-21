@@ -36,7 +36,7 @@ export default function ARInvoices() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['ar-invoices'],
-    queryFn: () => api.get<Invoice[]>('/ar/invoices/customer').catch(() => []),
+    queryFn: () => api.getList<Invoice>('/ar/invoices/customer').catch(() => []),
   })
 
   return (

@@ -25,7 +25,7 @@ const columns: ColumnDef<TaxRate, unknown>[] = [
 export default function TaxRates() {
   const { data = [], isLoading } = useQuery({
     queryKey: ['tax-rates'],
-    queryFn: () => api.get<TaxRate[]>('/erp/tax-rates').catch(() => []),
+    queryFn: () => api.getList<TaxRate>('/erp/tax-rates').catch(() => []),
   })
 
   return (

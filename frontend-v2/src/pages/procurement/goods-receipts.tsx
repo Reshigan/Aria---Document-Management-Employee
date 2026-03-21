@@ -31,7 +31,7 @@ export default function GoodsReceipts() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['goods-receipts'],
-    queryFn: () => api.get<GoodsReceipt[]>('/erp/procure-to-pay/goods-receipts').catch(() => []),
+    queryFn: () => api.getList<GoodsReceipt>('/erp/procure-to-pay/goods-receipts').catch(() => []),
   })
 
   return (

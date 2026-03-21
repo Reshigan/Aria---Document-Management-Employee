@@ -32,7 +32,7 @@ export default function Receipts() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['receipts'],
-    queryFn: () => api.get<Receipt[]>('/ar/receipts').catch(() => []),
+    queryFn: () => api.getList<Receipt>('/ar/receipts').catch(() => []),
   })
 
   return (

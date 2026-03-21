@@ -34,7 +34,7 @@ export default function PurchaseOrders() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['purchase-orders'],
-    queryFn: () => api.get<PurchaseOrder[]>('/erp/procure-to-pay/purchase-orders').catch(() => []),
+    queryFn: () => api.getList<PurchaseOrder>('/erp/procure-to-pay/purchase-orders').catch(() => []),
   })
 
   return (

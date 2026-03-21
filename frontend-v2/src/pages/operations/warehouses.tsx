@@ -21,7 +21,7 @@ export default function Warehouses() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['warehouses'],
-    queryFn: () => api.get<WarehouseData[]>('/erp/warehouses').catch(() => []),
+    queryFn: () => api.getList<WarehouseData>('/erp/warehouses').catch(() => []),
   })
 
   if (isLoading) {

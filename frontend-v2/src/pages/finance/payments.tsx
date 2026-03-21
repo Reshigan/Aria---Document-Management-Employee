@@ -32,7 +32,7 @@ export default function Payments() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['payments'],
-    queryFn: () => api.get<Payment[]>('/ap/payments').catch(() => []),
+    queryFn: () => api.getList<Payment>('/ap/payments').catch(() => []),
   })
 
   return (

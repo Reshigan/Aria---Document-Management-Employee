@@ -29,7 +29,7 @@ export default function BOMs() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['boms'],
-    queryFn: () => api.get<BOM[]>('/erp/boms').catch(() => []),
+    queryFn: () => api.getList<BOM>('/erp/boms').catch(() => []),
   })
 
   return (

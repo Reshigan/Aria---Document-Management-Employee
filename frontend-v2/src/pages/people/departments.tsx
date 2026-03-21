@@ -17,7 +17,7 @@ interface Department {
 export default function Departments() {
   const { data = [], isLoading } = useQuery({
     queryKey: ['departments'],
-    queryFn: () => api.get<Department[]>('/erp/hr/departments').catch(() => []),
+    queryFn: () => api.getList<Department>('/erp/hr/departments').catch(() => []),
   })
 
   if (isLoading) {

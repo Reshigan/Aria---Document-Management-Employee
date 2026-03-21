@@ -35,7 +35,7 @@ export default function JournalEntries() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['journal-entries'],
-    queryFn: () => api.get<JournalEntry[]>('/erp/journal-entries').catch(() => []),
+    queryFn: () => api.getList<JournalEntry>('/erp/journal-entries').catch(() => []),
   })
 
   return (

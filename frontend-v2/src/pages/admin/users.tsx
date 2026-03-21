@@ -36,7 +36,7 @@ const columns: ColumnDef<User, unknown>[] = [
 export default function Users() {
   const { data = [], isLoading } = useQuery({
     queryKey: ['users'],
-    queryFn: () => api.get<User[]>('/admin/users').catch(() => []),
+    queryFn: () => api.getList<User>('/admin/users').catch(() => []),
   })
 
   return (

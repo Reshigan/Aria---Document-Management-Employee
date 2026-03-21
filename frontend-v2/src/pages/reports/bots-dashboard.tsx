@@ -21,7 +21,7 @@ const categories = ['All', 'Financial', 'Procurement', 'Manufacturing', 'Sales',
 export default function BotsDashboard() {
   const { data: bots = [], isLoading } = useQuery({
     queryKey: ['bots'],
-    queryFn: () => api.get<BotData[]>('/bots').catch(() => []),
+    queryFn: () => api.getList<BotData>('/bots').catch(() => []),
   })
 
   const activeBots = bots.filter(b => b.status === 'active' || b.status === 'running').length

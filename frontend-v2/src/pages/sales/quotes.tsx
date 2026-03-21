@@ -34,7 +34,7 @@ export default function Quotes() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['quotes'],
-    queryFn: () => api.get<Quote[]>('/erp/order-to-cash/quotes').catch(() => []),
+    queryFn: () => api.getList<Quote>('/erp/order-to-cash/quotes').catch(() => []),
   })
 
   return (

@@ -59,6 +59,17 @@ class ApiClient {
     return this.request<T>(endpoint)
   }
 
+  async getList<T>(endpoint: string): Promise<T[]> {
+    const res = await this.request<unknown>(endpoint)
+    if (Array.isArray(res)) return res as T[]
+    if (res && typeof res === 'object') {
+      const obj = res as Record<string, unknown>
+      const arrayKey = Object.keys(obj).find(k => Array.isArray(obj[k]))
+      if (arrayKey) return obj[arrayKey] as T[]
+    }
+    return []
+  }
+
   post<T>(endpoint: string, body?: unknown) {
     return this.request<T>(endpoint, { method: 'POST', body })
   }

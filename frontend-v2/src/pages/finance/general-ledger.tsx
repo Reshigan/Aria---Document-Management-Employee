@@ -35,7 +35,7 @@ export default function GeneralLedger() {
   const navigate = useNavigate()
   const { data = [], isLoading } = useQuery({
     queryKey: ['general-ledger'],
-    queryFn: () => api.get<GLEntry[]>('/erp/general-ledger').catch(() => []),
+    queryFn: () => api.getList<GLEntry>('/erp/general-ledger').catch(() => []),
   })
 
   return (
