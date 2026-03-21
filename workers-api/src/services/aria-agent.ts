@@ -938,7 +938,7 @@ const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
   {
     id: 'procure_to_pay',
     name: 'Procure-to-Pay',
-    description: 'Full P2P cycle: PO -> Goods Receipt -> Supplier Invoice -> Payment',
+    description: 'Full P2P cycle: PO -> Goods Receipt -> AP Processing',
     triggers: [
       /procure[- ]?to[- ]?pay/i,
       /p2p\s+(?:cycle|flow|process)/i,
@@ -971,7 +971,7 @@ const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
   {
     id: 'po_to_invoice',
     name: 'PO to Invoice',
-    description: 'Create PO, receive goods, generate supplier invoice',
+    description: 'Create PO, receive goods, process supplier invoice and payment',
     triggers: [
       /create\s+(?:a\s+)?po\s+and\s+(?:once\s+)?(?:received|receipt|goods)/i,
       /purchase\s+order.*(?:then|and).*(?:invoice|bill)/i,
@@ -980,7 +980,7 @@ const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     steps: [
       { bot_id: 'purchase_order', description: 'Create purchase order', depends_on: [] },
       { bot_id: 'goods_receipt', description: 'Record goods receipt', depends_on: [1] },
-      { bot_id: 'ap_payment', description: 'Process supplier invoice', depends_on: [2] },
+      { bot_id: 'ap_payment', description: 'Process supplier invoice and payment', depends_on: [2] },
     ],
   },
   {
