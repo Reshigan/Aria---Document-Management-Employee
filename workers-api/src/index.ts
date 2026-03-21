@@ -664,6 +664,10 @@ app.route('/erp/ar', invoices);
 app.route('/api/erp/ap', invoices);
 app.route('/erp/ap', invoices);
 
+// --- AR receipts / AP payments aliases (handlers live in payments router) ---
+app.route('/api/ar', payments);
+app.route('/api/ap', payments);
+
 // --- CRM aliases (customers, leads, opportunities via new-pages) ---
 app.route('/api/crm/customers', customers);
 app.route('/crm/customers', customers);
