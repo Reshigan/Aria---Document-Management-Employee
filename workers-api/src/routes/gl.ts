@@ -352,8 +352,10 @@ app.get('/trial-balance', async (c) => {
         COALESCE(SUM(jel.credit_amount), 0) as total_credit,
         COALESCE(SUM(jel.debit_amount), 0) - COALESCE(SUM(jel.credit_amount), 0) as balance
       FROM gl_accounts ga
-      LEFT JOIN journal_entry_lines jel ON ga.id = jel.account_id
-      LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id AND je.status = 'posted'
+      LEFT JOIN (
+        journal_entry_lines jel
+        INNER JOIN journal_entries je ON jel.journal_entry_id = je.id AND je.status = 'posted'
+      ) ON ga.id = jel.account_id
       WHERE ga.company_id = ?
       GROUP BY ga.id, ga.account_code, ga.account_name, ga.account_type
       ORDER BY ga.account_code
