@@ -410,11 +410,11 @@ const SEMANTIC_BOT_REGISTRY: SemanticBot[] = [
     consumes: [],
   },
   {
-    id: 'inventory_optimization',
+    id: 'inventory',
     name: 'Inventory Optimization Bot',
     category: 'Procurement',
-    description: 'Optimizes inventory levels and reorder points',
-    triggers: ['optimize inventory', 'inventory optimization', 'stock optimization'],
+    description: 'Optimizes inventory levels, manages stock, and calculates reorder points',
+    triggers: ['optimize inventory', 'inventory optimization', 'stock optimization', 'manage inventory', 'inventory check', 'stock levels'],
     required_params: [],
     optional_params: [],
     produces: ['optimization_report'],
@@ -456,29 +456,18 @@ const SEMANTIC_BOT_REGISTRY: SemanticBot[] = [
     consumes: [],
   },
   {
-    id: 'lead_management',
-    name: 'Lead Management Bot',
+    id: 'lead_scoring',
+    name: 'Lead Scoring & Qualification Bot',
     category: 'Sales',
-    description: 'Manages and tracks sales leads',
-    triggers: ['manage leads', 'lead tracking', 'new lead'],
+    description: 'Manages, tracks, scores, and qualifies sales leads',
+    triggers: ['manage leads', 'lead tracking', 'new lead', 'qualify leads', 'lead scoring', 'score leads', 'lead priority'],
     required_params: [],
     optional_params: [],
-    produces: ['leads_processed'],
+    produces: ['leads_processed', 'qualification_report'],
     consumes: [],
   },
   {
-    id: 'lead_qualification',
-    name: 'Lead Qualification Bot',
-    category: 'Sales',
-    description: 'Scores and qualifies sales leads',
-    triggers: ['qualify leads', 'lead scoring', 'score leads', 'lead priority'],
-    required_params: [],
-    optional_params: [],
-    produces: ['qualification_report'],
-    consumes: [],
-  },
-  {
-    id: 'opportunity_management',
+    id: 'opportunity',
     name: 'Opportunity Management Bot',
     category: 'Sales',
     description: 'Manages sales pipeline opportunities',
@@ -524,11 +513,11 @@ const SEMANTIC_BOT_REGISTRY: SemanticBot[] = [
 
   // ── Manufacturing ──
   {
-    id: 'production_scheduling',
+    id: 'production',
     name: 'Production Scheduling Bot',
     category: 'Manufacturing',
     description: 'Schedules production runs and allocates resources',
-    triggers: ['schedule production', 'production planning', 'manufacturing schedule'],
+    triggers: ['schedule production', 'production planning', 'manufacturing schedule', 'run production'],
     required_params: [],
     optional_params: [],
     produces: ['production_schedule'],
@@ -636,7 +625,7 @@ const SEMANTIC_BOT_REGISTRY: SemanticBot[] = [
 
   // ── HR & People ──
   {
-    id: 'payroll_sa',
+    id: 'payroll',
     name: 'SA Payroll Bot',
     category: 'HR',
     description: 'Processes South African payroll with PAYE, UIF, SDL',
@@ -894,6 +883,28 @@ const SEMANTIC_BOT_REGISTRY: SemanticBot[] = [
     produces: ['work_order_id'],
     consumes: [],
   },
+  {
+    id: 'stock_movement',
+    name: 'Stock Movement Bot',
+    category: 'Procurement',
+    description: 'Records stock transfers, adjustments, and movements between warehouses',
+    triggers: ['stock movement', 'stock transfer', 'move stock', 'warehouse transfer', 'stock adjustment'],
+    required_params: [],
+    optional_params: ['from_warehouse', 'to_warehouse', 'product_id', 'quantity'],
+    produces: ['movement_id'],
+    consumes: [],
+  },
+  {
+    id: 'leave_management',
+    name: 'Leave Management Bot',
+    category: 'HR',
+    description: 'Manages employee leave requests, approvals, and balances',
+    triggers: ['manage leave', 'leave request', 'approve leave', 'leave balance', 'annual leave'],
+    required_params: [],
+    optional_params: ['employee_id', 'leave_type'],
+    produces: ['leave_report'],
+    consumes: [],
+  },
 ];
 
 // ─── Well-known multi-step workflow templates ─────────────────────────────────
@@ -937,8 +948,7 @@ const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     steps: [
       { bot_id: 'purchase_order', description: 'Create purchase order', depends_on: [] },
       { bot_id: 'goods_receipt', description: 'Record goods receipt', depends_on: [1] },
-      { bot_id: 'supplier_invoice', description: 'Create supplier invoice', depends_on: [2] },
-      { bot_id: 'ap_payment', description: 'Process supplier payment', depends_on: [3] },
+      { bot_id: 'ap_payment', description: 'Process supplier invoice and payment', depends_on: [2] },
     ],
   },
   {
@@ -970,7 +980,7 @@ const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     steps: [
       { bot_id: 'purchase_order', description: 'Create purchase order', depends_on: [] },
       { bot_id: 'goods_receipt', description: 'Record goods receipt', depends_on: [1] },
-      { bot_id: 'supplier_invoice', description: 'Generate supplier invoice', depends_on: [2] },
+      { bot_id: 'ap_payment', description: 'Process supplier invoice', depends_on: [2] },
     ],
   },
   {
