@@ -299,4 +299,75 @@ app.post('/journal-entries/:id/post', async (c) => {
   }
 });
 
+// ==================== GENERAL LEDGER (alias for journal entries list) ====================
+// Frontend-v2 calls /api/erp/gl/general-ledger
+app.get('/general-ledger', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+
+  try {
+    const result = await c.env.DB.prepare(`
+      SELECT je.*, 
+        (SELECT GROUP_CONCAT(jel.account_id || ':' || jel.debit_amount || ':' || jel.credit_amount, '|')
+         FROM journal_entry_lines jel WHERE jel.journal_entry_id = je.id) as lines_data
+      FROM journal_entries je
+      WHERE je.company_id = ?
+      ORDER BY je.entry_date DESC, je.entry_number DESC
+    `).bind(companyId).all();
+    
+    return c.json(result.results || []);
+  } catch (error) {
+    console.error('Error loading general ledger:', error);
+    return c.json({ error: 'Failed to load general ledger' }, 500);
+  }
+});
+
+// ==================== ACCOUNTS (alias for chart-of-accounts) ====================
+// Frontend-v2 calls /api/erp/gl/accounts
+app.get('/accounts', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT * FROM gl_accounts WHERE company_id = ? ORDER BY account_code'
+    ).bind(companyId).all();
+    
+    return c.json({
+      accounts: result.results || [],
+      total: result.results?.length || 0
+    });
+  } catch (error) {
+    console.error('Error loading accounts:', error);
+    return c.json({ error: 'Failed to load accounts' }, 500);
+  }
+});
+
+// ==================== TRIAL BALANCE ====================
+app.get('/trial-balance', async (c) => {
+  const companyId = await getSecureCompanyId(c);
+
+  try {
+    const result = await c.env.DB.prepare(`
+      SELECT ga.account_code, ga.account_name, ga.account_type,
+        COALESCE(SUM(jel.debit_amount), 0) as total_debit,
+        COALESCE(SUM(jel.credit_amount), 0) as total_credit,
+        COALESCE(SUM(jel.debit_amount), 0) - COALESCE(SUM(jel.credit_amount), 0) as balance
+      FROM gl_accounts ga
+      LEFT JOIN journal_entry_lines jel ON ga.id = jel.account_id
+      LEFT JOIN journal_entries je ON jel.journal_entry_id = je.id AND je.status = 'posted'
+      WHERE ga.company_id = ?
+      GROUP BY ga.id, ga.account_code, ga.account_name, ga.account_type
+      ORDER BY ga.account_code
+    `).bind(companyId).all();
+    
+    return c.json({
+      accounts: result.results || [],
+      total_debit: (result.results || []).reduce((s: number, r: any) => s + (r.total_debit || 0), 0),
+      total_credit: (result.results || []).reduce((s: number, r: any) => s + (r.total_credit || 0), 0)
+    });
+  } catch (error) {
+    console.error('Error loading trial balance:', error);
+    return c.json({ error: 'Failed to load trial balance' }, 500);
+  }
+});
+
 export default app;
