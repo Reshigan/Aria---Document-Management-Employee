@@ -577,6 +577,99 @@ invoices.get('/supplier/:id', async (c) => {
   }
 });
 
+// Create supplier invoice
+invoices.post('/supplier', async (c) => {
+  try {
+    const companyId = await getSecureCompanyId(c);
+    if (!companyId) return c.json({ error: 'Authentication required' }, 401);
+    const userId = await getSecureUserId(c);
+    const body = await c.req.json<{
+      supplier_id?: string;
+      supplier_name?: string;
+      purchase_order_id?: string;
+      invoice_date?: string;
+      due_date?: string;
+      notes?: string;
+      reference?: string;
+      lines?: Array<{
+        product_id?: string;
+        description?: string;
+        quantity?: number;
+        unit_price?: number;
+        discount_percent?: number;
+        tax_rate?: number;
+      }>;
+    }>();
+
+    let supplierId: string | undefined = body.supplier_id;
+    if (supplierId) {
+      const existingSupplier = await c.env.DB.prepare(
+        'SELECT id FROM suppliers WHERE id = ? AND company_id = ?'
+      ).bind(supplierId, companyId).first<{ id: string }>();
+      if (!existingSupplier) {
+        supplierId = undefined;
+      }
+    }
+    if (!supplierId && body.supplier_name) {
+      const supplier = await c.env.DB.prepare(
+        'SELECT id FROM suppliers WHERE company_id = ? AND supplier_name = ? LIMIT 1'
+      ).bind(companyId, body.supplier_name).first<{ id: string }>();
+      supplierId = supplier?.id || undefined;
+    }
+
+    if (!supplierId) {
+      return c.json({ error: 'supplier_id or supplier_name is required' }, 400);
+    }
+
+    const lastInvoice = await c.env.DB.prepare(
+      'SELECT invoice_number FROM supplier_invoices WHERE company_id = ? ORDER BY created_at DESC LIMIT 1'
+    ).bind(companyId).first<{ invoice_number: string }>();
+
+    const lastNum = lastInvoice ? (parseInt((lastInvoice.invoice_number || '').replace(/[^0-9]/g, '')) || 0) : 0;
+    const nextNum = lastNum + 1;
+    const invoiceNumber = `BILL-${String(nextNum).padStart(5, '0')}`;
+
+    const invoiceId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const invoiceDate = body.invoice_date || now.split('T')[0];
+    const dueDate = body.due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    const lines = body.lines || [];
+    let subtotal = 0;
+    let taxAmount = 0;
+    for (const line of lines) {
+      const qty = safeNumber(line.quantity) || 1;
+      const price = safeNumber(line.unit_price);
+      const discount = safeNumber(line.discount_percent);
+      const taxRate = safeNumber(line.tax_rate) || 15;
+      const lineSubtotal = qty * price * (1 - discount / 100);
+      subtotal += lineSubtotal;
+      taxAmount += lineSubtotal * (taxRate / 100);
+    }
+    const totalAmount = subtotal + taxAmount;
+
+    await c.env.DB.prepare(`
+      INSERT INTO supplier_invoices (id, company_id, invoice_number, supplier_id, purchase_order_id, invoice_date, due_date, status, subtotal, tax_amount, discount_amount, total_amount, amount_paid, balance_due, notes, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      invoiceId, companyId, invoiceNumber, supplierId, body.purchase_order_id || null,
+      invoiceDate, dueDate, 'draft',
+      subtotal, taxAmount, 0, totalAmount, 0, totalAmount,
+      body.notes || null, userId, now, now
+    ).run();
+
+    return c.json({
+      id: invoiceId,
+      invoice_number: invoiceNumber,
+      total_amount: totalAmount,
+      message: 'Supplier invoice created successfully'
+    }, 201);
+  } catch (error) {
+    console.error('Create supplier invoice error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
 // Update supplier invoice status
 invoices.put('/supplier/:id/status', async (c) => {
   try {

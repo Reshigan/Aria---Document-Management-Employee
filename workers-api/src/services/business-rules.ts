@@ -120,9 +120,10 @@ export function calculateLineTotal(item: LineItemInput): number {
 
 const STATUS_TRANSITIONS: Record<string, Record<string, string[]>> = {
   quote: {
-    draft: ['sent', 'cancelled'],
-    sent: ['accepted', 'rejected', 'expired', 'cancelled'],
+    draft: ['sent', 'approved', 'cancelled'],
+    sent: ['accepted', 'approved', 'rejected', 'expired', 'cancelled'],
     accepted: ['converted'],
+    approved: ['converted'],
     rejected: [],
     expired: ['draft'],
     converted: [],
@@ -141,8 +142,9 @@ const STATUS_TRANSITIONS: Record<string, Record<string, string[]>> = {
     cancelled: [],
   },
   purchase_order: {
-    draft: ['sent', 'cancelled'],
-    sent: ['confirmed', 'cancelled'],
+    draft: ['sent', 'approved', 'cancelled'],
+    sent: ['confirmed', 'approved', 'cancelled'],
+    approved: ['partial', 'received', 'cancelled'],
     confirmed: ['partial', 'received', 'cancelled'],
     partial: ['received', 'cancelled'],
     received: ['invoiced'],
