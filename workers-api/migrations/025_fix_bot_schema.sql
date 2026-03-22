@@ -67,7 +67,7 @@ UPDATE employees SET status = CASE WHEN is_active = 1 THEN 'active' ELSE 'inacti
 ALTER TABLE bank_transactions ADD COLUMN reconciled INTEGER DEFAULT 0;
 ALTER TABLE bank_transactions ADD COLUMN amount REAL;
 UPDATE bank_transactions SET reconciled = is_reconciled WHERE is_reconciled IS NOT NULL;
-UPDATE bank_transactions SET amount = credit_amount - debit_amount WHERE amount IS NULL AND (debit_amount IS NOT NULL OR credit_amount IS NOT NULL);
+UPDATE bank_transactions SET amount = COALESCE(credit_amount, 0) - COALESCE(debit_amount, 0) WHERE amount IS NULL AND (debit_amount IS NOT NULL OR credit_amount IS NOT NULL);
 
 -- ============================================
 -- 10. leads: bot uses 'lead_name' (table has contact_name) and 'score'
