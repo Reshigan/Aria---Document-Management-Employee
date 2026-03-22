@@ -55,10 +55,13 @@ ALTER TABLE employees ADD COLUMN salary REAL DEFAULT 0;
 ALTER TABLE employees ADD COLUMN status TEXT DEFAULT 'active';
 
 -- ============================================
--- 9. bank_transactions: bot uses 'reconciled' (has is_reconciled)
---    (amount already exists from migration 014)
+-- 9. bank_transactions: bot uses 'reconciled' (has is_reconciled) and 'amount'
+--    Note: amount may exist from migration 014 in production but not in fresh builds
+--    since migration 005 creates the table first (without amount) and 014's
+--    CREATE TABLE IF NOT EXISTS is a no-op.
 -- ============================================
 ALTER TABLE bank_transactions ADD COLUMN reconciled INTEGER DEFAULT 0;
+ALTER TABLE bank_transactions ADD COLUMN amount REAL;
 
 -- ============================================
 -- 10. leads: bot uses 'lead_name' (table has contact_name) and 'score'
