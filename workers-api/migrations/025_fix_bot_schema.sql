@@ -5,6 +5,7 @@
 -- 1. purchase_orders: bot uses 'order_date', table has 'po_date'
 -- ============================================
 ALTER TABLE purchase_orders ADD COLUMN order_date TEXT;
+UPDATE purchase_orders SET order_date = po_date WHERE po_date IS NOT NULL;
 
 -- ============================================
 -- 2. tasks: bot uses 'updated_at' and 'priority'
@@ -38,6 +39,7 @@ ALTER TABLE stock_movements ADD COLUMN completed_at TEXT;
 -- 6. stock_levels: bot uses 'quantity' (table has quantity_on_hand)
 -- ============================================
 ALTER TABLE stock_levels ADD COLUMN quantity REAL DEFAULT 0;
+UPDATE stock_levels SET quantity = quantity_on_hand WHERE quantity_on_hand IS NOT NULL;
 
 -- ============================================
 -- 7. payroll_runs: bot uses payroll_number, pay_period_start, pay_period_end, processed_by
@@ -53,6 +55,8 @@ ALTER TABLE payroll_runs ADD COLUMN processed_by TEXT;
 -- ============================================
 ALTER TABLE employees ADD COLUMN salary REAL DEFAULT 0;
 ALTER TABLE employees ADD COLUMN status TEXT DEFAULT 'active';
+UPDATE employees SET salary = basic_salary WHERE basic_salary IS NOT NULL;
+UPDATE employees SET status = CASE WHEN is_active = 1 THEN 'active' ELSE 'inactive' END WHERE is_active IS NOT NULL;
 
 -- ============================================
 -- 9. bank_transactions: bot uses 'reconciled' (has is_reconciled) and 'amount'
@@ -62,12 +66,14 @@ ALTER TABLE employees ADD COLUMN status TEXT DEFAULT 'active';
 -- ============================================
 ALTER TABLE bank_transactions ADD COLUMN reconciled INTEGER DEFAULT 0;
 ALTER TABLE bank_transactions ADD COLUMN amount REAL;
+UPDATE bank_transactions SET reconciled = is_reconciled WHERE is_reconciled IS NOT NULL;
 
 -- ============================================
 -- 10. leads: bot uses 'lead_name' (table has contact_name) and 'score'
 -- ============================================
 ALTER TABLE leads ADD COLUMN lead_name TEXT;
 ALTER TABLE leads ADD COLUMN score INTEGER;
+UPDATE leads SET lead_name = contact_name WHERE contact_name IS NOT NULL;
 
 -- ============================================
 -- 11. supplier_invoices: bot uses 'approved_by' and 'approved_at'
@@ -86,11 +92,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_financial_periods_company_period ON financ
 -- ============================================
 ALTER TABLE journal_entries ADD COLUMN debit_amount REAL DEFAULT 0;
 ALTER TABLE journal_entries ADD COLUMN credit_amount REAL DEFAULT 0;
+UPDATE journal_entries SET debit_amount = total_debit, credit_amount = total_credit WHERE total_debit IS NOT NULL;
 
 -- ============================================
 -- 14. bank_accounts: bot uses 'balance' (table has current_balance)
 -- ============================================
 ALTER TABLE bank_accounts ADD COLUMN balance REAL DEFAULT 0;
+UPDATE bank_accounts SET balance = current_balance WHERE current_balance IS NOT NULL;
 
 -- ============================================
 -- 15. expense_claims: bot uses 'amount' and 'category'
@@ -98,6 +106,7 @@ ALTER TABLE bank_accounts ADD COLUMN balance REAL DEFAULT 0;
 -- ============================================
 ALTER TABLE expense_claims ADD COLUMN amount REAL DEFAULT 0;
 ALTER TABLE expense_claims ADD COLUMN category TEXT;
+UPDATE expense_claims SET amount = total_amount WHERE total_amount IS NOT NULL;
 
 -- ============================================
 -- 16. opportunities: bot inserts 'created_by'
