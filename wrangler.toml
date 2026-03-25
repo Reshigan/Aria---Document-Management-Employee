@@ -1,0 +1,21 @@
+name = "aria-erp"
+compatibility_date = "2024-01-01"
+
+[site]
+bucket = "./public"
+
+[vars]
+DATABASE_URL = "sqlite:///./aria.db"
+SECRET_KEY = "AriaProductionSecretKey2024VantaxSecure!"
+
+[env.production]
+name = "aria-erp-production"
+route = "aria.vantax.co.za/*"
+
+[env.staging]
+name = "aria-erp-staging"
+route = "staging.aria.vantax.co.za/*"
+
+[pages]
+build_command = "cd frontend && npm install && npm run build"
+destination = "frontend/dist"
