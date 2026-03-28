@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./workers-api
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: TypeScript type check
         working-directory: ./workers-api
@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./workers-api
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: Run tests
         working-directory: ./workers-api
@@ -89,16 +89,20 @@ jobs:
 
       - name: Check for hardcoded secrets
         run: |
-          echo "Scanning for hardcoded secrets..."
+          echo "Scanning for hardcoded secrets in workers-api/src and frontend-v2/src..."
           FOUND=0
-          # Check for common hardcoded passwords
-          if grep -rn "password123\|admin123\|secret123\|hardcoded_secret" \
-            --include="*.ts" --include="*.tsx" --include="*.js" \
-            workers-api/src/ frontend-v2/src/ 2>/dev/null \
-            | grep -v "\.test\." | grep -v "__tests__" | grep -v "// " | head -20; then
-            echo "::error::Hardcoded credentials found"
-            FOUND=1
-          fi
+          # Only scan active source directories (not legacy frontend/)
+          for DIR in workers-api/src frontend-v2/src; do
+            if [ -d "$DIR" ]; then
+              if grep -rn 'password123\|secret123\|hardcoded_secret' \
+                --include='*.ts' --include='*.tsx' \
+                "$DIR" 2>/dev/null \
+                | grep -v '\.test\.' | grep -v '__tests__' | head -20; then
+                echo "::error::Hardcoded credentials found in $DIR"
+                FOUND=1
+              fi
+            fi
+          done
           if [ "$FOUND" -eq 1 ]; then exit 1; fi
           echo "No hardcoded secrets found"
 

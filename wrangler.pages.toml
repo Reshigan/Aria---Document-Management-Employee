@@ -14,7 +14,7 @@ VITE_API_URL = "https://aria-api.reshigan-085.workers.dev"
 VITE_APP_NAME = "Aria ERP"
 VITE_APP_VERSION = "2.0.0"
 
-# Environment variables for preview
+# Environment variables for preview (uses production API — no separate preview worker deployed)
 [env.preview]
 VITE_API_URL = "https://aria-api.reshigan-085.workers.dev"
 VITE_APP_NAME = "Aria ERP (Preview)"

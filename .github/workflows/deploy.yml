@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./workers-api
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: TypeScript type check
         working-directory: ./workers-api
@@ -54,7 +54,7 @@ jobs:
           echo "Applying D1 migrations..."
           for file in migrations/*.sql; do
             echo "Running: $file"
-            npx wrangler d1 execute aria-erp-db --remote --file="$file" --yes || true
+            npx wrangler d1 execute aria-erp-db --remote --file="$file" --yes
           done
           echo "All migrations applied"
         env:
@@ -73,7 +73,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./frontend-v2
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: Build
         working-directory: ./frontend-v2
