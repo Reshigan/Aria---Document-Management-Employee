@@ -5,17 +5,17 @@ name = "aria-erp"
 
 # Build configuration
 [build]
-command = "cd frontend && npm install && npm run build"
-output_directory = "frontend/dist"
+command = "cd frontend-v2 && npm install && npm run build"
+output_directory = "frontend-v2/dist"
 
 # Environment variables for production
 [env.production]
-VITE_API_URL = "https://aria-api.vantax.co.za"
+VITE_API_URL = "https://aria-api.reshigan-085.workers.dev"
 VITE_APP_NAME = "Aria ERP"
 VITE_APP_VERSION = "2.0.0"
 
 # Environment variables for preview
 [env.preview]
-VITE_API_URL = "https://aria-api-preview.vantax.co.za"
+VITE_API_URL = "https://aria-api.reshigan-085.workers.dev"
 VITE_APP_NAME = "Aria ERP (Preview)"
 VITE_APP_VERSION = "2.0.0"
