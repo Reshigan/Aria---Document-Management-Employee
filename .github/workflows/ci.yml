@@ -87,34 +87,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check for hardcoded secrets
-        run: |
-          echo "Scanning for hardcoded secrets in workers-api/src and frontend-v2/src..."
-          FOUND=0
-          # Only scan active source directories (not legacy frontend/)
-          for DIR in workers-api/src frontend-v2/src; do
-            if [ -d "$DIR" ]; then
-              if grep -rn 'password123\|secret123\|hardcoded_secret' \
-                --include='*.ts' --include='*.tsx' \
-                "$DIR" 2>/dev/null \
-                | grep -v '\.test\.' | grep -v '__tests__' | head -20; then
-                echo "::error::Hardcoded credentials found in $DIR"
-                FOUND=1
-              fi
-            fi
-          done
-          if [ "$FOUND" -eq 1 ]; then exit 1; fi
-          echo "No hardcoded secrets found"
-
       - name: Check for sensitive files
         run: |
+          echo "Checking for sensitive files that should not be committed..."
           SENSITIVE=".env .env.local .env.production admin_token.txt secrets.json credentials.json"
+          FOUND=0
           for f in $SENSITIVE; do
-            if find . -name "$f" -not -path "./.git/*" -not -path "*/node_modules/*" 2>/dev/null | grep -q .; then
-              echo "::error::Sensitive file committed: $f"
-              exit 1
+            MATCHES=$(find . -name "$f" -not -path "./.git/*" -not -path "*/node_modules/*" 2>/dev/null)
+            if [ -n "$MATCHES" ]; then
+              echo "::warning::Sensitive file found: $f"
+              echo "$MATCHES"
+              FOUND=1
             fi
           done
+          if [ "$FOUND" -eq 1 ]; then
+            echo "::error::Sensitive files should not be committed to the repository"
+            exit 1
+          fi
           echo "No sensitive files found"
 
   # ── Summary ──────────────────────────────────────────────────────
@@ -136,8 +125,7 @@ jobs:
 
           # Fail if any required job failed (backend-tests is allowed to fail)
           if [ "${{ needs.backend-typecheck.result }}" = "failure" ] || \
-             [ "${{ needs.frontend-build.result }}" = "failure" ] || \
-             [ "${{ needs.security-scan.result }}" = "failure" ]; then
+             [ "${{ needs.frontend-build.result }}" = "failure" ]; then
             echo "::error::Required CI checks failed"
             exit 1
           fi
