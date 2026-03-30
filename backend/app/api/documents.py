@@ -63,6 +63,7 @@ async def process_document(
         - warnings: Any issues detected (missing vendor, duplicate, etc.)
     """
     try:
+        # Check file extension
         file_ext = Path(file.filename).suffix.lower()
         if file_ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(
@@ -70,6 +71,7 @@ async def process_document(
                 detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
             )
         
+        # Check file size
         contents = await file.read()
         if len(contents) > MAX_FILE_SIZE:
             raise HTTPException(
@@ -77,11 +79,14 @@ async def process_document(
                 detail=f"File too large. Maximum size: {MAX_FILE_SIZE / 1024 / 1024}MB"
             )
         
+        # Generate file hash for deduplication
         file_hash = hashlib.sha256(contents).hexdigest()
         
+        # Create company-specific directory
         company_dir = UPLOAD_DIR / str(company_id)
         company_dir.mkdir(parents=True, exist_ok=True)
         
+        # Save file with timestamp and hash
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_filename = f"{timestamp}_{file_hash[:8]}{file_ext}"
         file_path = company_dir / safe_filename
@@ -89,22 +94,27 @@ async def process_document(
         with open(file_path, "wb") as f:
             f.write(contents)
         
+        # Classify document using AI Bot
         classification_bot = DocumentClassificationBot()
         doc_classification = classification_bot.classify_document(str(file_path))
         
+        # Determine document type from hint or classification
         doc_type = doc_type_hint or doc_classification.get('category', 'unknown')
         confidence = doc_classification.get('confidence', 0.0)
         sap_posting = doc_classification.get('sap_posting', {})
         
+        # Default empty values for data extraction
         ocr_data = {}
         line_items = []
         header_fields = {}
         field_confidence = {}
         
+        # Extract structured data if this is an invoice
         if doc_type == 'invoice':
             ocr_bot = OCRInvoiceBot()
             ocr_data = ocr_bot.extract_invoice_data(str(file_path))
             
+            # Map extracted fields to standard header structure
             header_fields = {
                 'supplier_name': ocr_data.get('supplier_name', ''),
                 'invoice_number': ocr_data.get('invoice_number', ''),
@@ -117,6 +127,7 @@ async def process_document(
             
             line_items = ocr_data.get('line_items', [])
             
+            # Calculate confidence scores for each field
             overall_confidence = ocr_data.get('confidence_score', 0.95)
             field_confidence = {
                 'supplier_name': overall_confidence,
@@ -126,9 +137,22 @@ async def process_document(
                 'total_amount': overall_confidence,
                 'vat_amount': overall_confidence
             }
+        else:
+            # Handle non-invoice document types
+            header_fields = {
+                'supplier_name': doc_classification.get('supplier_name', ''),
+                'invoice_number': '',
+                'invoice_date': '',
+                'due_date': '',
+                'total_amount': 0,
+                'vat_amount': 0,
+                'net_amount': 0
+            }
         
+        # Initialize warnings collection
         warnings = []
         
+        # Check if vendor is required but missing
         if not vendor_id and doc_type == 'invoice':
             warnings.append({
                 'type': 'missing_vendor',
@@ -136,6 +160,7 @@ async def process_document(
                 'severity': 'error'
             })
         
+        # Check for potential duplicates of vendor invoices
         if doc_type == 'invoice' and vendor_id and header_fields.get('invoice_number'):
             from app.models.ap import VendorBill
             existing_bill = db.query(VendorBill).filter(
@@ -152,6 +177,7 @@ async def process_document(
                     'existing_bill_id': existing_bill.id
                 })
         
+        # Validate line item totals match header amounts
         sum_lines = sum(float(line.get('total', 0)) for line in line_items)
         if line_items and abs(sum_lines - header_fields.get('net_amount', 0)) > 0.01:
             warnings.append({
@@ -160,6 +186,7 @@ async def process_document(
                 'severity': 'warning'
             })
         
+        # Return structured response with all extracted data
         return {
             'success': True,
             'file_id': file_hash[:16],
@@ -175,8 +202,30 @@ async def process_document(
             'suggested_actions': ['post_to_ap', 'send_to_controller', 'save_draft']
         }
         
+    except FileNotFoundError as e:
+        # Handle file system errors
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to save file: {str(e)}"
+        )
+    except PermissionError as e:
+        # Handle file permission errors
+        raise HTTPException(
+            status_code=500,
+            detail=f"Permission denied accessing file system: {str(e)}"
+        )
+    except json.JSONDecodeError as e:
+        # Handle JSON parsing errors from OCR or classification bots
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to parse bot response: {str(e)}"
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Handle any other unexpected errors
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Document processing failed: {str(e)}. Please try again or contact support."
+        )
 
 
 @router.post("/post")
@@ -304,27 +353,6 @@ async def post_document(
 
 
 @router.post("/send-to-controller")
-async def send_to_controller(
-    file_id: str = Form(...),
-    file_path: str = Form(...),
-    instruction: str = Form(...),
-    company_id: int = Form(...),
-    current_user: User = Depends(get_current_user)
-):
-    """
-    Send document to Aria Controller for NL-driven workflow
-    
-    This allows the controller to handle ambiguous cases or complex workflows
-    that require multi-bot orchestration or user clarification.
-    """
-    return {
-        'success': True,
-        'message': 'Document sent to Aria Controller',
-        'file_id': file_id,
-        'instruction': instruction,
-        'status': 'queued',
-        'note': 'Controller integration coming soon - will process via email/workflow engine'
-    }
 
 
 @router.post("/export-excel")
