@@ -101,14 +101,17 @@ class BotRegistry:
                 "production_reporting_bot",
                 "scrap_management_bot",
                 "tool_management_bot",
-                "operator_instructions_bot"
+                "operator_instructions_bot",
+                "mrp_bot",
+                "production_scheduler_bot"
             ],
             
             # Phase 8: Compliance (3)
             "compliance": [
                 "audit_management_bot",
                 "policy_management_bot",
-                "risk_management_bot"
+                "risk_management_bot",
+                "bbbee_compliance_bot"
             ],
             
             # Existing bots (14)
@@ -136,8 +139,18 @@ class BotRegistry:
                         self.bots[bot_name] = bot_instance
                         self.categories[category].append(bot_name)
                         print(f"✅ Loaded: {bot_name} ({category})")
+                    elif hasattr(module, bot_name.replace('_bot', 'Bot')):
+                        # Try alternate naming convention (e.g., mrp_bot -> MRPPBot)
+                        bot_instance = getattr(module, bot_name.replace('_bot', 'Bot'))
+                        self.bots[bot_name] = bot_instance
+                        self.categories[category].append(bot_name)
+                        print(f"✅ Loaded: {bot_name} ({category}) - Alternate naming")
                     else:
                         print(f"⚠️  Module {bot_name} has no instance variable")
+                except ImportError as e:
+                    # Bot file doesn't exist yet - this is okay for planned bots
+                    print(f"⏭️  Planned bot not yet implemented: {bot_name}")
+                    continue
                 except Exception as e:
                     print(f"❌ Failed to load {bot_name}: {str(e)}")
     
