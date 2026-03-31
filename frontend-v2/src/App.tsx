@@ -71,7 +71,7 @@ const AskAria = lazy(() => import('@/pages/ask-aria/ask-aria'))
 // Not Found
 const NotFound = lazy(() => import('@/pages/not-found'))
 
-// Feature flag for revolutionary UI
+// Feature flag for revolutionary UI - NOW ACTIVATED FOR PRODUCTION
 const ENABLE_REVOLUTIONARY_UI = true
 
 function PageLoader() {
