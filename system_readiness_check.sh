@@ -1,8 +1,7 @@
 #!/bin/bash
-"""
-ARIA ERP System Readiness and Verification Script
-Checks that all components are properly wired and functioning
-"""
+#
+# ARIA ERP System Readiness and Verification Script
+# Checks that all components are properly wired and functioning
 
 echo "=== ARIA ERP SYSTEM READINESS CHECK ==="
 echo "$(date)"
