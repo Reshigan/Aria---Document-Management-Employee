@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { AvatarProvider } from '@/components/erp/avatar-bot'
 import App from './App'
 import './globals.css'
 
@@ -22,8 +24,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ThemeProvider defaultTheme="system" storageKey="aria-theme">
-          <App />
-          <Toaster />
+          <TooltipProvider>
+            <AvatarProvider>
+              <App />
+              <Toaster />
+            </AvatarProvider>
+          </TooltipProvider>
         </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>

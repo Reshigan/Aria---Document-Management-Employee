@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { MainLayout } from '@/components/layout/main-layout'
+import { HolographicLayout } from '@/components/layout/holographic-layout'
 import { useAuthStore } from '@/stores/auth-store'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -70,6 +71,9 @@ const AskAria = lazy(() => import('@/pages/ask-aria/ask-aria'))
 // Not Found
 const NotFound = lazy(() => import('@/pages/not-found'))
 
+// Feature flag for revolutionary UI
+const ENABLE_REVOLUTIONARY_UI = true
+
 function PageLoader() {
   return (
     <div className="space-y-4 p-8">
@@ -92,11 +96,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AppLayout({ children }: { children: React.ReactNode }) {
+  // Use revolutionary holographic layout when enabled
+  const LayoutComponent = ENABLE_REVOLUTIONARY_UI ? HolographicLayout : MainLayout
+  
   return (
     <ProtectedRoute>
-      <MainLayout>
+      <LayoutComponent>
         <Suspense fallback={<PageLoader />}>{children}</Suspense>
-      </MainLayout>
+      </LayoutComponent>
     </ProtectedRoute>
   )
 }

@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/holographic.css';
+
 @layer base {
   :root {
     /* === ARIA ERP Design Tokens — Light Mode === */
