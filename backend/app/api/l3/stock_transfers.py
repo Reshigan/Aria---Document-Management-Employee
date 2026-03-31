@@ -19,6 +19,18 @@ except ImportError:
                 db.close()
         from auth_integrated import get_current_user
 
+# Import validation service
+try:
+    from app.core.validation import get_business_logic_validator, ValidationError
+except ImportError:
+    # Provide fallback if validation service not available
+    ValidationError = Exception
+    def get_business_logic_validator(*args, **kwargs):
+        class DummyValidator:
+            def validate_inventory_transaction(self, data):
+                return data
+        return DummyValidator()
+
 router = APIRouter()
 
 
@@ -133,10 +145,24 @@ async def add_stock_transfer_line(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    """Add a line to a stock transfer"""
+    """Add a line to a stock transfer with business logic validation"""
     try:
         company_id = current_user.get("company_id", "default")
         user_email = current_user.get("email", "unknown")
+        
+        # Create transaction data for validation
+        transaction_data = {
+            "product_id": line.product_id,
+            "quantity": float(line.quantity),
+            "transaction_type": "TRANSFER",
+            "warehouse_id": 0,  # Placeholder, will be set later
+            "reference": f"transfer-{transfer_id}",
+            "adjustment_reason": "Stock Transfer"
+        }
+        
+        # Validate inventory transaction data
+        validator = get_business_logic_validator(db, company_id)
+        validated_data = validator.validate_inventory_transaction(transaction_data)
         
         line_query = text("""
             SELECT COALESCE(MAX(line_number), 0) + 1
@@ -163,8 +189,8 @@ async def add_stock_transfer_line(
         result = db.execute(insert_query, {
             "transfer_id": transfer_id,
             "line_number": next_line,
-            "product_id": line.product_id,
-            "quantity": line.quantity,
+            "product_id": validated_data['product_id'],
+            "quantity": validated_data['quantity'],
             "from_bin": line.from_bin,
             "to_bin": line.to_bin,
             "lot_number": line.lot_number,
@@ -177,9 +203,18 @@ async def add_stock_transfer_line(
         line_id = result.fetchone()[0]
         
         return {"id": line_id, "message": "Transfer line added successfully"}
+    except ValidationError as ve:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail=str(ve)
+        )
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"An error occurred while adding the transfer line: {str(e)}")
 
 
 @router.delete("/stock-transfer-line/{line_id}")
@@ -338,3 +373,93 @@ async def execute_stock_transfer(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+class StockTransferCreate(BaseModel):
+    """Stock transfer creation model"""
+    transfer_date: str
+    from_warehouse_id: int
+    to_warehouse_id: int
+    reference: Optional[str] = None
+    notes: Optional[str] = None
+
+
+@router.post("/stock-transfer")
+async def create_stock_transfer(
+    transfer_data: StockTransferCreate,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Create a new stock transfer with business logic validation"""
+    try:
+        company_id = current_user.get("company_id", "default")
+        user_email = current_user.get("email", "unknown")
+        
+        # Validate warehouses exist
+        warehouse_query = text("""
+            SELECT COUNT(*) FROM warehouses 
+            WHERE id IN (:from_warehouse_id, :to_warehouse_id) 
+            AND company_id = :company_id
+        """)
+        
+        result = db.execute(warehouse_query, {
+            "from_warehouse_id": transfer_data.from_warehouse_id,
+            "to_warehouse_id": transfer_data.to_warehouse_id,
+            "company_id": company_id
+        }).fetchone()
+        
+        if result[0] != 2:
+            raise HTTPException(
+                status_code=400,
+                detail="One or both warehouses not found or not accessible"
+            )
+        
+        # Generate transfer number
+        counter_query = text("""
+            SELECT COALESCE(MAX(CAST(SUBSTRING(transfer_number FROM 5) AS INTEGER)), 0) + 1
+            FROM stock_transfers
+            WHERE company_id = :company_id AND transfer_number LIKE 'TRF-%'
+        """)
+        
+        result = db.execute(counter_query, {"company_id": company_id}).fetchone()
+        next_number = result[0] if result[0] else 1
+        transfer_number = f"TRF-{next_number:06d}"
+        
+        # Insert new transfer
+        insert_query = text("""
+            INSERT INTO stock_transfers (
+                transfer_number, transfer_date, from_warehouse_id, to_warehouse_id,
+                reference, notes, status, company_id, created_by, created_at
+            ) VALUES (
+                :transfer_number, :transfer_date, :from_warehouse_id, :to_warehouse_id,
+                :reference, :notes, 'DRAFT', :company_id, :created_by, NOW()
+            ) RETURNING id
+        """)
+        
+        result = db.execute(insert_query, {
+            "transfer_number": transfer_number,
+            "transfer_date": transfer_data.transfer_date,
+            "from_warehouse_id": transfer_data.from_warehouse_id,
+            "to_warehouse_id": transfer_data.to_warehouse_id,
+            "reference": transfer_data.reference,
+            "notes": transfer_data.notes,
+            "company_id": company_id,
+            "created_by": user_email
+        })
+        
+        db.commit()
+        transfer_id = result.fetchone()[0]
+        
+        return {
+            "id": transfer_id,
+            "transfer_number": transfer_number,
+            "message": "Stock transfer created successfully"
+        }
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500, 
+            detail=f"An error occurred while creating the stock transfer: {str(e)}"
+        )
