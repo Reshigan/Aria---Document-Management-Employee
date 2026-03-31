@@ -8,6 +8,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { AvatarProvider } from '@/components/erp/avatar-bot'
 import App from './App'
 import './globals.css'
+import './styles/holographic.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {

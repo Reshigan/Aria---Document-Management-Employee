@@ -42,7 +42,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { AvatarFloatingButton } from './avatar-bot'
+import { AvatarFloatingButton } from '@/components/erp/avatar-bot'
 
 interface Module {
   id: string
