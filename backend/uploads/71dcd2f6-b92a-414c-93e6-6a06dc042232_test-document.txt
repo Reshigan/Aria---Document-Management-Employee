@@ -1,3 +1,0 @@
-This is a test document for upload functionality.
-It contains sample text to verify the document management system.
-Created on: 2025-10-16

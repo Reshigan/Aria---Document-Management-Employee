@@ -1,3 +1,0 @@
-This is a test document for ARIA system.
-Testing document upload functionality.
-Document Processing System v2.0

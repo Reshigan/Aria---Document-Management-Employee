@@ -1,0 +1,124 @@
+# Dependencies
+node_modules/
+backend/venv/
+backend/__pycache__/
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+frontend/build/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+logs/
+backend.log
+server.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+dist/
+build/
+*.tar.gz
+*.zip
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Test files
+coverage/
+.coverage
+.pytest_cache/
+test-results/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Package files
+*.egg-info/
+.eggs/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Runtime files
+*.pid
+*.sock
+
+# Python cache files
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Backup files
+*.backup
+*.backup_*
+*.bak
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Private keys and sensitive files
+*.pem
+*.key
+*.ppk
+.env
+.env.local
+*.p12
+*.pfx
+
+
+# Test reports
+*.json
+phase1_test_report_*.json
+
+# Old/backup files
+*_old.py
+
+# Security - Never commit tokens or secrets
+admin_token.txt
+*_token.txt
+*.token
+secrets.json
+credentials.json
+
+# Sensitive configuration
+.env.production
+.env.staging
+temp_keys.txt
+*.keys
+*.secrets

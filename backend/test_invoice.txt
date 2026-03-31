@@ -1,8 +1,0 @@
-INVOICE
-Invoice Number: INV-2024-001
-Date: 2024-10-13
-Amount: R1,500.00
-Vendor: Test Supplier
-Description: Office supplies for October 2024
-VAT: R195.00
-Total: R1,695.00

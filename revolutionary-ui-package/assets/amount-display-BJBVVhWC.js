@@ -1,0 +1,1 @@
+import{j as o,W as a,s as m}from"./index-BAC0DUbF.js";function i({amount:s,currency:e="ZAR",className:r,size:t="md"}){const n=s<0;return o.jsx("span",{className:m("font-mono tabular-nums text-right",n?"text-destructive":"text-foreground",t==="sm"&&"text-sm",t==="md"&&"text-base",t==="lg"&&"text-lg font-semibold",r),children:a(s,e)})}export{i as A};

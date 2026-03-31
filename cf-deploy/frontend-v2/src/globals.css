@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === ARIA ERP Design Tokens — Light Mode === */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 72% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 44%;
+    --warning-foreground: 0 0% 100%;
+
+    --accent-gold: 43 66% 48%;
+    --accent-gold-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 217 19% 27%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+
+    /* Module Accent Colors */
+    --module-finance: 221 83% 53%;
+    --module-sales: 263 70% 58%;
+    --module-procurement: 189 94% 37%;
+    --module-hr: 160 84% 31%;
+    --module-manufacturing: 38 92% 44%;
+    --module-reports: 239 84% 67%;
+    --module-admin: 215 14% 34%;
+    --module-aria: 43 66% 48%;
+  }
+
+  .dark {
+    /* === ARIA ERP Design Tokens — Dark Mode === */
+    --background: 222 55% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 69% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --accent-gold: 45 66% 52%;
+    --accent-gold-foreground: 0 0% 100%;
+
+    --border: 217 19% 27%;
+    --input: 217 19% 27%;
+    --ring: 217 91% 60%;
+
+    /* Sidebar */
+    --sidebar-background: 222 55% 5%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 217 19% 20%;
+    --sidebar-accent: 217 33% 14%;
+    --sidebar-accent-foreground: 210 40% 98%;
+
+    /* Module Accent Colors — Dark */
+    --module-finance: 213 94% 68%;
+    --module-sales: 262 83% 74%;
+    --module-procurement: 187 92% 69%;
+    --module-hr: 160 72% 53%;
+    --module-manufacturing: 48 96% 53%;
+    --module-reports: 234 89% 74%;
+    --module-admin: 215 16% 65%;
+    --module-aria: 45 66% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  /* Tabular numbers for financial data */
+  .font-mono, .tabular-nums {
+    font-feature-settings: "tnum" 1, "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
