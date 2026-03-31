@@ -10,12 +10,12 @@ output_directory = "frontend-v2/dist"
 
 # Environment variables for production
 [env.production]
-VITE_API_URL = "https://aria-api.reshigan-085.workers.dev"
+VITE_API_URL = "https://aria.vantax.co.za/api"
 VITE_APP_NAME = "Aria ERP"
 VITE_APP_VERSION = "2.0.0"
 
 # Environment variables for preview (uses production API — no separate preview worker deployed)
 [env.preview]
-VITE_API_URL = "https://aria-api.reshigan-085.workers.dev"
+VITE_API_URL = "https://aria.vantax.co.za/api"
 VITE_APP_NAME = "Aria ERP (Preview)"
 VITE_APP_VERSION = "2.0.0"
