@@ -9,6 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
 from core.database import Base, engine
+from core.exceptions import add_exception_handlers
+from core.middleware import DatabaseSessionMiddleware, RequestContextMiddleware
 
 # API Routes
 from app.api import auth, customers, suppliers, invoices, accounts, payments, dashboard, bots
@@ -39,6 +41,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add centralized exception handlers
+add_exception_handlers(app)
+
+# Add middleware for database sessions and request context
+app.add_middleware(DatabaseSessionMiddleware)
+app.add_middleware(RequestContextMiddleware)
 
 # Create database tables
 @app.on_event("startup")
