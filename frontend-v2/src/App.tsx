@@ -99,25 +99,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   // Use revolutionary holographic layout when enabled
   const LayoutComponent = ENABLE_REVOLUTIONARY_UI ? HolographicLayout : MainLayout
   
-  // TEMP DEBUGGING: Skip authentication for testing revolutionary UI
-  // In production, you would want to keep ProtectedRoute
-  const isAuthenticated = true; // Force authentication for testing
-  
-  // VISUAL INDICATOR TO CONFIRM REVOLUTIONARY UI IS ACTIVE
-  const uiIndicator = ENABLE_REVOLUTIONARY_UI ? 
-    "REVOLUTIONARY-UI-ACTIVE-HOLOGRAPHIC-FLOATING-MODULES" : 
-    "CLASSIC-UI-ACTIVE";
-  
   return (
-    <div>
-      {/* Debug indicator - REMOVE IN PRODUCTION */}
-      <div style={{position: 'fixed', top: 0, left: 0, zIndex: 9999, background: 'red', color: 'white', padding: '5px', fontSize: '10px'}}>
-        {uiIndicator}
-      </div>
-      <LayoutComponent>
-        <Suspense fallback={<PageLoader />}>{children}</Suspense>
-      </LayoutComponent>
-    </div>
+    <LayoutComponent>
+      <Suspense fallback={<PageLoader />}>{children}</Suspense>
+    </LayoutComponent>
   )
 }
 

@@ -1,43 +1,25 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   LayoutDashboard, 
-  DollarSign, 
   ShoppingCart, 
-  Truck, 
   Users, 
   Factory,
   BarChart3, 
   Settings, 
-  Bot, 
-  MessageSquare, 
-  FileText, 
-  CreditCard, 
   Landmark, 
-  Wallet, 
-  Package, 
-  Warehouse,
-  ClipboardList, 
-  UserCog, 
-  CalendarDays, 
-  Shield, 
-  Receipt, 
-  ArrowLeftRight,
-  BookOpen, 
-  PieChart, 
   Briefcase, 
-  HardHat, 
-  Wrench,
   X,
   Search,
   Bell,
   HelpCircle,
   User,
-  Menu,
-  Grid,
-  Zap
+  Zap,
+  ChevronRight,
+  MessageSquare
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -49,392 +31,405 @@ interface Module {
   name: string
   icon: React.ReactNode
   color: string
+  glowColor: string
   description: string
-  position: { x: number; y: number; z: number }
-  size: number
-  connections: string[]
-}
-
-interface ViewportState {
-  zoom: number
-  rotation: { x: number; y: number }
-  position: { x: number; y: number }
-  activeModule: string | null
+  route: string
+  subRoutes: { name: string; route: string }[]
 }
 
 export function HolographicLayout({ children }: { children: React.ReactNode }) {
-  const [viewport, setViewport] = useState<ViewportState>({
-    zoom: 1,
-    rotation: { x: 0, y: 0 },
-    position: { x: 0, y: 0 },
-    activeModule: null
-  })
-  
-  const [searchOpen, setSearchOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
   const [searchQuery, setSearchQuery] = useState('')
-  const [notifications, setNotifications] = useState(3)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [expandedModule, setExpandedModule] = useState<string | null>(null)
+  const [notifications] = useState(3)
+  const sidebarRef = useRef<HTMLDivElement>(null)
 
-  // Revolutionary 3D module structure
-  const modules: Module[] = [
+  const modules: Module[] = useMemo(() => [
     {
       id: 'dashboard',
       name: 'Executive Dashboard',
-      icon: <LayoutDashboard className="h-6 w-6" />,
+      icon: <LayoutDashboard className="h-5 w-5" />,
       color: 'from-blue-500 to-cyan-500',
-      description: 'Central command center with real-time KPIs',
-      position: { x: 0, y: 0, z: 0 },
-      size: 120,
-      connections: ['finance', 'sales', 'operations']
+      glowColor: 'rgba(59, 130, 246, 0.3)',
+      description: 'Real-time KPIs & insights',
+      route: '/',
+      subRoutes: [
+        { name: 'Executive Overview', route: '/' },
+        { name: 'ERP Dashboard', route: '/erp-dashboard' },
+      ]
     },
     {
       id: 'finance',
       name: 'Finance Hub',
-      icon: <Landmark className="h-6 w-6" />,
+      icon: <Landmark className="h-5 w-5" />,
       color: 'from-emerald-500 to-teal-500',
-      description: 'Complete financial management ecosystem',
-      position: { x: -200, y: -100, z: -50 },
-      size: 100,
-      connections: ['dashboard', 'sales', 'procurement']
+      glowColor: 'rgba(16, 185, 129, 0.3)',
+      description: 'Accounting & treasury',
+      route: '/finance/general-ledger',
+      subRoutes: [
+        { name: 'General Ledger', route: '/finance/general-ledger' },
+        { name: 'Chart of Accounts', route: '/finance/chart-of-accounts' },
+        { name: 'Journal Entries', route: '/finance/journal-entries' },
+        { name: 'AR Invoices', route: '/finance/ar-invoices' },
+        { name: 'AP Bills', route: '/finance/ap-bills' },
+        { name: 'Payments', route: '/finance/payments' },
+        { name: 'Receipts', route: '/finance/receipts' },
+        { name: 'Bank Accounts', route: '/finance/bank-accounts' },
+        { name: 'Reconciliation', route: '/finance/reconciliation' },
+      ]
     },
     {
       id: 'sales',
       name: 'Sales Operations',
-      icon: <ShoppingCart className="h-6 w-6" />,
+      icon: <ShoppingCart className="h-5 w-5" />,
       color: 'from-purple-500 to-fuchsia-500',
-      description: 'Customer relationships and revenue generation',
-      position: { x: 200, y: -100, z: -50 },
-      size: 100,
-      connections: ['dashboard', 'finance', 'operations']
+      glowColor: 'rgba(168, 85, 247, 0.3)',
+      description: 'CRM & revenue',
+      route: '/sales/customers',
+      subRoutes: [
+        { name: 'Customers', route: '/sales/customers' },
+        { name: 'Quotes', route: '/sales/quotes' },
+        { name: 'Sales Orders', route: '/sales/orders' },
+        { name: 'Deliveries', route: '/sales/deliveries' },
+      ]
     },
     {
       id: 'procurement',
-      name: 'Procurement Network',
-      icon: <Briefcase className="h-6 w-6" />,
+      name: 'Procurement',
+      icon: <Briefcase className="h-5 w-5" />,
       color: 'from-amber-500 to-orange-500',
-      description: 'Supply chain and vendor management',
-      position: { x: -200, y: 100, z: -50 },
-      size: 100,
-      connections: ['finance', 'operations']
+      glowColor: 'rgba(245, 158, 11, 0.3)',
+      description: 'Supply chain & vendors',
+      route: '/procurement/suppliers',
+      subRoutes: [
+        { name: 'Suppliers', route: '/procurement/suppliers' },
+        { name: 'Purchase Orders', route: '/procurement/purchase-orders' },
+        { name: 'Goods Receipts', route: '/procurement/goods-receipts' },
+      ]
     },
     {
       id: 'operations',
-      name: 'Operations Center',
-      icon: <Factory className="h-6 w-6" />,
+      name: 'Operations',
+      icon: <Factory className="h-5 w-5" />,
       color: 'from-rose-500 to-pink-500',
-      description: 'Manufacturing and inventory operations',
-      position: { x: 200, y: 100, z: -50 },
-      size: 100,
-      connections: ['sales', 'procurement', 'people']
+      glowColor: 'rgba(244, 63, 94, 0.3)',
+      description: 'Manufacturing & inventory',
+      route: '/operations/products',
+      subRoutes: [
+        { name: 'Products', route: '/operations/products' },
+        { name: 'Warehouses', route: '/operations/warehouses' },
+        { name: 'Stock Movements', route: '/operations/stock-movements' },
+        { name: 'BOMs', route: '/operations/boms' },
+        { name: 'Work Orders', route: '/operations/work-orders' },
+        { name: 'Manufacturing', route: '/operations/manufacturing' },
+      ]
     },
     {
       id: 'people',
-      name: 'People Dynamics',
-      icon: <Users className="h-6 w-6" />,
+      name: 'People',
+      icon: <Users className="h-5 w-5" />,
       color: 'from-indigo-500 to-blue-500',
-      description: 'Human resources and workforce management',
-      position: { x: 0, y: 200, z: -100 },
-      size: 100,
-      connections: ['operations', 'reports']
+      glowColor: 'rgba(99, 102, 241, 0.3)',
+      description: 'HR & workforce',
+      route: '/people/employees',
+      subRoutes: [
+        { name: 'Employees', route: '/people/employees' },
+        { name: 'Departments', route: '/people/departments' },
+        { name: 'Leave', route: '/people/leave' },
+        { name: 'Payroll', route: '/people/payroll' },
+        { name: 'Attendance', route: '/people/attendance' },
+      ]
     },
     {
       id: 'reports',
-      name: 'Analytics Studio',
-      icon: <BarChart3 className="h-6 w-6" />,
+      name: 'Analytics',
+      icon: <BarChart3 className="h-5 w-5" />,
       color: 'from-violet-500 to-purple-500',
-      description: 'Business intelligence and reporting',
-      position: { x: 0, y: -200, z: -100 },
-      size: 100,
-      connections: ['dashboard', 'people']
+      glowColor: 'rgba(139, 92, 246, 0.3)',
+      description: 'BI & reporting',
+      route: '/reports/financial',
+      subRoutes: [
+        { name: 'Financial Reports', route: '/reports/financial' },
+        { name: 'Sales Report', route: '/reports/sales' },
+        { name: 'Procurement Report', route: '/reports/procurement' },
+        { name: 'HR Report', route: '/reports/hr' },
+        { name: 'Bots Dashboard', route: '/reports/bots' },
+      ]
     },
     {
       id: 'admin',
-      name: 'System Control',
-      icon: <Settings className="h-6 w-6" />,
+      name: 'System',
+      icon: <Settings className="h-5 w-5" />,
       color: 'from-slate-500 to-gray-500',
-      description: 'Configuration and administration',
-      position: { x: -300, y: 0, z: -150 },
-      size: 80,
-      connections: ['dashboard']
+      glowColor: 'rgba(100, 116, 139, 0.3)',
+      description: 'Configuration',
+      route: '/admin/company',
+      subRoutes: [
+        { name: 'Company Settings', route: '/admin/company' },
+        { name: 'Users', route: '/admin/users' },
+        { name: 'Tax Rates', route: '/admin/tax-rates' },
+        { name: 'Compliance', route: '/admin/compliance' },
+        { name: 'Bot Config', route: '/admin/bots' },
+      ]
     },
     {
-      id: 'bots',
-      name: 'AI Orchestra',
-      icon: <Bot className="h-6 w-6" />,
+      id: 'ask-aria',
+      name: 'Ask Aria',
+      icon: <MessageSquare className="h-5 w-5" />,
       color: 'from-cyan-500 to-blue-500',
-      description: 'Intelligent automation agents',
-      position: { x: 300, y: 0, z: -150 },
-      size: 80,
-      connections: ['dashboard', 'admin']
+      glowColor: 'rgba(6, 182, 212, 0.3)',
+      description: 'AI assistant',
+      route: '/ask-aria',
+      subRoutes: []
     }
-  ]
+  ], [])
 
-  // Handle mouse movement for 3D effect
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!containerRef.current) return
-    
-    const rect = containerRef.current.getBoundingClientRect()
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
-    const mouseX = e.clientX - rect.left - centerX
-    const mouseY = e.clientY - rect.top - centerY
-    
-    // Subtle rotation based on mouse position
-    setViewport(prev => ({
-      ...prev,
-      rotation: {
-        x: mouseY * 0.05,
-        y: mouseX * 0.05
-      }
-    }))
+  const isModuleActive = (module: Module) => {
+    if (module.route === '/' && location.pathname === '/') return true
+    if (module.subRoutes.some(sub => sub.route === location.pathname)) return true
+    const prefix = module.route.split('/').slice(0, 2).join('/')
+    if (prefix !== '/' && location.pathname.startsWith(prefix)) return true
+    return false
   }
 
-  // Handle zoom with scroll
-  const handleWheel = (e: React.WheelEvent) => {
-    setViewport(prev => ({
-      ...prev,
-      zoom: Math.max(0.5, Math.min(2, prev.zoom - e.deltaY * 0.001))
-    }))
+  const isSubRouteActive = (route: string) => location.pathname === route
+
+  const handleModuleClick = (module: Module) => {
+    if (expandedModule === module.id) {
+      navigate(module.route)
+    } else {
+      setExpandedModule(module.id)
+    }
   }
 
-  // Navigation handler
-  const navigateToModule = (moduleId: string) => {
-    setViewport(prev => ({
-      ...prev,
-      activeModule: moduleId
-    }))
-    
-    // In a real implementation, this would navigate to the actual route
-    console.log(`Navigating to module: ${moduleId}`)
+  const handleSubRouteClick = (route: string) => {
+    navigate(route)
   }
 
-  // Filter modules based on search
-  const filteredModules = searchQuery 
-    ? modules.filter(module => 
+  const filteredModules = searchQuery
+    ? modules.filter(module =>
         module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        module.description.toLowerCase().includes(searchQuery.toLowerCase())
+        module.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        module.subRoutes.some(sub => sub.name.toLowerCase().includes(searchQuery.toLowerCase()))
       )
-    : modules.slice(0, 5)
+    : modules
+
+  const filteredSubRoutes = searchQuery
+    ? modules.flatMap(module =>
+        module.subRoutes
+          .filter(sub => sub.name.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map(sub => ({ ...sub, moduleName: module.name, moduleColor: module.color }))
+      )
+    : []
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-background to-secondary/20">
-      {/* Holographic Navigation Space */}
-      <div 
-        ref={containerRef}
-        className="relative w-80 bg-gradient-to-b from-secondary/10 to-background border-r border-border overflow-hidden"
-        onMouseMove={handleMouseMove}
-        onWheel={handleWheel}
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* Holographic Sidebar Navigation */}
+      <div
+        ref={sidebarRef}
+        className="relative w-72 flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-r border-white/5 overflow-hidden"
       >
-        {/* Ambient background particles */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
+        {/* Ambient particles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {[...Array(15)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 rounded-full bg-primary/20"
+              className="absolute w-1 h-1 rounded-full bg-blue-400/20"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                left: `${(i * 7 + 10) % 100}%`,
+                top: `${(i * 13 + 5) % 100}%`,
               }}
               animate={{
-                y: [0, Math.random() * 100 - 50],
-                opacity: [0.2, 0.8, 0.2]
+                y: [0, -30, 0],
+                opacity: [0.1, 0.5, 0.1]
               }}
               transition={{
-                duration: 3 + Math.random() * 5,
+                duration: 4 + (i % 3) * 2,
                 repeat: Infinity,
-                delay: Math.random() * 2
+                delay: (i % 5) * 0.8
               }}
             />
           ))}
         </div>
 
-        {/* 3D Module Visualization */}
-        <div className="relative h-full flex items-center justify-center perspective-1000">
-          <motion.div
-            className="relative w-full h-3/4"
-            style={{
-              transform: `rotateX(${viewport.rotation.x}deg) rotateY(${viewport.rotation.y}deg) scale(${viewport.zoom})`,
-              transformStyle: 'preserve-3d'
-            }}
-          >
-            {modules.map((module) => {
-              const isActive = viewport.activeModule === module.id
-              const isConnected = viewport.activeModule 
-                ? module.connections.includes(viewport.activeModule) || viewport.activeModule === module.id
-                : false
-              
-              return (
-                <motion.div
-                  key={module.id}
-                  className={cn(
-                    'absolute cursor-pointer flex flex-col items-center justify-center rounded-2xl border backdrop-blur-sm transition-all duration-300',
-                    isActive 
-                      ? 'border-primary shadow-lg shadow-primary/25 z-10' 
-                      : isConnected 
-                        ? 'border-primary/50 z-5' 
-                        : 'border-border/50 z-0'
-                  )}
-                  style={{
-                    width: `${module.size}px`,
-                    height: `${module.size}px`,
-                    left: `calc(50% + ${module.position.x}px)`,
-                    top: `calc(50% + ${module.position.y}px)`,
-                    transform: `translate(-50%, -50%) translateZ(${module.position.z}px)`,
-                    background: isActive 
-                      ? `linear-gradient(135deg, hsl(var(--primary)/0.2), hsl(var(--primary)/0.1))` 
-                      : `linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--background)))`
-                  }}
-                  whileHover={{ scale: 1.05, zIndex: 20 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigateToModule(module.id)}
-                >
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${module.color} text-white mb-2`}>
-                    {module.icon}
-                  </div>
-                  <h3 className="font-semibold text-sm text-center px-2 truncate w-full">
-                    {module.name}
-                  </h3>
-                  <p className="text-xs text-muted-foreground text-center px-2 truncate w-full mt-1">
-                    {module.description}
-                  </p>
-                  
-                  {/* Connection lines */}
-                  {isActive && module.connections.map(connId => {
-                    const connectedModule = modules.find(m => m.id === connId)
-                    if (!connectedModule) return null
-                    
-                    return (
-                      <motion.div
-                        key={connId}
-                        className="absolute top-1/2 left-1/2 w-px bg-primary/30"
-                        style={{
-                          height: '100px',
-                          transform: `rotate(${Math.atan2(
-                            connectedModule.position.y - module.position.y,
-                            connectedModule.position.x - module.position.x
-                          )}rad) translateY(-50px)`,
-                          transformOrigin: 'top center'
-                        }}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      />
-                    )
-                  })}
-                </motion.div>
-              )
-            })}
-          </motion.div>
+        {/* Logo */}
+        <div className="relative z-10 px-5 py-4 border-b border-white/5">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <Zap className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-base font-bold text-white tracking-tight">ARIA ERP</h1>
+              <p className="text-[10px] text-blue-400/70 font-medium tracking-wider uppercase">Holographic Interface</p>
+            </div>
+          </div>
         </div>
 
-        {/* Quick Search and Controls */}
-        <div className="absolute bottom-4 left-4 right-4">
-          <AnimatePresence>
-            {searchOpen ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="mb-2"
+        {/* Search */}
+        <div className="relative z-10 px-3 py-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+            <Input
+              placeholder="Search modules..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-8 text-xs bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500/30"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 hover:text-white"
+                onClick={() => setSearchQuery('')}
               >
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search modules, features, help..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-10"
-                    autoFocus
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6"
-                    onClick={() => setSearchOpen(false)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                {searchQuery && (
-                  <div className="mt-2 bg-background/80 backdrop-blur rounded-lg border border-border max-h-40 overflow-y-auto">
-                    {filteredModules.map(module => (
-                      <Button
-                        key={module.id}
-                        variant="ghost"
-                        className="w-full justify-start h-12"
-                        onClick={() => {
-                          navigateToModule(module.id)
-                          setSearchOpen(false)
-                          setSearchQuery('')
-                        }}
-                      >
-                        <div className={`mr-3 p-1.5 rounded-md bg-gradient-to-br ${module.color}`}>
-                          {module.icon}
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium text-sm">{module.name}</p>
-                          <p className="text-xs text-muted-foreground">{module.description}</p>
-                        </div>
-                      </Button>
-                    ))}
-                    {filteredModules.length === 0 && (
-                      <div className="p-4 text-center text-muted-foreground">
-                        No modules found. Try a different search term.
-                      </div>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-            ) : (
-              <div className="flex gap-2">
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  className="flex-1"
-                  onClick={() => setSearchOpen(true)}
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8">
-                  <Grid className="h-4 w-4" />
-                </Button>
-              </div>
+                <X className="h-3 w-3" />
+              </Button>
             )}
-          </AnimatePresence>
+          </div>
+
+          {/* Search results for sub-routes */}
+          {searchQuery && filteredSubRoutes.length > 0 && (
+            <div className="mt-2 rounded-lg bg-white/5 border border-white/10 max-h-40 overflow-y-auto">
+              {filteredSubRoutes.map((sub) => (
+                <button
+                  key={sub.route}
+                  onClick={() => {
+                    handleSubRouteClick(sub.route)
+                    setSearchQuery('')
+                  }}
+                  className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <ChevronRight className="h-3 w-3 text-slate-500" />
+                  <span>{sub.name}</span>
+                  <span className="ml-auto text-[10px] text-slate-500">{sub.moduleName}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
+        {/* Module List */}
+        <nav className="relative z-10 flex-1 overflow-y-auto px-3 pb-3 space-y-1">
+          {filteredModules.map((module) => {
+            const active = isModuleActive(module)
+            const expanded = expandedModule === module.id
+
+            return (
+              <div key={module.id}>
+                {/* Module button */}
+                <button
+                  onClick={() => handleModuleClick(module)}
+                  className={cn(
+                    'w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 relative',
+                    active
+                      ? 'text-white'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  )}
+                >
+                  {/* Active glow */}
+                  {active && (
+                    <motion.div
+                      layoutId="activeModuleGlow"
+                      className="absolute inset-0 rounded-xl"
+                      style={{
+                        background: `linear-gradient(135deg, ${module.glowColor}, transparent)`,
+                        boxShadow: `0 0 20px ${module.glowColor}`,
+                      }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    />
+                  )}
+
+                  <div className={cn(
+                    'relative z-10 p-1.5 rounded-lg bg-gradient-to-br text-white shadow-md transition-transform duration-200',
+                    module.color,
+                    active ? 'scale-110' : 'group-hover:scale-105'
+                  )}>
+                    {module.icon}
+                  </div>
+
+                  <div className="relative z-10 flex-1 text-left">
+                    <p className="font-medium text-sm leading-tight">{module.name}</p>
+                    <p className="text-[10px] text-slate-500 group-hover:text-slate-400 leading-tight mt-0.5">
+                      {module.description}
+                    </p>
+                  </div>
+
+                  {module.subRoutes.length > 0 && (
+                    <ChevronRight className={cn(
+                      'relative z-10 h-3.5 w-3.5 text-slate-500 transition-transform duration-200',
+                      expanded && 'rotate-90'
+                    )} />
+                  )}
+                </button>
+
+                {/* Sub-routes */}
+                <AnimatePresence>
+                  {expanded && module.subRoutes.length > 0 && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="ml-5 pl-4 border-l border-white/10 py-1 space-y-0.5">
+                        {module.subRoutes.map((sub) => {
+                          const subActive = isSubRouteActive(sub.route)
+                          return (
+                            <button
+                              key={sub.route}
+                              onClick={() => handleSubRouteClick(sub.route)}
+                              className={cn(
+                                'w-full text-left px-3 py-1.5 rounded-lg text-xs transition-all duration-150',
+                                subActive
+                                  ? 'text-white bg-white/10 font-medium'
+                                  : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                              )}
+                            >
+                              {sub.name}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )
+          })}
+        </nav>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-950 to-transparent pointer-events-none z-20" />
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navigation Bar - Minimalist */}
+        {/* Top Bar */}
         <header className="border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex items-center justify-between px-6 py-3">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                ARIA ERP
-              </h1>
+            <div className="flex items-center gap-3">
               <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-                <Zap className="h-4 w-4" />
-                <span>Revolutionary Interface Active</span>
+                <Zap className="h-4 w-4 text-blue-500" />
+                <span className="font-medium">Holographic Interface Active</span>
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="relative h-9 w-9">
+                <Bell className="h-4 w-4" />
                 {notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive text-[8px] text-white flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[9px] text-white flex items-center justify-center font-medium">
                     {notifications}
                   </span>
                 )}
               </Button>
-              <Button variant="ghost" size="icon">
-                <HelpCircle className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <HelpCircle className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <User className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -446,7 +441,7 @@ export function HolographicLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      {/* Revolutionary Avatar Bot */}
+      {/* Avatar Bot */}
       <AvatarFloatingButton />
     </div>
   )
