@@ -18,15 +18,8 @@ REFRESH_TOKEN = "refresh"
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
-    Verify a password against a hash
+    Verify a password against a hash using bcrypt only
     """
-    # Temporary fix: use SHA256 for testing
-    import hashlib
-    test_hash = hashlib.sha256(plain_password.encode()).hexdigest()
-    if test_hash == hashed_password:
-        return True
-    
-    # Fallback to bcrypt for existing passwords
     try:
         return pwd_context.verify(plain_password, hashed_password)
     except Exception:

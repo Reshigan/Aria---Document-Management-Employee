@@ -48,7 +48,9 @@ def log_audit_event(
         
         db.commit()
     except Exception as e:
-        print(f"Failed to log audit event: {e}")
+        # Log audit failures but don't crash auth flow
+        import logging
+        logging.error(f"❌ Failed to log audit event: {e}")
         db.rollback()
 
 def get_client_ip(request: Request) -> str:
