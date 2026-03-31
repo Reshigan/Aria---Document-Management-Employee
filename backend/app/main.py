@@ -92,6 +92,10 @@ app.include_router(procure_to_pay_pg.router, prefix=settings.API_V1_PREFIX)
 # Document Management
 app.include_router(document_api.router, prefix=settings.API_V1_PREFIX)
 
+# Super Admin API
+from app.api import super_admin
+app.include_router(super_admin.router, prefix=settings.API_V1_PREFIX)
+
 # Reports & Search
 app.include_router(search.router, prefix=settings.API_V1_PREFIX)
 app.include_router(reports.router, prefix=settings.API_V1_PREFIX)
