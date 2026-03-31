@@ -12,6 +12,14 @@ from core.database import Base, engine
 
 # API Routes
 from app.api import auth, customers, suppliers, invoices, accounts, payments, dashboard, bots
+from app.api import ap, crm, banking, search, reports, vat, user_management, backup_recovery
+from app.api import master_data_pg, order_to_cash_pg, procure_to_pay_pg
+from app.api import hr_payroll_pg
+from app.api import documents as document_api
+
+# Admin Config Routes
+from app.api import workflow_admin_config, quality_admin_config, manufacturing_admin_config
+from app.api import payroll_hr_admin_config, ar_ap_banking_admin_config
 
 # Create FastAPI app
 app = FastAPI(
@@ -42,7 +50,7 @@ async def startup_event():
 
 # Include API routers
 
- # from api import hr
+# Core ERP Modules
 app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
 app.include_router(customers.router, prefix=settings.API_V1_PREFIX)
 app.include_router(suppliers.router, prefix=settings.API_V1_PREFIX)
@@ -51,7 +59,47 @@ app.include_router(accounts.router, prefix=settings.API_V1_PREFIX)
 app.include_router(payments.router, prefix=settings.API_V1_PREFIX)
 app.include_router(dashboard.router, prefix=settings.API_V1_PREFIX)
 app.include_router(bots.router, prefix=settings.API_V1_PREFIX)
- # app.include_router(hr.router, prefix=settings.API_V1_PREFIX)
+
+# Accounts Payable & Receivable
+app.include_router(ap.router, prefix=settings.API_V1_PREFIX)
+
+# HR & Payroll (multiple routers)
+app.include_router(hr_payroll_pg.payroll_runs_router, prefix="")
+app.include_router(hr_payroll_pg.leave_requests_router, prefix="")
+
+# CRM, Banking, and other modules
+from app.api import crm_pg, banking_pg, inventory_pg, fixed_assets_pg, manufacturing_pg
+app.include_router(crm_pg.router, prefix=settings.API_V1_PREFIX)
+app.include_router(banking_pg.router, prefix=settings.API_V1_PREFIX)
+app.include_router(inventory_pg.router, prefix=settings.API_V1_PREFIX)
+app.include_router(fixed_assets_pg.router, prefix=settings.API_V1_PREFIX)
+app.include_router(manufacturing_pg.router, prefix=settings.API_V1_PREFIX)
+
+# Master Data and Business Processes
+app.include_router(master_data_pg.router, prefix=settings.API_V1_PREFIX)
+app.include_router(order_to_cash_pg.router, prefix=settings.API_V1_PREFIX)
+app.include_router(procure_to_pay_pg.router, prefix=settings.API_V1_PREFIX)
+
+# Document Management
+app.include_router(document_api.router, prefix=settings.API_V1_PREFIX)
+
+# Reports & Search
+app.include_router(search.router, prefix=settings.API_V1_PREFIX)
+app.include_router(reports.router, prefix=settings.API_V1_PREFIX)
+
+# Compliance
+app.include_router(vat.router, prefix=settings.API_V1_PREFIX)
+
+# Administrative Functions
+app.include_router(user_management.router, prefix=settings.API_V1_PREFIX)
+app.include_router(backup_recovery.router, prefix=settings.API_V1_PREFIX)
+
+# Admin Configuration
+app.include_router(workflow_admin_config.router, prefix=settings.API_V1_PREFIX)
+app.include_router(quality_admin_config.router, prefix=settings.API_V1_PREFIX)
+app.include_router(manufacturing_admin_config.router, prefix=settings.API_V1_PREFIX)
+app.include_router(payroll_hr_admin_config.router, prefix=settings.API_V1_PREFIX)
+app.include_router(ar_ap_banking_admin_config.router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/")
 async def root():
