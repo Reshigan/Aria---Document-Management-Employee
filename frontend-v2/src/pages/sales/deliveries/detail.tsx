@@ -79,7 +79,7 @@ export default function DeliveryDetail() {
   if (error) return <div>Error loading delivery</div>
   if (!delivery) return <div>Delivery not found</div>
 
-  const statusVariant = delivery.status === 'delivered' ? 'success' : delivery.status === 'shipped' ? 'posted' : 'draft'
+  const statusVariant = delivery.status === 'delivered' ? 'paid' : delivery.status === 'shipped' ? 'posted' : 'draft'
 
   const handlePrint = () => {
     window.open(`/api/go-live/pdf/delivery/${delivery.id}`, '_blank')
