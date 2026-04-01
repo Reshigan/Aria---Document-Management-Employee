@@ -45,6 +45,27 @@ jobs:
         working-directory: ./workers-api
         run: npm install --no-audit --no-fund
 
+      - name: Start dev server in background
+        working-directory: ./workers-api
+        run: |
+          npm run dev > server.log 2>&1 &
+          echo "Waiting for server to start..."
+          # Wait for server to be ready by checking if port 8787 is listening
+          timeout=30
+          while [ $timeout -gt 0 ]; do
+            if curl -s http://localhost:8787 > /dev/null 2>&1; then
+              echo "Server is ready!"
+              break
+            fi
+            sleep 1
+            timeout=$((timeout - 1))
+          done
+          if [ $timeout -eq 0 ]; then
+            echo "Server failed to start within 30 seconds"
+            cat server.log
+            exit 1
+          fi
+
       - name: Run tests
         working-directory: ./workers-api
         run: npm run test
