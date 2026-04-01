@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Menu, Bell, Search, LogOut, User, Settings } from 'lucide-react'
+import { Menu, Search, LogOut, User, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/erp/theme-toggle'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command'
 import { useSidebarStore } from '@/stores/sidebar-store'
 import { useAuthStore } from '@/stores/auth-store'
-import { Badge } from '@/components/ui/badge'
+import { NotificationPanel } from '@/components/layout/notification-panel'
 
 const commandItems = [
   { label: 'Executive Dashboard', path: '/', group: 'Navigate' },
@@ -94,10 +94,7 @@ export function TopBar() {
           </Button>
 
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative h-8 w-8">
-            <Bell className="h-4 w-4" />
-            <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]" variant="destructive">3</Badge>
-          </Button>
+          <NotificationPanel />
 
           <ThemeToggle />
 

@@ -28,8 +28,10 @@ const Reconciliation = lazy(() => import('@/pages/finance/reconciliation'))
 // Sales
 const Customers = lazy(() => import('@/pages/sales/customers'))
 const Quotes = lazy(() => import('@/pages/sales/quotes'))
+const QuoteDetail = lazy(() => import('@/pages/sales/quotes/detail'))
 const SalesOrders = lazy(() => import('@/pages/sales/orders'))
 const Deliveries = lazy(() => import('@/pages/sales/deliveries'))
+const DeliveryDetail = lazy(() => import('@/pages/sales/deliveries/detail'))
 
 // Procurement
 const Suppliers = lazy(() => import('@/pages/procurement/suppliers'))
@@ -138,8 +140,10 @@ export default function App() {
         {/* Sales */}
         <Route path="/sales/customers" element={<AppLayout><Customers /></AppLayout>} />
         <Route path="/sales/quotes" element={<AppLayout><Quotes /></AppLayout>} />
+        <Route path="/sales/quotes/:id" element={<AppLayout><QuoteDetail /></AppLayout>} />
         <Route path="/sales/orders" element={<AppLayout><SalesOrders /></AppLayout>} />
         <Route path="/sales/deliveries" element={<AppLayout><Deliveries /></AppLayout>} />
+        <Route path="/sales/deliveries/:id" element={<AppLayout><DeliveryDetail /></AppLayout>} />
 
         {/* Procurement */}
         <Route path="/procurement/suppliers" element={<AppLayout><Suppliers /></AppLayout>} />
