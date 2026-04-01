@@ -55,7 +55,7 @@ export default function Assets() {
       <PageHeader 
         title="Fixed Assets" 
         description="Manage company fixed assets and depreciation"
-        action={{ label: 'New Asset', onClick: () => {}, disabled: true }} 
+        action={{ label: 'New Asset', onClick: () => {} }} 
       />
       <DataTable 
         columns={columns} 

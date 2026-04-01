@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { AmountDisplay } from '@/components/erp/amount-display'
 import api from '@/lib/api'
 import { toast } from 'sonner'
+import { Plus } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 interface Budget {
@@ -59,7 +60,7 @@ export default function Budgets() {
       end_date: `${new Date().getFullYear()}-12-31`,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['budgets'])
+      queryClient.invalidateQueries({ queryKey: ['budgets'] })
       toast.success('Budget created successfully')
     },
     onError: (error: any) => {
@@ -79,7 +80,7 @@ export default function Budgets() {
         action={{ 
           label: 'New Budget', 
           onClick: handleCreateBudget,
-          loading: createMutation.isLoading
+          icon: createMutation.isPending ? undefined : <Plus className="h-4 w-4" />
         }} 
       />
       <DataTable 
