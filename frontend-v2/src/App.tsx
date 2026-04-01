@@ -58,6 +58,11 @@ const ProcurementReport = lazy(() => import('@/pages/reports/procurement-report'
 const HRReport = lazy(() => import('@/pages/reports/hr-report'))
 const BotsDashboard = lazy(() => import('@/pages/reports/bots-dashboard'))
 
+// Financial Planning
+const Budgets = lazy(() => import('@/pages/financial-planning/budgets'))
+const Assets = lazy(() => import('@/pages/financial-planning/assets'))
+const FinancialPlanningDashboard = lazy(() => import('@/pages/financial-planning/dashboard'))
+
 // Admin
 const CompanySettings = lazy(() => import('@/pages/admin/company-settings'))
 const Users = lazy(() => import('@/pages/admin/users'))
@@ -162,6 +167,11 @@ export default function App() {
         <Route path="/reports/procurement" element={<AppLayout><ProcurementReport /></AppLayout>} />
         <Route path="/reports/hr" element={<AppLayout><HRReport /></AppLayout>} />
         <Route path="/reports/bots" element={<AppLayout><BotsDashboard /></AppLayout>} />
+
+        {/* Financial Planning */}
+        <Route path="/financial-planning" element={<AppLayout><FinancialPlanningDashboard /></AppLayout>} />
+        <Route path="/financial-planning/budgets" element={<AppLayout><Budgets /></AppLayout>} />
+        <Route path="/financial-planning/assets" element={<AppLayout><Assets /></AppLayout>} />
 
         {/* Admin */}
         <Route path="/admin/company" element={<AppLayout><CompanySettings /></AppLayout>} />

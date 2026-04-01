@@ -158,6 +158,20 @@ export function HolographicLayout({ children }: { children: React.ReactNode }) {
       ]
     },
     {
+      id: 'financial-planning',
+      name: 'Financial Planning',
+      icon: <BarChart3 className="h-5 w-5" />,
+      color: 'from-emerald-500 to-teal-500',
+      glowColor: 'rgba(16, 185, 129, 0.3)',
+      description: 'Budgets & forecasts',
+      route: '/financial-planning',
+      subRoutes: [
+        { name: 'Dashboard', route: '/financial-planning' },
+        { name: 'Budget Management', route: '/financial-planning/budgets' },
+        { name: 'Fixed Assets', route: '/financial-planning/assets' },
+      ]
+    },
+    {
       id: 'admin',
       name: 'System',
       icon: <Settings className="h-5 w-5" />,
