@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { PageHeader } from '@/components/erp/page-header'
 import { DataTable } from '@/components/erp/data-table'
 import { Badge } from '@/components/ui/badge'
@@ -38,8 +38,22 @@ export default function Deliveries() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Deliveries" description="Outbound deliveries" action={{ label: 'New Delivery', onClick: () => navigate('/sales/deliveries/new') }} />
-      <DataTable columns={columns} data={data} searchKey="customer_name" searchPlaceholder="Search deliveries..." loading={isLoading} onRowClick={(row) => navigate(`/sales/deliveries/${row.id}`)} />
+      <PageHeader 
+        title="Deliveries" 
+        description="Outbound deliveries" 
+        action={{ 
+          label: 'New Delivery', 
+          onClick: () => navigate('/sales/deliveries/new') 
+        }} 
+      />
+      <DataTable 
+        columns={columns} 
+        data={data} 
+        searchKey="customer_name" 
+        searchPlaceholder="Search deliveries..." 
+        loading={isLoading} 
+        onRowClick={(row) => navigate(`/sales/deliveries/${row.id}`)} 
+      />
     </div>
   )
 }
