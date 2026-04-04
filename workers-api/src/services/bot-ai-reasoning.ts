@@ -2,6 +2,59 @@ interface AIBinding {
   run(model: string, options: { messages: Array<{role: string, content: string}>, max_tokens?: number, temperature?: number }): Promise<{ response?: string, text?: string }>;
 }
 
+interface BotMemory {
+  experiences: BotExperience[];
+  patterns: BotPattern[];
+  preferences: BotPreference[];
+  contextHistory: BotContextItem[];
+  knowledgeBase: BotKnowledge[];
+  recentResults?: BotExecutionResult[];
+}
+
+interface BotExperience {
+  id: string;
+  situation: string;
+  actionTaken: string;
+  outcome: string;
+  success: boolean;
+  timestamp: string;
+}
+
+interface BotPattern {
+  id: string;
+  patternType: string;
+  description: string;
+  frequency: number;
+  lastObserved: string;
+  importance: number; // 1-10
+}
+
+interface BotPreference {
+  id: string;
+  key: string;
+  value: any;
+  category: string;
+  lastUsed: string;
+  confidence: number; // 0-1 confidence level
+}
+
+interface BotContextItem {
+  id: string;
+  key: string;
+  value: any;
+  timestamp: string;
+  ttl?: number; // Time to live in seconds
+}
+
+interface BotKnowledge {
+  id: string;
+  domain: string;
+  fact: string;
+  source: string;
+  verified: boolean;
+  confidence: number;
+}
+
 interface BotContext {
   botId: string;
   botName: string;
@@ -9,6 +62,8 @@ interface BotContext {
   companyId: string;
   counts: Record<string, number>;
   config: Record<string, unknown>;
+  memory?: BotMemory;
+  recentResults?: BotExecutionResult[];
 }
 
 interface AIInsight {

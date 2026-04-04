@@ -7,11 +7,26 @@
  * 
  * This ensures bots actually run real business logic on schedule,
  * not just log "completed" without doing anything.
+ * 
+ * Enhanced with memory and learning capabilities.
  */
+
+import { BotMemoryService, getBotMemoryService } from './bot-memory-service';
+import { analyzeBeforeExecution, generateInsights } from './bot-ai-reasoning';
+
+// Initialize memory service for bots
+let botMemoryService: BotMemoryService | null = null;
+function getMemoryService(db: D1Database) {
+  if (!botMemoryService) {
+    botMemoryService = getBotMemoryService(db);
+  }
+  return botMemoryService;
+}
 
 interface Env {
   DB: D1Database;
   JWT_SECRET: string;
+  AI?: any;
 }
 
 interface BotExecutionResult {
@@ -3253,6 +3268,17 @@ export async function executeBotById(
         result = await executePayrollBot(companyId, config, db, userId, timestamp);
         break;
       
+      // Enhanced memory-aware bots with learning capabilities
+      case 'ar_collections_smart':
+        result = await executeSmartARCollectionsBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'invoice_reminder_adaptive':
+        result = await executeAdaptiveInvoiceReminderBot(companyId, config, db, userId, timestamp);
+        break;
+      case 'inventory_optimization_predictive':
+        result = await executePredictiveInventoryOptimizationBot(companyId, config, db, userId, timestamp);
+        break;
+      
       default:
         result = {
           success: true,
@@ -5674,6 +5700,701 @@ export async function executeDocumentControlBot(
       message: String(error),
       executed_at: timestamp,
       error: 'Failed to check document reviews'
+    };
+  }
+}
+
+// =============================================================================
+// ENHANCED MEMORY-AWARE BOT FUNCTIONS WITH LEARNING CAPABILITIES
+// =============================================================================
+
+/**
+ * Enhanced AR Collections Bot with Memory and Learning
+ * Uses past interaction history to personalize collection strategies
+ */
+export async function executeSmartARCollectionsBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  const botId = 'ar_collections_smart';
+  
+  try {
+    // Retrieve bot memory and learning experiences if available
+    const memoryService = getMemoryService(db);
+    const memories = await memoryService.retrieveMemories(botId, companyId, ['experience', 'pattern'], 10);
+    const preferences = await memoryService.loadPreferences(botId, companyId, 'collections_strategy');
+    
+    // Fetch overdue invoices and customer payment history
+    const overdueInvoices = await db.prepare(`
+      SELECT 
+        ci.id, ci.invoice_number, c.customer_name, ci.total_amount, ci.due_date,
+        -- Payment behavior metrics
+        (SELECT COUNT(*) FROM customer_payments cp WHERE cp.customer_id = c.id AND cp.payment_date < ci.due_date) as early_payments,
+        (SELECT COUNT(*) FROM customer_payments cp WHERE cp.customer_id = c.id AND cp.payment_date > ci.due_date) as late_payments,
+        (SELECT COUNT(*) FROM tasks t WHERE t.reference_id = ci.id AND t.type = 'collection_reminder') as reminders_sent
+      FROM customer_invoices ci
+      LEFT JOIN customers c ON ci.customer_id = c.id
+      WHERE ci.company_id = ? AND ci.status = 'sent' AND date(ci.due_date) < date('now')
+      ORDER BY date(ci.due_date) ASC
+      LIMIT 20
+    `).bind(companyId).all();
+
+    if (!overdueInvoices.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: botId,
+        company_id: companyId,
+        state_changed: false,
+        message: 'No overdue invoices found.',
+        executed_at: timestamp,
+      };
+    }
+
+    // Adaptive strategy based on customer history and memory
+    const adaptiveConfig = {
+      min_balance_for_priority: preferences?.min_balance_threshold || config.min_balance_threshold || 500,
+      follow_up_sequence: preferences?.follow_up_sequence || config.follow_up_sequence || ['email', 'sms', 'call'],
+      max_follow_ups: preferences?.max_follow_ups || config.max_follow_ups || 3,
+      ignore_recent_reminders: config.ignore_recent_reminders ?? true
+    };
+
+    const remindersCreated: string[] = [];
+    const learningExperiences: any[] = []; // Track what we learn from this execution
+    
+    for (const invoice of overdueInvoices.results as any[]) {
+      // Skip if recently reminded based on configuration
+      if (adaptiveConfig.ignore_recent_reminders && invoice.reminders_sent > 0) {
+        continue;
+      }
+
+      // Priority scoring based on amount and customer history
+      const isHighPriority = invoice.total_amount >= adaptiveConfig.min_balance_for_priority;
+      const customerRiskProfile = invoice.late_payments > invoice.early_payments ? 'high_risk' : 'normal';
+      
+      // Personalized escalation path for this customer
+      let escalationPath = [...adaptiveConfig.follow_up_sequence];
+      if (customerRiskProfile === 'high_risk') {
+        // High-risk customers get more aggressive follow-up
+        escalationPath = ['call', 'email', 'sms', 'legal'];
+      }
+
+      // Record learning opportunity: What worked in past similar situations?
+      const similarPastCases = memories.filter(mem => 
+        mem.content.customer_risk_profile === customerRiskProfile && 
+        Math.abs(mem.content.invoice_amount - invoice.total_amount) / invoice.total_amount < 0.2
+      );
+
+      // Generate personalized message using learning insights
+      const messageContext = similarPastCases.map(caseMem => 
+        `${caseMem.content.message_type}: ${caseMem.content.outcome}`
+      ).join('; ');
+
+      // Create the collection task with adaptive priority and strategy
+      const priority = isHighPriority ? 'high' : (customerRiskProfile === 'high_risk' ? 'urgent' : 'medium');
+      
+      const taskId = crypto.randomUUID();
+      await db.prepare(`
+        INSERT INTO tasks 
+        (id, type, reference_id, reference_type, company_id, status, description, priority, created_at, config)
+        VALUES (?, 'smart_collection_reminder', ?, 'invoice', ?, 'pending', ?, ?, datetime('now'), ?)
+      `).bind(
+        taskId,
+        invoice.id,
+        companyId,
+        `Smart collection reminder for ${invoice.customer_name} - Invoice ${invoice.invoice_number}
+         Amount: ${invoice.total_amount}
+         Days overdue: ${Math.floor((new Date().getTime() - new Date(invoice.due_date).getTime()) / (1000 * 60 * 60 * 24))}
+         Customer profile: ${customerRiskProfile}
+         Previous outcomes: ${messageContext.substring(0, 100)}
+         Recommended escalation path: ${escalationPath.join(', ')}`,
+        priority,
+        JSON.stringify({ 
+          escalation_path: escalationPath, 
+          customer_risk_profile: customerRiskProfile,
+          invoice_amount: invoice.total_amount,
+          days_overdue: Math.floor((new Date().getTime() - new Date(invoice.due_date).getTime()) / (1000 * 60 * 60 * 24))
+        })
+      ).run();
+      
+      remindersCreated.push(`${invoice.invoice_number} (${customerRiskProfile})`);
+      
+      // Store experience for learning
+      learningExperiences.push({
+        customer_name: invoice.customer_name,
+        customer_risk_profile: customerRiskProfile,
+        invoice_number: invoice.invoice_number,
+        invoice_amount: invoice.total_amount,
+        reminder_created_at: new Date().toISOString()
+      });
+    }
+
+    // Save learning from this execution
+    if (learningExperiences.length > 0) {
+      await memoryService.recordLearning(
+        botId,
+        companyId,
+        runId,
+        'success_pattern',
+        'Adaptive Collection Strategy Execution',
+        `${learningExperiences.length} collection reminders executed with adaptive strategies based on customer risk profiles`,
+        `Continue monitoring customer payment behaviors to refine escalation paths. Current strategy: ${
+          adaptiveConfig.follow_up_sequence.join(', ')
+        }. High priority threshold: R${adaptiveConfig.min_balance_for_priority}`,
+        'medium',
+        [],
+        0.7
+      );
+    }
+
+    // Record this execution pattern in bot memory
+    await memoryService.storeMemory(
+      botId,
+      companyId,
+      'experience',
+      {
+        execution_timestamp: timestamp,
+        reminders_created: remindersCreated.length,
+        customer_profiles: [...new Set(learningExperiences.map(exp => exp.customer_risk_profile))],
+        average_invoice_value: learningExperiences.reduce((sum, exp) => sum + exp.invoice_amount, 0) / (learningExperiences.length || 1),
+        total_value: learningExperiences.reduce((sum, exp) => sum + exp.invoice_amount, 0)
+      },
+      8 // High importance
+    );
+
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: botId,
+      company_id: companyId,
+      state_changed: true,
+      message: `Created ${remindersCreated.length} smart collection reminder(s) with adaptive strategies. Customers: ${remindersCreated.join(', ')}`,
+      executed_at: timestamp,
+      details: { 
+        reminders_created: remindersCreated,
+        total_value_at_risk: learningExperiences.reduce((sum, exp) => sum + exp.invoice_amount, 0),
+        customer_risk_distribution: learningExperiences.reduce((acc, exp) => {
+          acc[exp.customer_risk_profile] = (acc[exp.customer_risk_profile] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>)
+      }
+    };
+  } catch (error) {
+    // Log error to memory and continue learning from failures
+    const memoryService = getMemoryService(db);
+    await memoryService.recordLearning(
+      botId,
+      companyId,
+      runId,
+      'error_analysis',
+      'Smart AR Collections Execution Failed',
+      `Bot crashed during execution: ${String(error)}`,
+      'Investigate error and check database connectivity or query issues.',
+      'high',
+      [],
+      0.9
+    ).catch(() => {}); // Ignore errors in error handling
+    
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: botId,
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to process smart AR collections'
+    };
+  }
+}
+
+/**
+ * Enhanced Invoice Reminder Bot with Adaptive Messaging
+ * Learns from past reminder interactions to optimize timing and messaging
+ */
+export async function executeAdaptiveInvoiceReminderBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  const botId = 'invoice_reminder_adaptive';
+  
+  try {
+    // Retrieve memory for intelligent decision making
+    const memoryService = getMemoryService(db);
+    const memories = await memoryService.retrieveMemories(botId, companyId, ['pattern', 'knowledge_base'], 15);
+    const customerResponses = memories.filter(mem => mem.content.type === 'customer_response');
+    
+    // Fetch invoices coming due with payment history context
+    const upcomingDue = await db.prepare(`
+      SELECT 
+        ci.id, ci.invoice_number, c.customer_name, c.email, ci.total_amount, ci.due_date,
+        -- Response history metrics
+        (SELECT COUNT(*) FROM customer_payments cp WHERE cp.customer_id = c.id AND cp.payment_date <= ci.due_date) as timely_payments,
+        (SELECT COUNT(*) FROM customer_payments cp WHERE cp.customer_id = c.id AND cp.payment_date > ci.due_date) as late_payments
+      FROM customer_invoices ci
+      LEFT JOIN customers c ON ci.customer_id = c.id
+      WHERE ci.company_id = ? AND ci.status = 'sent' AND date(ci.due_date) BETWEEN date('now') AND date('now', '+14 days')
+      ORDER BY date(ci.due_date) ASC
+      LIMIT 25
+    `).bind(companyId).all();
+
+    if (!upcomingDue.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: botId,
+        company_id: companyId,
+        state_changed: false,
+        message: 'No invoices due soon.',
+        executed_at: timestamp,
+      };
+    }
+
+    // Analyze payment behavior patterns from memory
+    const paymentPatterns = customerResponses.reduce((patterns, response) => {
+      const customerId = response.content.customer_id;
+      patterns[customerId] = patterns[customerId] || { reminders: 0, payments: 0, typical_response_time: [] };
+      patterns[customerId].reminders++;
+      if (response.content.response_type === 'payment') {
+        patterns[customerId].payments++;
+        patterns[customerId].typical_response_time.push(response.content.days_to_payment);
+      }
+      return patterns;
+    }, {} as Record<string, any>);
+
+    // Adaptive reminder timing based on customer behavior
+    const remindersCreated: string[] = [];
+    const learningInsights: any[] = [];
+    
+    for (const invoice of upcomingDue.results as any[]) {
+      const customerId = invoice.email; // Use email as identifier for cross-reference
+      const customerPattern = paymentPatterns[customerId];
+      
+      // Intelligent timing decision
+      let reminderTiming = 7; // Default to 7 days before
+      if (customerPattern) {
+        const responseRate = customerPattern.payments / customerPattern.reminders;
+        if (responseRate > 0.8) {
+          // Good responders can get reminder closer to due date
+          reminderTiming = 3; 
+        } else if (responseRate < 0.3) {
+          // Poor responders get multiple reminders
+          reminderTiming = 10;
+        }
+        // For medium performers, keep to 7-day strategy
+      }
+
+      // Calculate optimal reminder date
+      const dueDate = new Date(invoice.due_date);
+      const reminderDate = new Date(dueDate);
+      reminderDate.setDate(dueDate.getDate() - reminderTiming);
+      
+      // Skip if reminder date hasn't arrived yet
+      if (reminderDate > new Date()) {
+        continue;
+      }
+
+      // Check if reminder already exists for this time period
+      const existingReminder = await db.prepare(`
+        SELECT id FROM tasks 
+        WHERE reference_id = ? AND type = 'adaptive_invoice_reminder' 
+        AND created_at > date('now', '-7 days')
+      `).bind(invoice.id).first();
+      
+      if (existingReminder) {
+        continue; // Prevent duplicate reminders
+      }
+
+      // Generate personalized message based on learning
+      let messageTemplate = `Friendly reminder: Invoice ${invoice.invoice_number} for R${invoice.total_amount} is due on ${invoice.due_date}`;
+      
+      // Customize for customer's response history
+      if (customerPattern) {
+        const responseRate = customerPattern.payments / customerPattern.reminders;
+        if (responseRate > 0.8) {
+          messageTemplate += `. Thank you for being such a prompt payer!`;
+        } else if (responseRate < 0.3) {
+          messageTemplate += `. We'd appreciate a quick payment to maintain smooth operations.`;
+        } else {
+          messageTemplate += `. As always, we appreciate your business.`;
+        }
+      }
+
+      // Create the reminder task with intelligence context
+      const taskId = crypto.randomUUID();
+      await db.prepare(`
+        INSERT INTO tasks 
+        (id, type, reference_id, reference_type, company_id, status, description, priority, created_at, config)
+        VALUES (?, 'adaptive_invoice_reminder', ?, 'invoice', ?, 'pending', ?, 'medium', datetime('now'), ?)
+      `).bind(
+        taskId,
+        invoice.id,
+        companyId,
+        messageTemplate,
+        JSON.stringify({
+          customer_response_history: customerPattern || null,
+          optimal_timing_days: reminderTiming,
+          calculated_reminder_date: reminderDate.toISOString(),
+          customized_message: messageTemplate.includes('prompt payer') ? 'loyal_customer' : 
+                             messageTemplate.includes('appreciate a quick payment') ? 'follow_up_needed' : 'standard'
+        })
+      ).run();
+      
+      remindersCreated.push(`${invoice.invoice_number} (${invoice.customer_name})`);
+      
+      // Record learning insight for future optimizations
+      learningInsights.push({
+        invoice_number: invoice.invoice_number,
+        customer_id: customerId,
+        reminder_timing: reminderTiming,
+        message_type: messageTemplate.includes('prompt payer') ? 'loyal_customer' : 
+                      messageTemplate.includes('appreciate a quick payment') ? 'follow_up_needed' : 'standard'
+      });
+    }
+
+    // Learn from this execution
+    if (learningInsights.length > 0) {
+      await memoryService.recordLearning(
+        botId,
+        companyId,
+        runId,
+        'optimization',
+        `Adaptive Reminders Execution Insights`,
+        `${remindersCreated.length} adaptive reminders generated with personalized timing and messaging`,
+        `Continue refining timing algorithms based on payment velocity and customer segmentation.
+         Current strategies: loyal_customer=${learningInsights.filter(i => i.message_type === 'loyal_customer').length},
+         follow_up_needed=${learningInsights.filter(i => i.message_type === 'follow_up_needed').length}`,
+        'medium',
+        [],
+        0.8
+      );
+
+      // Store patterns for future reference
+      await memoryService.storeMemory(
+        botId,
+        companyId,
+        'pattern',
+        {
+          execution_timestamp: timestamp,
+          reminders_sent: remindersCreated.length,
+          message_distribution: learningInsights.reduce((dist, insight) => {
+            dist[insight.message_type] = (dist[insight.message_type] || 0) + 1;
+            return dist;
+          }, {} as Record<string, number>),
+          avg_reminder_timing: learningInsights.reduce((sum, ins) => sum + ins.reminder_timing, 0) / (learningInsights.length || 1)
+        },
+        7
+      );
+    }
+
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: botId,
+      company_id: companyId,
+      state_changed: remindersCreated.length > 0,
+      message: `Sent ${remindersCreated.length} adaptive invoice reminders. Customers: ${remindersCreated.join(', ')}`,
+      executed_at: timestamp,
+      details: {
+        reminders_sent: remindersCreated.length,
+        customer_segments: Object.keys(paymentPatterns).length,
+        learning_insights_count: learningInsights.length
+      }
+    };
+  } catch (error) {
+    // Store error learning
+    const memoryService = getMemoryService(db);
+    await memoryService.recordLearning(
+      botId,
+      companyId,
+      runId,
+      'error_analysis',
+      'Adaptive Invoice Reminder Execution Failed',
+      `Bot failed generating reminders: ${String(error)}`,
+      'Investigate database query or reminder personalization issues.',
+      'high',
+      [],
+      0.9
+    ).catch(() => {});
+    
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: botId,
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to execute adaptive invoice reminders'
+    };
+  }
+}
+
+/**
+ * Predictive Inventory Optimization Bot with Pattern Recognition
+ * Uses historical inventory turnover and sales patterns to forecast needs
+ */
+export async function executePredictiveInventoryOptimizationBot(
+  companyId: string,
+  config: Record<string, any>,
+  db: D1Database,
+  userId: string,
+  timestamp: string
+): Promise<BotExecutionResult> {
+  const runId = crypto.randomUUID();
+  const botId = 'inventory_optimization_predictive';
+  
+  try {
+    // Retrieve memory for pattern recognition
+    const memoryService = getMemoryService(db);
+    const memories = await memoryService.retrieveMemories(botId, companyId, ['pattern', 'experience'], 20);
+    const historicalTurnover = memories.filter(mem => mem.content.type === 'turnover_analysis');
+    
+    // Fetch inventory with sales trend analysis
+    const inventoryAnalysis = await db.prepare(`
+      WITH monthly_sales AS (
+        SELECT 
+          variant_id,
+          strftime('%Y-%m', invoice_date) as month,
+          SUM(quantity) as units_sold
+        FROM invoice_items ii
+        JOIN customer_invoices ci ON ii.invoice_id = ci.id
+        WHERE ci.company_id = ?
+          AND ci.invoice_date >= date('now', '-12 months')
+        GROUP BY variant_id, month
+      ),
+      trend_data AS (
+        SELECT 
+          variant_id,
+          AVG(units_sold) as avg_monthly_sales,
+          -- Calculate trend slope using simple linear regression approach
+          (COUNT(*) * SUM(month_index * units_sold) - SUM(month_index) * SUM(units_sold)) /
+          (COUNT(*) * SUM(month_index * month_index) - SUM(month_index) * SUM(month_index)) as trend_slope,
+          MAX(month) as last_sale_month
+        FROM (
+          SELECT 
+            variant_id, units_sold, month,
+            ROW_NUMBER() OVER (PARTITION BY variant_id ORDER BY month) as month_index
+          FROM monthly_sales
+        )
+        GROUP BY variant_id
+        HAVING COUNT(*) >= 3 -- Need at least 3 months data for reliable trend
+      )
+      SELECT 
+        iv.variant_id,
+        p.product_name,
+        iv.current_stock,
+        iv.reorder_point,
+        iv.reorder_quantity,
+        td.avg_monthly_sales,
+        td.trend_slope,
+        td.last_sale_month,
+        -- Seasonal adjustment factors from memory if available
+        CASE 
+          WHEN p.category IN (SELECT DISTINCT content->>'$.seasonal_category' FROM bot_memories WHERE bot_id = 'inventory_optimization_predictive' AND memory_type = 'pattern')
+          THEN (SELECT content->>'$.peak_multiplier' FROM bot_memories WHERE bot_id = 'inventory_optimization_predictive' AND content LIKE '%' || p.category || '%' LIMIT 1)
+          ELSE 1.0 
+        END as seasonal_factor
+      FROM inventory_variants iv
+      JOIN products p ON iv.product_id = p.id
+      LEFT JOIN trend_data td ON iv.variant_id = td.variant_id
+      WHERE iv.company_id = ? AND iv.current_stock <= iv.reorder_point * 1.5
+      ORDER BY iv.current_stock ASC
+      LIMIT 30
+    `).bind(companyId, companyId).all();
+
+    if (!inventoryAnalysis.results?.length) {
+      return {
+        success: true,
+        run_id: runId,
+        bot_id: botId,
+        company_id: companyId,
+        state_changed: false,
+        message: 'No products nearing reorder point requiring attention.',
+        executed_at: timestamp,
+      };
+    }
+
+    // Pattern-based forecasting with learned seasonality and trends
+    const recommendations: any[] = [];
+    const purchaseOrdersCreated: string[] = [];
+    const learningsCaptured: any[] = [];
+    
+    for (const inventory of inventoryAnalysis.results as any[]) {
+      // Calculate predicted need for next 30 days incorporating trend and seasonal factors
+      const avgMonthlySales = inventory.avg_monthly_sales || 0;
+      const trendFactor = inventory.trend_slope > 0 ? 1 + (inventory.trend_slope * 0.5) : 1; // Moderate trend projection
+      const seasonalMultiplier = inventory.seasonal_factor || 1.0;
+      
+      const thirtyDayProjection = avgMonthlySales * trendFactor * seasonalMultiplier;
+      const optimalStockLevel = thirtyDayProjection * 1.5; // 50% buffer
+      
+      // Recommendation logic with learned patterns from memory
+      let recommendedAction = 'monitor'; // Default recommendation
+      let priority = 'low';
+      
+      if (inventory.current_stock === 0 && inventory.avg_monthly_sales > 0) {
+        recommendedAction = 'immediate_purchase';
+        priority = 'critical';
+      } else if (inventory.current_stock < inventory.reorder_point) {
+        recommendedAction = 'purchase_order';
+        priority = 'high';
+      } else if (inventory.trend_slope > 0.1) {
+        // Rising demand trend detected
+        recommendedAction = 'review_increase';
+        priority = 'medium';
+      } else if (inventory.trend_slope < -0.1) {
+        // Declining demand trend
+        recommendedAction = 'evaluate_discontinuation';
+        priority = 'low';
+      }
+      
+      // Capture insights for learning
+      const recommendationDetail = {
+        variant_id: inventory.variant_id,
+        product_name: inventory.product_name,
+        current_stock: inventory.current_stock,
+        projected_demand_30_days: thirtyDayProjection,
+        optimal_stock_level: optimalStockLevel,
+        recommended_action: recommendedAction,
+        urgency: priority,
+        trend_analysis: {
+          avg_monthly_sales: avgMonthlySales,
+          trend_slope: inventory.trend_slope,
+          seasonal_factor: seasonalMultiplier,
+          confidence_level: avgMonthlySales > 0 ? 'high' : 'low'
+        },
+        reasoning_chain: `Current stock ${inventory.current_stock} vs reorder point ${inventory.reorder_point}. 
+                          ${avgMonthlySales > 0 ? `30-day projection: ${thirtyDayProjection.toFixed(1)}. ` : ''}
+                          Trend slope: ${inventory.trend_slope?.toFixed(3) || 'insufficient_data'}. 
+                          Seasonal multiplier: ${seasonalMultiplier}. 
+                          Recommendation: ${recommendedAction}.`
+      };
+      
+      recommendations.push(recommendationDetail);
+      
+      // Execute purchases for urgent needs
+      if (recommendedAction === 'immediate_purchase' || recommendedAction === 'purchase_order') {
+        const poQuantity = Math.max(Math.ceil(optimalStockLevel - inventory.current_stock), inventory.reorder_quantity || 10);
+        
+        // Create purchase order tasks
+        const taskId = crypto.randomUUID();
+        await db.prepare(`
+          INSERT INTO tasks 
+          (id, type, reference_id, reference_type, company_id, status, description, priority, created_at, config)
+          VALUES (?, 'predictive_restock', ?, 'inventory', ?, 'pending', ?, ?, datetime('now'), ?)
+        `).bind(
+          taskId,
+          inventory.variant_id,
+          companyId,
+          `Auto-generated PO for ${inventory.product_name}. Current: ${inventory.current_stock}, Recommended order: ${poQuantity} units. Reason: ${recommendedAction}`,
+          priority,
+          JSON.stringify({
+            ...recommendationDetail,
+            po_quantity: poQuantity,
+            created_for_run: runId,
+            execution_timestamp: timestamp
+          })
+        ).run();
+        
+        purchaseOrdersCreated.push(`${inventory.product_name} (${poQuantity} units)`);
+      }
+      
+      // Learn from this recommendation cycle
+      learningsCaptured.push({
+        ...recommendationDetail,
+        decision_made_at: timestamp
+      });
+    }
+
+    // Save learning and patterns for future optimization
+    if (learningsCaptured.length > 0) {
+      await memoryService.recordLearning(
+        botId,
+        companyId,
+        runId,
+        'best_practice',
+        'Inventory Optimization Strategy Execution',
+        `${purchaseOrdersCreated.length} purchase orders auto-generated. ${recommendations.length} inventory items analyzed.`,
+        `Continue refining forecast accuracy with trend detection and seasonal adjustments.
+         Top-selling products identified for strategic stocking decisions.
+         Low-turnover items flagged for review to reduce carrying costs.`,
+        'high',
+        [],
+        0.85
+      );
+
+      // Store forecasting patterns for continuous improvement
+      await memoryService.storeMemory(
+        botId,
+        companyId,
+        'pattern',
+        {
+          execution_timestamp: timestamp,
+          total_products_analyzed: recommendations.length,
+          purchase_orders_generated: purchaseOrdersCreated.length,
+          average_trend_slope: recommendations.reduce((sum, rec) => sum + (rec.trend_analysis.trend_slope || 0), 0) / (recommendations.length || 1),
+          action_distribution: recommendations.reduce((dist, rec) => {
+            dist[rec.recommended_action] = (dist[rec.recommended_action] || 0) + 1;
+            return dist;
+          }, {} as Record<string, number>),
+          total_projected_demand: recommendations.reduce((sum, rec) => sum + rec.projected_demand_30_days, 0)
+        },
+        9 // Very high importance for supply chain decisions
+      );
+    }
+
+    return {
+      success: true,
+      run_id: runId,
+      bot_id: botId,
+      company_id: companyId,
+      state_changed: purchaseOrdersCreated.length > 0,
+      message: `Processed ${recommendations.length} inventory items. Generated ${purchaseOrdersCreated.length} purchase orders. Key items: ${purchaseOrdersCreated.slice(0,5).join(', ')}`,
+      executed_at: timestamp,
+      details: {
+        items_analyzed: recommendations.length,
+        purchase_orders_created: purchaseOrdersCreated.length,
+        recommendation_distribution: recommendations.reduce((dist, rec) => {
+          dist[rec.recommended_action] = (dist[rec.recommended_action] || 0) + 1;
+          return dist;
+        }, {} as Record<string, number>),
+        projected_total_demand_next_30_days: recommendations.reduce((sum, rec) => sum + rec.projected_demand_30_days, 0)
+      }
+    };
+  } catch (error) {
+    // Store error analysis for improvements
+    const memoryService = getMemoryService(db);
+    await memoryService.recordLearning(
+      botId,
+      companyId,
+      runId,
+      'error_analysis',
+      'Predictive Inventory Optimization Failed',
+      `Bot failed during analysis phase: ${String(error)}`,
+      'Check database query syntax and sales history aggregation logic.',
+      'critical',
+      [],
+      0.95
+    ).catch(() => {});
+    
+    return {
+      success: false,
+      run_id: runId,
+      bot_id: botId,
+      company_id: companyId,
+      state_changed: false,
+      message: String(error),
+      executed_at: timestamp,
+      error: 'Failed to execute predictive inventory optimization'
     };
   }
 }
