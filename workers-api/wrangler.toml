@@ -3,6 +3,15 @@ name = "aria-api"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
+# Smart Placement: routes requests to nearest edge with warm instances
+# Reduces cold start latency by keeping workers warm in optimal locations
+[placement]
+mode = "smart"
+
+# RECOMMENDATION: Upgrade to Workers Paid plan ($5/mo) for production use.
+# Benefits: significantly reduced cold start times, 50ms CPU time (vs 10ms free),
+# no daily request limits, and better performance for large bundles like this API.
+
 # Environment variables (secrets should be set via wrangler secret)
 [vars]
 ENVIRONMENT = "production"
@@ -42,7 +51,7 @@ command = "npm run build"
 port = 8787
 local_protocol = "http"
 
-# Scheduled triggers for autonomous bot execution
-# Runs every hour to process pending bot tasks
+# Scheduled triggers for autonomous bot execution and keepalive
+# Main tasks run every hour; keepalive ping every 5 minutes to prevent cold starts
 [triggers]
-crons = ["0 * * * *"]
+crons = ["0 * * * *", "*/5 * * * *"]

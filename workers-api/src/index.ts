@@ -54,13 +54,9 @@ import goLive from './routes/go-live';
 import missingEndpoints from './routes/missing-endpoints';
 import reverseLogistics from './routes/reverse-logistics';
 import integration from './routes/integration';
-import { executeScheduledBots as runScheduledBots } from './services/bot-executor';
-import { processPendingDeliveries } from './services/webhook-service';
-import { processDueScheduledReports } from './services/report-builder-service';
-import { processScheduledPosts, generateDailyPosts } from './services/marketing-service';
-import { rateLimiter } from './middleware/rate-limiter';
-import { sendTransactionalEmail } from './services/email-service';
-import { healSchema } from './services/schema-healer';
+// Heavy services (schema-healer, bot-executor, webhook-service, report-builder-service,
+// marketing-service, data-seeding-service) are lazy-loaded via dynamic import() to reduce
+// cold start bundle size. Only critical path modules are eagerly imported above.
 
 // Types
 interface Env {
@@ -102,8 +98,10 @@ interface TokenPayload {
 const app = new Hono<{ Bindings: Env }>();
 
 // Self-healing schema middleware: runs once on first request to ensure all tables/columns exist
+// Uses dynamic import to lazy-load the 5000+ line schema definition, reducing cold start parse time
 app.use('*', async (c, next) => {
   try {
+    const { healSchema } = await import('./services/schema-healer');
     await healSchema(c.env.DB);
   } catch (e) {
     console.error('[schema-healer] Error:', e);
@@ -806,11 +804,11 @@ app.route('/odoo', crossModule);
 app.route('/api', missingEndpoints);
 app.route('', missingEndpoints);
 
-// Data Seedingendpoint (for generating test data)
-import { seedFullYear, seedMonth } from './services/data-seeding-service';
-
+// Data Seeding endpoint (for generating test data)
+// Lazy-loaded to reduce cold start bundle size
 app.post('/api/seed/full-year', async (c) => {
   try {
+    const { seedFullYear } = await import('./services/data-seeding-service');
     const body = await c.req.json<{ company_id?: string; year?: number }>().catch(() => ({ company_id: undefined, year: undefined }));
     const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
     const year = body.year || 2025;
@@ -834,6 +832,7 @@ app.post('/api/seed/full-year', async (c) => {
 
 app.post('/api/seed/month', async (c) => {
   try {
+    const { seedMonth } = await import('./services/data-seeding-service');
     const body = await c.req.json<{ company_id?: string; year?: number; month?: number }>().catch(() => ({ company_id: undefined, year: undefined, month: undefined }));
     const companyId = body.company_id || 'b0598135-52fd-4f67-ac56-8f0237e6355e'; // Demo company
     const year = body.year || 2025;
@@ -1247,7 +1246,8 @@ async function executeScheduledBots(env: Env): Promise<void> {
   console.log('Starting scheduled bot execution with REAL bot logic...');
   
   try {
-    // Call the shared bot executor service that runs actual bot implementations
+    // Lazy-load bot executor to reduce cold start bundle size
+    const { executeScheduledBots: runScheduledBots } = await import('./services/bot-executor');
     const result = await runScheduledBots(env.DB);
     console.log(`Scheduled bot execution completed. Executed ${result.executed} bots.`);
     
@@ -1269,16 +1269,19 @@ async function executeScheduledTasks(env: Env): Promise<void> {
     
     // 2. Process pending webhook deliveries (retries)
     console.log('Processing pending webhook deliveries...');
+    const { processPendingDeliveries } = await import('./services/webhook-service');
     const webhookResult = await processPendingDeliveries(env.DB);
     console.log(`Webhook deliveries: ${webhookResult.processed} processed, ${webhookResult.succeeded} succeeded, ${webhookResult.failed} failed`);
     
     // 3. Process due scheduled reports
     console.log('Processing due scheduled reports...');
+    const { processDueScheduledReports } = await import('./services/report-builder-service');
     const reportResult = await processDueScheduledReports(env.DB);
     console.log(`Scheduled reports: ${reportResult.processed} processed, ${reportResult.succeeded} succeeded, ${reportResult.failed} failed`);
     
     // 4. Process scheduled marketing posts
     console.log('Processing scheduled marketing posts...');
+    const { processScheduledPosts, generateDailyPosts } = await import('./services/marketing-service');
     const marketingResult = await processScheduledPosts(env.DB);
     console.log(`Marketing posts: ${marketingResult.processed} processed, ${marketingResult.succeeded} succeeded, ${marketingResult.failed} failed`);
     
@@ -1300,8 +1303,23 @@ export default {
   fetch: app.fetch,
   
   // Scheduled handler for cron triggers
+  // - Every 5 minutes (*/5): lightweight keepalive ping to prevent cold starts
+  // - Every hour (0 * * * *): full scheduled task execution (bots, webhooks, reports, marketing)
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
-    console.log(`Cron trigger fired at ${new Date().toISOString()}`);
-    ctx.waitUntil(executeScheduledTasks(env));
+    const now = new Date();
+    const isHourlyRun = now.getUTCMinutes() === 0;
+    
+    if (isHourlyRun) {
+      console.log(`Hourly cron trigger fired at ${now.toISOString()} - running full scheduled tasks`);
+      ctx.waitUntil(executeScheduledTasks(env));
+    } else {
+      console.log(`Keepalive ping at ${now.toISOString()}`);
+      // Lightweight keepalive - just touch the DB to keep connections warm
+      try {
+        await env.DB.prepare('SELECT 1').first();
+      } catch (e) {
+        console.error('Keepalive ping failed:', e);
+      }
+    }
   },
 };
