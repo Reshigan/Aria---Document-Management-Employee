@@ -2,6 +2,14 @@ interface AIBinding {
   run(model: string, options: { messages: Array<{role: string, content: string}>, max_tokens?: number, temperature?: number }): Promise<{ response?: string, text?: string }>;
 }
 
+interface BotExecutionResult {
+  success: boolean;
+  botId: string;
+  message: string;
+  data?: Record<string, unknown>;
+  timestamp: string;
+}
+
 interface BotMemory {
   experiences: BotExperience[];
   patterns: BotPattern[];
