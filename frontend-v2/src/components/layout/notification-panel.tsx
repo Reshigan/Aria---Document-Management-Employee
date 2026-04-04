@@ -106,7 +106,7 @@ export function NotificationPanel() {
                   variant="outline" 
                   size="sm" 
                   className="w-full"
-                  onClick={refresh}
+                  onClick={() => refresh()}
                 >
                   Refresh
                 </Button>
