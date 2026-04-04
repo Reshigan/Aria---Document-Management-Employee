@@ -1307,9 +1307,8 @@ export default {
   // - Every hour (0 * * * *): full scheduled task execution (bots, webhooks, reports, marketing)
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
     const now = new Date();
-    const isHourlyRun = now.getUTCMinutes() === 0;
     
-    if (isHourlyRun) {
+    if (event.cron === '0 * * * *') {
       console.log(`Hourly cron trigger fired at ${now.toISOString()} - running full scheduled tasks`);
       ctx.waitUntil(executeScheduledTasks(env));
     } else {
