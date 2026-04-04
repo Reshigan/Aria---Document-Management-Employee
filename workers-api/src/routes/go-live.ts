@@ -354,7 +354,7 @@ app.post('/email/send-document', async (c) => {
       return c.json({ error: 'doc_type, doc_id, and recipient_email are required' }, 400);
     }
 
-    const { doc, customerName } = await getDocumentData(c.env.DB, companyId, doc_type, doc_id);
+    const { doc, lines, customerName } = await getDocumentData(c.env.DB, companyId, doc_type, doc_id);
     if (!doc) {
       return c.json({ error: 'Document not found' }, 404);
     }
@@ -418,30 +418,22 @@ app.post('/email/send-document', async (c) => {
     const emailConfig = await getEmailConfig(c.env.DB, companyId);
     
     // Send email with PDF attachment
-    let emailResult = { success: false, error: 'Email not configured' };
+    let emailResult: { success: boolean; error?: string } = { success: false, error: 'Email not configured' };
     if (emailConfig) {
       emailResult = await sendDocumentEmail(
         c.env.DB,
         companyId,
-        {
-          number: docNumber,
-          amount: total,
-          currency: currency,
-          date: docDate,
-          status: doc.status || 'draft'
-        },
+        htmlContent,
         {
           email: recipient_email,
           name: customerName
         },
-        companyName,
-        [
-          {
-            filename: `${titleMap[doc_type] || 'Document'}-${docNumber}.html`,
-            content: pdfContent,
-            contentType: 'text/html'
-          }
-        ]
+        {
+          type: titleMap[doc_type] || 'Document',
+          number: docNumber,
+          companyName: companyName
+        },
+        message
       );
     }
 
