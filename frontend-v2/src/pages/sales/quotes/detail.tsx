@@ -83,7 +83,7 @@ export default function QuoteDetail() {
   if (error) return <div>Error loading quote</div>
   if (!quote) return <div>Quote not found</div>
 
-  const statusVariant = quote.status === 'accepted' ? 'success' : quote.status === 'sent' ? 'posted' : quote.status === 'declined' ? 'cancelled' : 'draft'
+  const statusVariant = quote.status === 'accepted' ? 'default' as const : quote.status === 'sent' ? 'posted' as const : quote.status === 'declined' ? 'cancelled' as const : 'draft' as const
 
   const handlePrint = () => {
     window.open(`/api/go-live/pdf/quote/${quote.id}`, '_blank')
@@ -93,7 +93,7 @@ export default function QuoteDetail() {
     try {
       // In a real implementation, you'd prompt for recipient email, subject, etc.
       // For now, we'll just log that we'd send it
-      const response = await api.post('/go-live/email/send-document', {
+      const response = await api.post<{ success: boolean; error?: string }>('/go-live/email/send-document', {
         doc_type: 'quote',
         doc_id: id,
         recipient_email: quote.customer_email || 'customer@example.com',
@@ -103,7 +103,7 @@ export default function QuoteDetail() {
       if (response.success) {
         alert('Email sent successfully!')
       } else {
-        alert('Failed to send email: ' + response.error)
+        alert('Failed to send email: ' + (response.error || 'Unknown error'))
       }
     } catch (error) {
       console.error('Failed to send email:', error)
